@@ -1,0 +1,12 @@
+﻿<Project>
+  <!--
+  WPF projects output temporary assemblies in directories that are not deleted after use.
+  See https://github.com/dotnet/wpf/issues/2930
+  -->
+  <Target Name="RemoveWpfTemp" AfterTargets="Build">
+    <ItemGroup>
+      <WpfTempDirectories Include="$([System.IO.Directory]::GetDirectories(&quot;$(_BaseOutputBinPath)&quot;,&quot;$(MSBuildProjectName)*_wpftmp*&quot;))"/>
+    </ItemGroup>
+    <RemoveDir Directories="@(WpfTempDirectories)" />
+  </Target>  
+</Project>

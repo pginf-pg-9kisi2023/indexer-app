@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <OutDir>$(_BaseOutputPath)</OutDir>
+    <PublishDir>$(_BasePublishPath)</PublishDir>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <Authors>Jakub Kuczys, Mikołaj Morozowski, Mateusz Kozak, Mikołaj Nadzieja, Dawid Łydka</Authors>
+    <Copyright>Copyright (c) Jakub Kuczys, Mikołaj Morozowski, Mateusz Kozak, Mikołaj Nadzieja, Dawid Łydka 2022-present</Copyright>
+    <NeutralLanguage>pl</NeutralLanguage>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <PropertyGroup Label="OutputBuildProps">
+    <Configuration Condition="$(Configuration) == ''">Debug</Configuration>
+    
+    <_BaseArtifactsPath>$(MSBuildThisFileDirectory)artifacts\</_BaseArtifactsPath>
+    <_BaseArtifactsPathSuffix>$(MSBuildProjectName)\$(Configuration)</_BaseArtifactsPathSuffix>
+
+    <_BaseOutputBinPath>$(_BaseArtifactsPath)bin\</_BaseOutputBinPath>
+    <_BaseOutputPath>$(_BaseOutputBinPath)$(_BaseArtifactsPathSuffix)\</_BaseOutputPath>
+    <_BasePublishPath>$(_BaseArtifactsPath)publish\$(_BaseArtifactsPathSuffix)\</_BasePublishPath>
+
+    <BaseIntermediateOutputPath>$(_BaseArtifactsPath)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(_BaseArtifactsPath)bin\$(MSBuildProjectName)\</BaseOutputPath>
+
+    <BeforeTargetFrameworkInferenceTargets>$(MSBuildThisFileDirectory)OutputBuildProject.props</BeforeTargetFrameworkInferenceTargets>
+  </PropertyGroup>
+</Project>
