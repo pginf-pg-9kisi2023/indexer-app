@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.TextFormatting;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Indexer.Model
 {
@@ -13,7 +12,13 @@ namespace Indexer.Model
         private String? _sessionPath { get; set; }
         private Config _config { get; set; }
         private List<IndexedImage> _indexedImages;
-        public Session() { }
+        public Session(String? sessionPath, Config conifg, List<IndexedImage> indexedImages)
+        {
+            _sessionPath = sessionPath;
+            _config = conifg;
+            _indexedImages = indexedImages;
+            InitSessionFile();
+        }
 
         void ExportPointsToCSV()
         {
@@ -33,6 +38,15 @@ namespace Indexer.Model
         void Save()
         {
 
+        }
+        public void InitSessionFile()
+        {
+            string fileName = _sessionPath ?? Path.GetTempFileName();
+            FileStream fileStream = File.Create(fileName);
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Session));
+            XmlWriter xmlWriter = new XmlTextWriter(fileStream, Encoding.Unicode);
+            xmlSerializer.Serialize(xmlWriter, this);
+            xmlWriter.Close();
         }
     }
 }
