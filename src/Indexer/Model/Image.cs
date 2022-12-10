@@ -2,11 +2,11 @@ namespace Indexer.Model
 {
     internal class Image
     {
-        private int _height { get; set; };
-        private int _width { get; set; };
-        private int _orientation { get; set; };
-        private string _path { get; set; };
-        private System.Drawing.Image? _lodaedImage { get; set; };
+        private int _height { get; set; }
+        private int _width { get; set; }
+        private int _orientation { get; set; }
+        private string _path { get; set; }
+        private System.Drawing.Image? _lodaedImage { get; set; }
 
         Image(int height, int width, int orientation, string path)
         {
@@ -14,14 +14,23 @@ namespace Indexer.Model
             _width = width;
             _orientation = orientation;
             _path = path;
-            _lodaedImage= null;
+            _lodaedImage = null;
         }
 
-        void LoadImage();
+        void LoadImage()
+        {
 
-        void Scale();
+        }
 
-        void UnloadedImage();
+        void Scale()
+        {
+
+        }
+
+        void UnloadedImage()
+        {
+
+        }
 
     }
 }

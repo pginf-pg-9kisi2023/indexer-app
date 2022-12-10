@@ -30,7 +30,7 @@ namespace Indexer.Model
 
         }
 
-        Session FromFile()
+        Session? FromFile()
         {
             return null;
         }

@@ -1,8 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Indexer.Model
 {
@@ -10,13 +6,24 @@ namespace Indexer.Model
     {
         private Image _image;
         private List<Label> _labels;
-        void AddImage();
-        void DeleteLabel();
-        void EditLable();
-
         IndexedImage(Image image)
         {
             _image = image;
+            _labels = new List<Label>();    
         }
+        void AddImage()
+        {
+
+        }
+        void DeleteLabel()
+        {
+
+        }
+        void EditLable()
+        {
+
+        }
+
+        
     }
 }
