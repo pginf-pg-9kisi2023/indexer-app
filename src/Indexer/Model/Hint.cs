@@ -6,8 +6,8 @@ namespace Indexer.Model
     {
         private string _description { get; set; }
         private string _name { get; set; }
-        private List<Label> _labels;
-        private Image _image;
+        private readonly List<Label> _labels;
+        private readonly Image _image;
 
 
         Hint(string description, string name, Image image)

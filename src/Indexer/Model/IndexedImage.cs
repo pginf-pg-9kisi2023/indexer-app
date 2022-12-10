@@ -4,12 +4,12 @@ namespace Indexer.Model
 {
     internal class IndexedImage
     {
-        private Image _image;
-        private List<Label> _labels;
+        private readonly Image _image;
+        private readonly List<Label> _labels;
         IndexedImage(Image image)
         {
             _image = image;
-            _labels = new List<Label>();    
+            _labels = new List<Label>();
         }
         void AddImage()
         {
@@ -24,6 +24,6 @@ namespace Indexer.Model
 
         }
 
-        
+
     }
 }
