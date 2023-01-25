@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Indexer.Model
@@ -13,9 +14,9 @@ namespace Indexer.Model
             _hints = new List<Hint>();
         }
 
-        Config? FromFile()
+        public static Config FromFile(string filePath)
         {
-            return null;
+            throw new NotImplementedException();
         }
     }
 }

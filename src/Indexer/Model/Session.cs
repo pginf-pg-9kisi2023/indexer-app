@@ -26,12 +26,12 @@ namespace Indexer.Model
 
         }
 
-        Session? FromFile()
+        public static Session FromFile(string sessionFilePath)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
-        void Save()
+        public void Save()
         {
 
         }
