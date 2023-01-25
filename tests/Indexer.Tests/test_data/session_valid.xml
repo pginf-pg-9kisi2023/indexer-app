@@ -1,0 +1,47 @@
+<session xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <config>
+        <points>
+            <point>
+                <name>TOP_LT</name>
+                <description>Górne pole - lewy górny narożnik</description>
+                <imageRef>V20_TOP_LT.jpg</imageRef>
+            </point>
+            <point>
+                <name>TOP_RT</name>
+                <description>Górne pole - prawy górny narożnik</description>
+                <imageRef>V20_TOP_RT.jpg</imageRef>
+            </point>
+        </points>
+    </config>
+    <images>
+        <image>
+            <path>D:\absolute\path\to\image1.jpg</path>
+            <points>
+                <point>
+                    <name>TOP_LT</name>
+                    <x>123</x>
+                    <y>456</y>
+                </point>
+                <point>
+                    <name>TOP_RT</name>
+                    <x>321</x>
+                    <y>654</y>
+                </point>
+            </points>
+        </image>
+        <image>
+            <path>D:\absolute\path\to\image2.jpg</path>
+            <points>
+                <point>
+                    <name>TOP_LT</name>
+                    <x>404</x>
+                    <y>103</y>
+                </point>
+            </points>
+        </image>
+        <image>
+            <path>D:\absolute\path\to\image3.jpg</path>
+            <points />
+        </image>
+    </images>
+</session>

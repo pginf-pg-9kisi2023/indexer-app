@@ -1,0 +1,9 @@
+<root>
+    <points>
+        <point>
+            <name>TOP_LT</name>
+            <description>Górne pole - lewy górny narożnik</description>
+            <imageRef>V20_TOP_LT.jpg</imageRef>
+        </point>
+    </points>
+</root>

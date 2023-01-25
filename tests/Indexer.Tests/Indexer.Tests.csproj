@@ -18,4 +18,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Indexer\Indexer.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="test_data\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
