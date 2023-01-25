@@ -13,10 +13,10 @@ namespace Indexer.Model
         private Config _config { get; set; }
         private readonly List<IndexedImage> _indexedImages;
 
-        public Session(String? sessionPath, Config conifg, List<IndexedImage> indexedImages)
+        public Session(String? sessionPath, Config config, List<IndexedImage> indexedImages)
         {
             _sessionPath = sessionPath;
-            _config = conifg;
+            _config = config;
             _indexedImages = indexedImages;
             InitSessionFile();
         }

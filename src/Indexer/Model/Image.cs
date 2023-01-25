@@ -6,7 +6,7 @@ namespace Indexer.Model
         private int _width { get; set; }
         private int _orientation { get; set; }
         private string _path { get; set; }
-        private System.Drawing.Image? _lodaedImage { get; set; }
+        private System.Drawing.Image? _loadedImage { get; set; }
 
         Image(int height, int width, int orientation, string path)
         {
@@ -14,7 +14,7 @@ namespace Indexer.Model
             _width = width;
             _orientation = orientation;
             _path = path;
-            _lodaedImage = null;
+            _loadedImage = null;
         }
 
         void LoadImage()
@@ -27,7 +27,7 @@ namespace Indexer.Model
 
         }
 
-        void UnloadedImage()
+        void UnloadImage()
         {
 
         }

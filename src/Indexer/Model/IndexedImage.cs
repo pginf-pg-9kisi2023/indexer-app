@@ -23,7 +23,7 @@ namespace Indexer.Model
 
         }
 
-        void EditLable()
+        void EditLabel()
         {
 
         }
