@@ -14,17 +14,17 @@ namespace Indexer.Model
             _image = image;
         }
 
-        void AddImage()
+        public void AddLabel()
         {
 
         }
 
-        void DeleteLabel()
+        public void DeleteLabel()
         {
 
         }
 
-        void EditLabel()
+        public void EditLabel()
         {
 
         }

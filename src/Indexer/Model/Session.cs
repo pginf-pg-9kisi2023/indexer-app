@@ -15,12 +15,12 @@ namespace Indexer.Model
             _indexedImages = new();
         }
 
-        void ExportPointsToCSV()
+        public void ExportPointsToCSV(string filePath)
         {
 
         }
 
-        void ExportPointsToXML()
+        public void ExportPointsToXML(string filePath)
         {
 
         }

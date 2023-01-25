@@ -30,17 +30,19 @@ namespace Indexer.Model
             Path = path;
         }
 
-        void LoadImage()
+        public void LoadImage()
         {
 
         }
 
-        void Scale()
+        // TODO: figure out what arguments would be needed here
+        // and whether this is needed at all
+        public void Scale()
         {
 
         }
 
-        void UnloadImage()
+        public void UnloadImage()
         {
 
         }
