@@ -6,7 +6,7 @@ namespace Indexer.Model
         public int X { get; private set; }
         public int Y { get; private set; }
 
-        Label(string name, int x, int y)
+        internal Label(string name, int x, int y)
         {
             Name = name;
             X = x;

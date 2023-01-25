@@ -11,7 +11,7 @@ namespace Indexer.Model
             private set => _image = new(value);
         }
 
-        Hint(string name, string description, string imagePath)
+        internal Hint(string name, string description, string imagePath)
         {
             Name = name;
             Description = description;

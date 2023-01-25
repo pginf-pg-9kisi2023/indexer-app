@@ -25,7 +25,7 @@ namespace Indexer.Model
             }
         }
 
-        Image(string path)
+        internal Image(string path)
         {
             Path = path;
         }

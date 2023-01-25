@@ -10,7 +10,7 @@ namespace Indexer.Model
         private readonly List<Hint> _hints;
         public ReadOnlyCollection<Hint> Hints => new(_hints);
 
-        Config(string filePath)
+        private Config(string filePath)
         {
             _filePath = filePath;
             _hints = new List<Hint>();

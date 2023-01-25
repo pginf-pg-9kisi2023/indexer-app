@@ -9,7 +9,7 @@ namespace Indexer.Model
         private readonly List<Label> _labels = new();
         public ReadOnlyCollection<Label> Labels => new(_labels);
 
-        IndexedImage(Image image)
+        internal IndexedImage(Image image)
         {
             _image = image;
         }
