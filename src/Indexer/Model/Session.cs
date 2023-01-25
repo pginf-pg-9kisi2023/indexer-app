@@ -12,6 +12,7 @@ namespace Indexer.Model
         private String? _sessionPath { get; set; }
         private Config _config { get; set; }
         private readonly List<IndexedImage> _indexedImages;
+
         public Session(String? sessionPath, Config conifg, List<IndexedImage> indexedImages)
         {
             _sessionPath = sessionPath;
@@ -39,6 +40,7 @@ namespace Indexer.Model
         {
 
         }
+
         public void InitSessionFile()
         {
             string fileName = _sessionPath ?? Path.GetTempFileName();

@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 
 namespace Indexer.Model
@@ -7,6 +6,7 @@ namespace Indexer.Model
     {
         private string _filePath { get; set; }
         private readonly List<Hint> _hints;
+
         Config(string filePath)
         {
             _filePath = filePath;

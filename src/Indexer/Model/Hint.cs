@@ -9,7 +9,6 @@ namespace Indexer.Model
         private readonly List<Label> _labels;
         private readonly Image _image;
 
-
         Hint(string description, string name, Image image)
         {
             _description = description;
