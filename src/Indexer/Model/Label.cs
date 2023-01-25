@@ -2,15 +2,15 @@ namespace Indexer.Model
 {
     internal class Label
     {
-        private int _x { get; set; }
-        private int _y { get; set; }
-        private string _name { get; set; }
+        public string Name { get; private set; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
 
-        Label(int x, int y, string name)
+        Label(string name, int x, int y)
         {
-            _x = x;
-            _y = y;
-            _name = name;
+            Name = name;
+            X = x;
+            Y = y;
         }
     }
 }

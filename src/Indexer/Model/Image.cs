@@ -2,19 +2,32 @@ namespace Indexer.Model
 {
     internal class Image
     {
-        private int _height { get; set; }
-        private int _width { get; set; }
-        private int _orientation { get; set; }
-        private string _path { get; set; }
-        private System.Drawing.Image? _loadedImage { get; set; }
+        private const int PropertyTagOrientation = 0x0112;
 
-        Image(int height, int width, int orientation, string path)
+        public string Path { get; private set; }
+        private System.Drawing.Image? _loadedImage { get; set; }
+        public int Height => _loadedImage is null ? 0 : _loadedImage.Height;
+        public int Width => _loadedImage is null ? 0 : _loadedImage.Width;
+        public int Orientation
         {
-            _height = height;
-            _width = width;
-            _orientation = orientation;
-            _path = path;
-            _loadedImage = null;
+            get
+            {
+                if (_loadedImage is null)
+                {
+                    return 0;
+                }
+                var propertyItem = _loadedImage.GetPropertyItem(PropertyTagOrientation);
+                if (propertyItem is null || propertyItem.Value is null)
+                {
+                    return 0;
+                }
+                return propertyItem.Value[0];
+            }
+        }
+
+        Image(string path)
+        {
+            Path = path;
         }
 
         void LoadImage()

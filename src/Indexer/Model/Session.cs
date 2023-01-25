@@ -5,15 +5,14 @@ namespace Indexer.Model
 {
     internal class Session
     {
-        private String? _sessionPath { get; set; }
-        private Config _config { get; set; }
+        public string? SessionFilePath { get; set; }
+        public Config Config { get; private set; }
         private readonly List<IndexedImage> _indexedImages;
 
-        public Session(String? sessionPath, Config config, List<IndexedImage> indexedImages)
+        public Session(Config config)
         {
-            _sessionPath = sessionPath;
-            _config = config;
-            _indexedImages = indexedImages;
+            Config = config;
+            _indexedImages = new();
         }
 
         void ExportPointsToCSV()

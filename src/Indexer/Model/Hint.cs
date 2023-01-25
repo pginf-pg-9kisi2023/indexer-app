@@ -1,20 +1,21 @@
-using System.Collections.Generic;
-
 namespace Indexer.Model
 {
     internal class Hint
     {
-        private string _description { get; set; }
-        private string _name { get; set; }
-        private readonly List<Label> _labels;
-        private readonly Image _image;
-
-        Hint(string description, string name, Image image)
+        public string Name { get; private set; }
+        public string Description { get; private set; }
+        private Image _image;
+        public string ImagePath
         {
-            _description = description;
-            _name = name;
-            _image = image;
-            _labels = new List<Label>();
+            get => _image.Path;
+            private set => _image = new(value);
+        }
+
+        Hint(string name, string description, string imagePath)
+        {
+            Name = name;
+            Description = description;
+            _image = new Image(imagePath);
         }
     }
 }
