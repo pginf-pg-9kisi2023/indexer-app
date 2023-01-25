@@ -6,13 +6,11 @@ namespace Indexer.Model
 {
     internal class Config
     {
-        private string _filePath;
         private readonly List<Hint> _hints;
         public ReadOnlyCollection<Hint> Hints => new(_hints);
 
-        private Config(string filePath)
+        private Config()
         {
-            _filePath = filePath;
             _hints = new List<Hint>();
         }
 
