@@ -52,6 +52,8 @@ dotnet_remove_unnecessary_suppression_exclusions = none
 
 # Unnecessary code rules
 dotnet_diagnostic.IDE0005.severity = warning
+dotnet_diagnostic.CA1812.severity = none
+dotnet_diagnostic.CA1852.severity = none
 
 #### C# Coding Conventions ####
 [*.cs]
