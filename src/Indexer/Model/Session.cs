@@ -6,7 +6,7 @@ namespace Indexer.Model
 {
     internal class Session
     {
-        public string? SessionFilePath { get; set; }
+        public string? FilePath { get; set; }
         public Config Config { get; private set; }
         private readonly List<IndexedImage> _indexedImages;
         public ReadOnlyCollection<IndexedImage> IndexedImages => new(_indexedImages);
@@ -26,7 +26,7 @@ namespace Indexer.Model
 
         }
 
-        public static Session FromFile(string sessionFilePath)
+        public static Session FromFile(string filePath)
         {
             throw new NotImplementedException();
         }
