@@ -5,6 +5,10 @@ on:
 
 jobs:
   build:
+    if: >-
+      github.repository_owner != 'Jackenmen'
+      || github.event_name != 'push'
+      || github.ref == 'refs/heads/main'
     runs-on: windows-latest
     steps:
       - name: Clone the repository
