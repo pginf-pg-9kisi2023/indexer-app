@@ -1,9 +1,12 @@
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+
+using Indexer.Collections;
+using Indexer.Collections.Generic;
 
 namespace Indexer.Model
 {
+    using ReadOnlyLabelCollection = ReadOnlyKeyedCollection<string, Label>;
+
     [DataContract(Name = "image", Namespace = "")]
     internal class IndexedImage
     {
@@ -14,10 +17,10 @@ namespace Indexer.Model
             get => _image.Path;
             private set => _image = new(value);
         }
-        private List<Label> _labels = new();
-        public ReadOnlyCollection<Label> Labels { get; private set; }
+        private LabelCollection _labels = new();
+        public ReadOnlyLabelCollection Labels { get; private set; }
         [DataMember(Name = "points", IsRequired = true)]
-        private List<Label> _xmlLabels
+        private LabelCollection _xmlLabels
         {
             get => _labels;
             set

@@ -1,23 +1,26 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
 
+using Indexer.Collections;
+using Indexer.Collections.Generic;
+
 namespace Indexer.Model
 {
+    using ReadOnlyIndexedImageCollection = ReadOnlyKeyedCollection<string, IndexedImage>;
+
     [DataContract(Name = "session", Namespace = "")]
     internal class Session
     {
         public string? FilePath { get; set; }
         [DataMember(Name = "config", IsRequired = true)]
         public Config Config { get; private set; }
-        private List<IndexedImage> _indexedImages = new();
-        public ReadOnlyCollection<IndexedImage> IndexedImages { get; private set; }
+        private IndexedImageCollection _indexedImages = new();
+        public ReadOnlyIndexedImageCollection IndexedImages { get; private set; }
         [DataMember(Name = "images", IsRequired = true)]
-        private List<IndexedImage> _xmlIndexedImages
+        private IndexedImageCollection _xmlIndexedImages
         {
             get => _indexedImages;
             set
