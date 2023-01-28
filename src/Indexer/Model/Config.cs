@@ -1,19 +1,22 @@
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
 
+using Indexer.Collections;
+using Indexer.Collections.Generic;
+
 namespace Indexer.Model
 {
+    using ReadOnlyHintCollection = ReadOnlyKeyedCollection<string, Hint>;
+
     [DataContract(Name = "pointsCollection", Namespace = "")]
     internal class Config
     {
-        private List<Hint> _hints = new();
-        public ReadOnlyCollection<Hint> Hints { get; private set; }
+        private HintCollection _hints = new();
+        public ReadOnlyHintCollection Hints { get; private set; }
         [DataMember(Name = "points", IsRequired = true)]
-        private List<Hint> _xmlHints
+        private HintCollection _xmlHints
         {
             get => _hints;
             set
