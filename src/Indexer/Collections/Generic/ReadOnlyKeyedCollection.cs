@@ -3,14 +3,14 @@ using System.Collections.ObjectModel;
 
 namespace Indexer.Collections.Generic
 {
-    internal interface IReadOnlyKeyedCollection<TKey, TItem> : IReadOnlyCollection<TItem>
+    public interface IReadOnlyKeyedCollection<TKey, TItem> : IReadOnlyCollection<TItem>
     {
         public TItem this[TKey key] { get; }
         public bool Contains(TKey key);
         public bool TryGetValue(TKey key, out TItem? item);
     }
 
-    internal class ReadOnlyKeyedCollection<TKey, TItem>
+    public class ReadOnlyKeyedCollection<TKey, TItem>
         : ReadOnlyCollection<TItem>, IReadOnlyKeyedCollection<TKey, TItem>
         where TKey : notnull
     {

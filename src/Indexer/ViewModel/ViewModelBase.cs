@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Indexer.ViewModel
 {
-    internal abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
+    public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 

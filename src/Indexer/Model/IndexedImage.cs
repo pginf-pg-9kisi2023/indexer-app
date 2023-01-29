@@ -8,7 +8,7 @@ namespace Indexer.Model
     using ReadOnlyLabelCollection = ReadOnlyKeyedCollection<string, Label>;
 
     [DataContract(Name = "image", Namespace = "")]
-    internal class IndexedImage
+    public class IndexedImage
     {
         private Image _image;
         [DataMember(Name = "path", IsRequired = true)]
@@ -30,7 +30,7 @@ namespace Indexer.Model
             }
         }
 
-        internal IndexedImage(Image image)
+        public IndexedImage(Image image)
         {
             _image = image;
             Labels = new(_labels);

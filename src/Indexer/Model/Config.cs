@@ -12,7 +12,7 @@ namespace Indexer.Model
     using ReadOnlyHintCollection = ReadOnlyKeyedCollection<string, Hint>;
 
     [DataContract(Name = "pointsCollection", Namespace = "")]
-    internal class Config
+    public class Config
     {
         private HintCollection _hints = new();
         public ReadOnlyHintCollection Hints { get; private set; }
