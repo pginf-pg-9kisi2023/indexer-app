@@ -208,6 +208,45 @@
                         </Grid>
                     </Grid>
                 </DockPanel>
+                <GridSplitter
+                    Grid.Column="3"
+                    Width="5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Stretch"
+                    Focusable="false" />
+                <StackPanel
+                    Grid.Column="4"
+                    Background="{Binding Background, ElementName=StatusBar}"
+                >
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="0.5*" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="0.25*" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="20" />
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            Name="SavedCoordinatesStatusText"
+                            Text="{Binding SavedPosition}"
+                            HorizontalAlignment="Center"
+                            Grid.Row="1" />
+                        <Image
+                            Source="{Binding CurrentHintBitmapImage}"
+                            Height="256"
+                            Width="256"
+                            Name="ReferenceImage"
+                            Grid.Row="5" />
+                        <TextBlock
+                            Name="ReferenceImageDecription"
+                            Text="{Binding CurrentHint.Description}"
+                            HorizontalAlignment="Center"
+                            Grid.Row="6" />
+                    </Grid>
+                </StackPanel>
             </Grid>
         </DockPanel>
     </Grid>
