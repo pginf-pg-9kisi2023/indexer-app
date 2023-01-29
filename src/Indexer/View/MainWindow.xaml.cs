@@ -1,10 +1,7 @@
 using System.Windows;
 
-namespace Indexer
+namespace Indexer.View
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
