@@ -16,6 +16,9 @@
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
     <Grid>
         <DockPanel>
             <Menu
@@ -52,6 +55,102 @@
                     <MenuItem Header="O programie" Click="About_Click" />
                 </MenuItem>
             </Menu>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="0.25*" />
+                        <RowDefinition Height="4" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+                    <ListView
+                        Name="FilesListView"
+                        Grid.Row="1"
+                        Focusable="false"
+                        ItemsSource="{Binding IndexedImages}"
+                    >
+                        <ListView.Resources>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Focusable" Value="false" />
+                            </Style>
+                        </ListView.Resources>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn
+                                    Header="Path"
+                                    DisplayMemberBinding="{Binding ImagePath}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <ListView
+                        Name="PointsListView"
+                        Grid.Row="3"
+                        Focusable="false"
+                        ItemsSource="{Binding CurrentLabels}"
+                    >
+                        <ListView.Resources>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Focusable" Value="false" />
+                            </Style>
+                        </ListView.Resources>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn
+                                    Header="Name"
+                                    DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn
+                                    Header="X"
+                                    DisplayMemberBinding="{Binding X}" />
+                                <GridViewColumn
+                                    Header="Y"
+                                    DisplayMemberBinding="{Binding Y}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <GridSplitter
+                        Grid.ColumnSpan="1"
+                        Grid.Row="2"
+                        Height="4"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        Focusable="false" />
+                </Grid>
+                <GridSplitter
+                    Grid.Column="1"
+                    Width="5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Stretch"
+                    Focusable="false" />
+                <DockPanel
+                    Name="PrevNextImageDock"
+                    Grid.Column="2"
+                    Visibility="{
+                        Binding Path=HasImages,
+                        Converter={StaticResource BooleanToVisibilityConverter}
+                    }"
+                >
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="20" />
+                        </Grid.RowDefinitions>
+                        <Image
+                            Grid.Row="0"
+                            MouseMove="MainImage_MouseMove"
+                            Name="MainImage"
+                            Stretch="None"
+                            Source="{Binding CurrentBitmapImage}" />
+                    </Grid>
+                </DockPanel>
+            </Grid>
         </DockPanel>
     </Grid>
 </Window>
