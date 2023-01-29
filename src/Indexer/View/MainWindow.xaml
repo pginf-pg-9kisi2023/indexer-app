@@ -11,11 +11,39 @@
     Title="{Binding Title}"
     Width="1280"
     Height="720"
+    Closing="MainWindow_Closing"
 >
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
     <Grid>
-
+        <DockPanel>
+            <Menu
+                x:Name="MenuBar"
+                DockPanel.Dock="Top"
+                Background="{Binding Background, ElementName=StatusBar}"
+                Focusable="false"
+            >
+                <MenuItem Header="Plik" Focusable="false">
+                    <MenuItem
+                        Header="Utwórz nową sesję..."
+                        Click="CreateSession_Click" />
+                    <MenuItem Header="Wczytaj sesję..." Click="LoadSession_Click" />
+                    <MenuItem
+                        Header="Zapisz sesję"
+                        Click="SaveSession_Click"
+                        IsEnabled="{Binding IsSessionModified}" />
+                    <MenuItem
+                        Header="Zapisz sesję jako..."
+                        Click="SaveSessionAs_Click"
+                        IsEnabled="{Binding IsSessionOpen}" />
+                    <MenuItem
+                        Header="Zamknij sesję"
+                        Click="CloseSession_Click"
+                        IsEnabled="{Binding IsSessionOpen}" />
+                    <MenuItem Header="Zamknij" Click="Exit_Click" />
+                </MenuItem>
+            </Menu>
+        </DockPanel>
     </Grid>
 </Window>
