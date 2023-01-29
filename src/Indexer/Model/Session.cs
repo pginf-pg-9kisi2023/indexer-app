@@ -29,11 +29,34 @@ namespace Indexer.Model
                 IndexedImages = new(value);
             }
         }
+        [DataMember(Name = "currentImageIndex", IsRequired = true)]
+        public int? CurrentImageIndex { get; set; }
+        public IndexedImage? CurrentImage
+        {
+            get
+            {
+                var collection = (Collection<IndexedImage>)_indexedImages;
+                if (CurrentImageIndex is int idx)
+                {
+                    return collection[idx];
+                }
+                return null;
+            }
+        }
 
         public Session(Config config)
         {
             Config = config;
             IndexedImages = new(_indexedImages);
+        }
+
+        public void AddIndexedImage(IndexedImage indexedImage)
+        {
+            _indexedImages.Add(indexedImage);
+            if (CurrentImageIndex is null)
+            {
+                CurrentImageIndex = 0;
+            }
         }
 
         public void ExportPointsToCSV(string filePath)

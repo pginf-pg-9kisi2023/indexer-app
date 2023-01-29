@@ -36,19 +36,14 @@ namespace Indexer.Model
             Labels = new(_labels);
         }
 
-        public void AddLabel()
+        public void AddLabel(Label label)
         {
-
+            _labels.Add(label);
         }
 
-        public void DeleteLabel()
+        public void DeleteLabel(string labelName)
         {
-
-        }
-
-        public void EditLabel()
-        {
-
+            _labels.Remove(labelName);
         }
     }
 }

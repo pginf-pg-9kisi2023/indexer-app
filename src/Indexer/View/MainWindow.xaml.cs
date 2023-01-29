@@ -211,6 +211,20 @@ namespace Indexer.View
             return null;
         }
 
+        private void AddImageOrFolder_Click(object sender, RoutedEventArgs e)
+        {
+            using var imageSelection = new ImageSelectionViewModel();
+            var dialog = new ImageSelectionDialog(imageSelection);
+            if (dialog.ShowDialog() == true)
+            {
+                Data.AddIndexedImages(imageSelection.Files);
+            }
+            else
+            {
+                return;
+            }
+        }
+
         private void ShortcutsHelp_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(
