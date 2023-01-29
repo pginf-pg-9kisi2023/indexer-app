@@ -56,6 +56,16 @@ namespace Indexer.Model
             {
                 throw new SerializationException("Failed to deserialize config file.");
             }
+
+            var baseDirectory = Path.GetDirectoryName(filePath) ?? "";
+            for (int i = 0; i < config._hints.Count; ++i)
+            {
+                config._hints[i] = new Hint(
+                    config._hints[i].Name,
+                    config._hints[i].Description,
+                    Path.Combine(baseDirectory, config._hints[i].ImagePath)
+                );
+            }
             return config;
         }
     }
