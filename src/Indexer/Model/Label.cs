@@ -8,11 +8,11 @@ namespace Indexer.Model
         [DataMember(Name = "name", IsRequired = true)]
         public string Name { get; private set; }
         [DataMember(Name = "x", IsRequired = true)]
-        public int X { get; private set; }
+        public int X { get; set; }
         [DataMember(Name = "y", IsRequired = true)]
-        public int Y { get; private set; }
+        public int Y { get; set; }
 
-        public Label(string name, int x, int y)
+        public Label(string name, int x = 0, int y = 0)
         {
             Name = name;
             X = x;

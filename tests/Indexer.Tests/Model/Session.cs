@@ -29,6 +29,8 @@ public class SessionTests
         Assert.AreEqual("Górne pole - prawy górny narożnik", hints[1].Description);
         Assert.AreEqual("V20_TOP_RT.jpg", hints[1].ImagePath);
 
+        // session.CurrentHintName
+        Assert.AreEqual("TOP_RT", session.CurrentHintName);
         // session.CurrentImageIndex
         Assert.AreEqual(0, session.CurrentImageIndex);
 

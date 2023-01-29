@@ -256,6 +256,21 @@ namespace Indexer.View
             Coordinates.Text = $"{(int)mousePosition.X}, {(int)mousePosition.Y}";
         }
 
+        private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                System.Windows.Point mousePosition = e.GetPosition(MainImage);
+                Data.SetCurrentLabelPosition(
+                    (int)mousePosition.X, (int)mousePosition.Y
+                );
+            }
+            else if (e.RightButton == MouseButtonState.Pressed)
+            {
+                Data.RemoveCurrentLabelPosition();
+            }
+        }
+
         private void PreviousPictureButton_Click(object sender, RoutedEventArgs e)
         {
             Data.SwitchToPreviousImage();
@@ -264,6 +279,28 @@ namespace Indexer.View
         private void NextPictureButton_Click(object sender, RoutedEventArgs e)
         {
             Data.SwitchToNextImage();
+        }
+
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Up:
+                    Data.MoveCurrentLabelPositionRelatively(y: -1);
+                    break;
+                case Key.Down:
+                    Data.MoveCurrentLabelPositionRelatively(y: 1);
+                    break;
+                case Key.Left:
+                    Data.MoveCurrentLabelPositionRelatively(x: -1);
+                    break;
+                case Key.Right:
+                    Data.MoveCurrentLabelPositionRelatively(x: 1);
+                    break;
+                case Key.Enter:
+                    Data.SwitchToNextLabel();
+                    return;
+            }
         }
     }
 }
