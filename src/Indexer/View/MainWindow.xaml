@@ -46,6 +46,14 @@
                         Click="SaveSessionAs_Click"
                         IsEnabled="{Binding IsSessionOpen}" />
                     <MenuItem
+                        Header="Wyeksportuj"
+                        Click="Export_Click"
+                        IsEnabled="{Binding IsSessionOpen}" />
+                    <MenuItem
+                        Header="Wyeksportuj do..."
+                        Click="ExportAs_Click"
+                        IsEnabled="{Binding IsSessionOpen}" />
+                    <MenuItem
                         Header="Zamknij sesję"
                         Click="CloseSession_Click"
                         IsEnabled="{Binding IsSessionOpen}" />
