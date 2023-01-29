@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Windows;
 
@@ -208,6 +209,31 @@ namespace Indexer.View
                 return openFileDialog.FileName;
             }
             return null;
+        }
+
+        private void ShortcutsHelp_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(
+                owner: this,
+                caption: Data.ProgramName,
+                messageBoxText: "",
+                button: MessageBoxButton.OK
+            );
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown version";
+            MessageBox.Show(
+                owner: this,
+                caption: Data.ProgramName,
+                messageBoxText: (
+                    $"{Data.ProgramName} {version}\n\n"
+                    + "Copyright (c) 2022-2023 Jakub Kuczys, Mikołaj Morozowski,"
+                    + " Mateusz Kozak, Mikołaj Nadzieja, Dawid Łydka"
+                ),
+                button: MessageBoxButton.OK
+            );
         }
     }
 }
