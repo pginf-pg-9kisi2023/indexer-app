@@ -100,6 +100,23 @@ namespace Indexer.ViewModel
                 return new();
             }
         }
+        public HintViewModel? CurrentHint { get; private set; }
+        public LabelViewModel? CurrentLabel
+        {
+            get
+            {
+                if (CurrentHint is null)
+                {
+                    return null;
+                }
+                LabelViewModel? value;
+                if (CurrentLabels.TryGetValue(CurrentHint.Name, out value))
+                {
+                    return value;
+                }
+                return null;
+            }
+        }
         public bool HasImages => _session?.CurrentImageIndex != null;
 
         public MainViewModel() { }
@@ -249,15 +266,45 @@ namespace Indexer.ViewModel
             {
                 var oldImage = CurrentImage;
                 _session.CurrentImageIndex = idx;
+                _session.CurrentHintName = _session.Config.Hints.First().Name;
                 CurrentImage = CurrentIndexedImage?.Image;
                 CurrentImage?.LoadImage();
                 oldImage?.UnloadImage();
+                CurrentHint = new(_session.CurrentHint!);
                 IsSessionModified = true;
                 OnPropertyChanged(nameof(CurrentIndexedImage));
                 OnPropertyChanged(nameof(CurrentImage));
                 OnPropertyChanged(nameof(CurrentBitmapImage));
+                OnPropertyChanged(nameof(CurrentLabel));
                 OnPropertyChanged(nameof(CurrentLabels));
+                OnPropertyChanged(nameof(CurrentHint));
             }
+        }
+
+        public void SwitchToNextLabel()
+        {
+            if (
+                _session is null
+                || CurrentIndexedImage is null
+                || _session.CurrentHintName is null
+            )
+            {
+                return;
+            }
+            var collection = (ReadOnlyCollection<Hint>)_session.Config.Hints;
+            if (collection[^1].Name == _session.CurrentHintName)
+            {
+                SwitchToNextImage();
+                return;
+            }
+            var newHint = collection[collection.IndexOf(_session.CurrentHint!) + 1];
+
+            _session.CurrentHintName = newHint.Name;
+            CurrentHint = new(_session.CurrentHint!);
+
+            IsSessionModified = true;
+            OnPropertyChanged(nameof(CurrentLabel));
+            OnPropertyChanged(nameof(CurrentHint));
         }
     }
 }
