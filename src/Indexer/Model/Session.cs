@@ -57,7 +57,15 @@ namespace Indexer.Model
             );
 
             var ser = new DataContractSerializer(typeof(Session));
-            var session = (Session?)ser.ReadObject(reader, verifyObjectName: true);
+            Session? session;
+            try
+            {
+                session = (Session?)ser.ReadObject(reader, verifyObjectName: true);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new SerializationException(ex.Message);
+            }
             if (session is null)
             {
                 throw new SerializationException("Failed to deserialize session file.");

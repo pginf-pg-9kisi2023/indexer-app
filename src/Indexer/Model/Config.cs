@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
@@ -42,7 +43,15 @@ namespace Indexer.Model
             );
 
             var ser = new DataContractSerializer(typeof(Config));
-            Config? config = (Config?)ser.ReadObject(reader, verifyObjectName: true);
+            Config? config;
+            try
+            {
+                config = (Config?)ser.ReadObject(reader, verifyObjectName: true);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new SerializationException(ex.Message);
+            }
             if (config is null)
             {
                 throw new SerializationException("Failed to deserialize config file.");
