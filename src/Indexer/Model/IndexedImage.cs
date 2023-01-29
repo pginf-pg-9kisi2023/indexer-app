@@ -10,13 +10,8 @@ namespace Indexer.Model
     [DataContract(Name = "image", Namespace = "")]
     public class IndexedImage
     {
-        private Image _image;
         [DataMember(Name = "path", IsRequired = true)]
-        public string ImagePath
-        {
-            get => _image.Path;
-            private set => _image = new(value);
-        }
+        public string ImagePath { get; private set; }
         private LabelCollection _labels = new();
         public ReadOnlyLabelCollection Labels { get; private set; }
         [DataMember(Name = "points", IsRequired = true)]
@@ -30,9 +25,9 @@ namespace Indexer.Model
             }
         }
 
-        public IndexedImage(Image image)
+        public IndexedImage(string imagePath)
         {
-            _image = image;
+            ImagePath = imagePath;
             Labels = new(_labels);
         }
 
