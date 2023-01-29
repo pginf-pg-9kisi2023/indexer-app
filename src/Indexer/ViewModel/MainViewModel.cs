@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -101,6 +102,8 @@ namespace Indexer.ViewModel
             }
         }
         public HintViewModel? CurrentHint { get; private set; }
+        public ImageViewModel? CurrentHintImage { get; private set; }
+        public BitmapSource? CurrentHintBitmapImage => CurrentHint?.Image?.LoadedImage;
         public LabelViewModel? CurrentLabel
         {
             get
@@ -118,6 +121,18 @@ namespace Indexer.ViewModel
             }
         }
         public bool HasImages => _session?.CurrentImageIndex != null;
+        public string SavedPosition
+        {
+            get
+            {
+                var currentLabel = CurrentLabel;
+                if (currentLabel is null)
+                {
+                    return "";
+                }
+                return $"{currentLabel.X}, {currentLabel.Y}";
+            }
+        }
 
         public MainViewModel() { }
 
@@ -265,12 +280,16 @@ namespace Indexer.ViewModel
             if (desynced || _session.CurrentImageIndex != idx)
             {
                 var oldImage = CurrentImage;
+                var oldHintImage = CurrentHintImage;
                 _session.CurrentImageIndex = idx;
                 _session.CurrentHintName = _session.Config.Hints.First().Name;
                 CurrentImage = CurrentIndexedImage?.Image;
                 CurrentImage?.LoadImage();
                 oldImage?.UnloadImage();
                 CurrentHint = new(_session.CurrentHint!);
+                CurrentHintImage = CurrentHint.Image;
+                CurrentHintImage?.LoadImage();
+                oldHintImage?.UnloadImage();
                 IsSessionModified = true;
                 OnPropertyChanged(nameof(CurrentIndexedImage));
                 OnPropertyChanged(nameof(CurrentImage));
@@ -278,6 +297,8 @@ namespace Indexer.ViewModel
                 OnPropertyChanged(nameof(CurrentLabel));
                 OnPropertyChanged(nameof(CurrentLabels));
                 OnPropertyChanged(nameof(CurrentHint));
+                OnPropertyChanged(nameof(CurrentHintImage));
+                OnPropertyChanged(nameof(CurrentHintBitmapImage));
             }
         }
 
@@ -370,12 +391,18 @@ namespace Indexer.ViewModel
             }
             var newHint = collection[collection.IndexOf(_session.CurrentHint!) + 1];
 
+            var oldHintImage = CurrentHintImage;
             _session.CurrentHintName = newHint.Name;
             CurrentHint = new(_session.CurrentHint!);
+            CurrentHintImage = CurrentHint.Image;
+            CurrentHintImage?.LoadImage();
+            oldHintImage?.UnloadImage();
 
             IsSessionModified = true;
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentHint));
+            OnPropertyChanged(nameof(CurrentHintImage));
+            OnPropertyChanged(nameof(CurrentHintBitmapImage));
         }
     }
 }
