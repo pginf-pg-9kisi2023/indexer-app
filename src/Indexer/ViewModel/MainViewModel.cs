@@ -281,6 +281,77 @@ namespace Indexer.ViewModel
             }
         }
 
+        public void MoveCurrentLabelPositionRelatively(int x = 0, int y = 0)
+        {
+            if (
+                _session is null
+                || CurrentIndexedImage is null
+                || _session.CurrentHintName is null
+            )
+            {
+                return;
+            }
+            var currentLabel = CurrentLabel;
+            if (currentLabel is null)
+            {
+                var label = new Label(_session.CurrentHintName);
+                currentLabel = CurrentIndexedImage.AddLabel(label); ;
+            }
+
+            currentLabel.X = Math.Min(
+                Math.Max(0, currentLabel.X + x), CurrentIndexedImage.Image.Width
+            );
+            currentLabel.Y = Math.Min(
+                Math.Max(0, currentLabel.Y + y), CurrentIndexedImage.Image.Height
+            );
+            OnPropertyChanged(nameof(CurrentLabel));
+            OnPropertyChanged(nameof(CurrentLabels));
+        }
+
+        public void SetCurrentLabelPosition(int x, int y)
+        {
+            if (
+                _session is null
+                || CurrentIndexedImage is null
+                || _session.CurrentHintName is null
+            )
+            {
+                return;
+            }
+            var currentLabel = CurrentLabel;
+            if (currentLabel is null)
+            {
+                var label = new Label(_session.CurrentHintName);
+                currentLabel = CurrentIndexedImage.AddLabel(label); ;
+            }
+
+            currentLabel.X = x;
+            currentLabel.Y = y;
+            OnPropertyChanged(nameof(CurrentLabel));
+            OnPropertyChanged(nameof(CurrentLabels));
+        }
+
+        public void RemoveCurrentLabelPosition()
+        {
+            if (
+                _session is null
+                || CurrentIndexedImage is null
+                || _session.CurrentHintName is null
+            )
+            {
+                return;
+            }
+            var currentLabel = CurrentLabel;
+            if (currentLabel is not null)
+            {
+                CurrentIndexedImage.DeleteLabel(_session.CurrentHintName);
+                CurrentLabels.Remove(currentLabel);
+            }
+
+            OnPropertyChanged(nameof(CurrentLabel));
+            OnPropertyChanged(nameof(CurrentLabels));
+        }
+
         public void SwitchToNextLabel()
         {
             if (

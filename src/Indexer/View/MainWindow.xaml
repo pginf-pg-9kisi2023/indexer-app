@@ -11,6 +11,7 @@
     Title="{Binding Title}"
     Width="1280"
     Height="720"
+    KeyDown="MainWindow_KeyDown"
     Closing="MainWindow_Closing"
 >
     <Window.DataContext>
@@ -170,6 +171,7 @@
                         <Image
                             Grid.Row="0"
                             MouseMove="MainImage_MouseMove"
+                            MouseDown="MainImage_MouseDown"
                             Name="MainImage"
                             Stretch="None"
                             Source="{Binding CurrentBitmapImage}" />

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
@@ -43,6 +45,12 @@ namespace Indexer.Model
                 return null;
             }
         }
+        [DataMember(Name = "currentHintName", IsRequired = true)]
+        public string? CurrentHintName { get; set; }
+        public Hint? CurrentHint
+        {
+            get => CurrentHintName != null ? Config.Hints[CurrentHintName] : null;
+        }
 
         public Session(Config config)
         {
@@ -56,6 +64,7 @@ namespace Indexer.Model
             if (CurrentImageIndex is null)
             {
                 CurrentImageIndex = 0;
+                CurrentHintName = Config.Hints.First().Name;
             }
         }
 
