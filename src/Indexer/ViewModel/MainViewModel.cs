@@ -100,6 +100,7 @@ namespace Indexer.ViewModel
                 return new();
             }
         }
+        public bool HasImages => _session?.CurrentImageIndex != null;
 
         public MainViewModel() { }
 
@@ -168,6 +169,7 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(CurrentImage));
             OnPropertyChanged(nameof(CurrentBitmapImage));
             OnPropertyChanged(nameof(CurrentLabels));
+            OnPropertyChanged(nameof(HasImages));
         }
 
         public void AddIndexedImages([NotNull] IEnumerable<string> imagePaths)
@@ -201,7 +203,38 @@ namespace Indexer.ViewModel
                 if (wasEmpty)
                 {
                     SetCurrentImageIndex(0, desynced: true);
+                    OnPropertyChanged(nameof(HasImages));
                 }
+            }
+        }
+
+        public void SwitchToPreviousImage()
+        {
+            if (_session is null)
+            {
+                throw new InvalidOperationException("No session is open.");
+            }
+
+            if (_session.CurrentImageIndex is int idx)
+            {
+                if (idx == 0)
+                {
+                    idx = IndexedImages.Count;
+                }
+                SetCurrentImageIndex(idx - 1);
+            }
+        }
+
+        public void SwitchToNextImage()
+        {
+            if (_session is null)
+            {
+                throw new InvalidOperationException("No session is open.");
+            }
+
+            if (_session.CurrentImageIndex is int idx)
+            {
+                SetCurrentImageIndex((idx + 1) % IndexedImages.Count);
             }
         }
 
