@@ -13,6 +13,7 @@
             </point>
         </points>
     </config>
+    <currentImageIndex>0</currentImageIndex>
     <images>
         <image>
             <path>D:\absolute\path\to\image1.jpg</path>

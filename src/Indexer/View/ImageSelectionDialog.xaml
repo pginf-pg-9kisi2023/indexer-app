@@ -1,0 +1,93 @@
+<Window
+    x:Class="Indexer.View.ImageSelectionDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Indexer.View"
+    xmlns:vm="clr-namespace:Indexer.ViewModel"
+    mc:Ignorable="d"
+    WindowStartupLocation="CenterScreen"
+    Title="Wybierz zdjęcia"
+    Height="360"
+    Width="360"
+>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="10" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="10" />
+        </Grid.RowDefinitions>
+
+        <UniformGrid Grid.Column="1" Grid.Row="1" Columns="4">
+            <Button
+                Content="Plik"
+                Click="FileButton_Click"
+                Margin="5"
+                Padding="6,3"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                ToolTip="Otwiera okno wyboru zdjęcia. Możliwe jest wybranie jednego lub wielu zdjęć." />
+            <Button
+                Content="Folder"
+                Click="FolderButton_Click"
+                Margin="5"
+                Padding="6,3"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                ToolTip="Otwiera okno wyboru folderu." />
+            <Button
+                Content="Usuń"
+                Click="DeleteButton_Click"
+                Margin="5"
+                Padding="6,3"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                ToolTip="Usuwa zdjęcia zaznaczone na liście poniżej."
+                IsEnabled="{Binding SelectedFiles.Count}" />
+            <Button
+                Content="Zapisz"
+                Click="SaveButton_Click"
+                Margin="5"
+                Padding="6,3"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                ToolTip="Dodaje zdjęcia na poniższej liście do sesji." />
+        </UniformGrid>
+
+        <ListBox
+            Name="FilesListView"
+            Grid.Column="1"
+            Grid.Row="3"
+            ItemsSource="{Binding Files}"
+        >
+            <ListBox.Resources>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="OverridesDefaultStyle" Value="true" />
+                    <Setter Property="SnapsToDevicePixels" Value="true" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <CheckBox
+                                    Margin="5,2"
+                                    Checked="FileCheckBox_Checked"
+                                    Unchecked="FileCheckBox_Unchecked"
+                                    IsChecked="{TemplateBinding IsSelected}"
+                                >
+                                    <ContentPresenter />
+                                </CheckBox>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.Resources>
+        </ListBox>
+    </Grid>
+</Window>

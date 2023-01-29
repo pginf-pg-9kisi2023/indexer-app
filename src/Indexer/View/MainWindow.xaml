@@ -30,6 +30,10 @@
                         Click="CreateSession_Click" />
                     <MenuItem Header="Wczytaj sesję..." Click="LoadSession_Click" />
                     <MenuItem
+                        Header="Dodaj obraz lub folder..."
+                        Click="AddImageOrFolder_Click"
+                        IsEnabled="{Binding IsSessionOpen}" />
+                    <MenuItem
                         Header="Zapisz sesję"
                         Click="SaveSession_Click"
                         IsEnabled="{Binding IsSessionModified}" />
