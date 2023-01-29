@@ -63,6 +63,15 @@ public class ConfigTests
     }
 
     [TestMethod]
+    [DeploymentItem(@"test_data\config_duplicate_name.xml")]
+    public void FromFile_WithDuplicateName_ThrowsSerializationException()
+    {
+        Assert.ThrowsException<SerializationException>(
+            () => Config.FromFile("config_duplicate_name.xml")
+        );
+    }
+
+    [TestMethod]
     public void FromFile_WithNonExistentFile_ThrowsFileNotFoundException()
     {
         Assert.ThrowsException<FileNotFoundException>(

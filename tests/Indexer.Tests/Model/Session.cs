@@ -96,6 +96,24 @@ public class SessionTests
     }
 
     [TestMethod]
+    [DeploymentItem(@"test_data\session_duplicate_config_point_name.xml")]
+    public void FromFile_WithDuplicateConfigPointName_ThrowsSerializationException()
+    {
+        Assert.ThrowsException<SerializationException>(
+            () => Session.FromFile("session_duplicate_config_point_name.xml")
+        );
+    }
+
+    [TestMethod]
+    [DeploymentItem(@"test_data\session_duplicate_image_point_name.xml")]
+    public void FromFile_WithDuplicateImagePointName_ThrowsSerializationException()
+    {
+        Assert.ThrowsException<SerializationException>(
+            () => Session.FromFile("session_duplicate_image_point_name.xml")
+        );
+    }
+
+    [TestMethod]
     public void FromFile_WithNonExistentFile_ThrowsFileNotFoundException()
     {
         Assert.ThrowsException<FileNotFoundException>(
