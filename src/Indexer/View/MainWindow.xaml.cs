@@ -255,5 +255,15 @@ namespace Indexer.View
             System.Windows.Point mousePosition = e.GetPosition(MainImage);
             Coordinates.Text = $"{(int)mousePosition.X}, {(int)mousePosition.Y}";
         }
+
+        private void PreviousPictureButton_Click(object sender, RoutedEventArgs e)
+        {
+            Data.SwitchToPreviousImage();
+        }
+
+        private void NextPictureButton_Click(object sender, RoutedEventArgs e)
+        {
+            Data.SwitchToNextImage();
+        }
     }
 }

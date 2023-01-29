@@ -173,6 +173,37 @@
                             Name="MainImage"
                             Stretch="None"
                             Source="{Binding CurrentBitmapImage}" />
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Button
+                                Name="PreviousPictureButton"
+                                Content="&lt;"
+                                HorizontalAlignment="Left"
+                                Width="20"
+                                Height="20"
+                                Grid.Column="0"
+                                Click="PreviousPictureButton_Click"
+                                Focusable="false" />
+                            <TextBlock
+                                Text="{Binding CurrentIndexedImage.ImagePath}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Stretch"
+                                TextAlignment="Center"
+                                Grid.Column="1" />
+                            <Button
+                                Name="NextPictureButton"
+                                Content="&gt;"
+                                HorizontalAlignment="Right"
+                                Width="20"
+                                Height="20"
+                                Grid.Column="2"
+                                Click="NextPictureButton_Click"
+                                Focusable="false" />
+                        </Grid>
                     </Grid>
                 </DockPanel>
             </Grid>
