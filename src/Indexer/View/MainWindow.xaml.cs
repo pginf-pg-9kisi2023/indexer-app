@@ -249,5 +249,11 @@ namespace Indexer.View
                 button: MessageBoxButton.OK
             );
         }
+
+        private void MainImage_MouseMove(object sender, MouseEventArgs e)
+        {
+            System.Windows.Point mousePosition = e.GetPosition(MainImage);
+            Coordinates.Text = $"{(int)mousePosition.X}, {(int)mousePosition.Y}";
+        }
     }
 }
