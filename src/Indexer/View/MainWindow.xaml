@@ -234,6 +234,27 @@
                             Text="{Binding SavedPosition}"
                             HorizontalAlignment="Center"
                             Grid.Row="1" />
+                        <local:Magnifier
+                            Stroke="black"
+                            Radius="128"
+                            ZoomFactor="5"
+                            ContentPanel="{Binding ElementName=MainImage}"
+                            MagnifiedPanel="{Binding ElementName=MagnifiedImage}"
+                            Height="256"
+                            Width="256"
+                            Grid.Row="2" />
+                        <DockPanel Height="256" Width="256" Grid.Row="2">
+                            <Canvas Name="MagnifiedImage" />
+                        </DockPanel>
+                        <Slider
+                            Minimum="100"
+                            Maximum="500"
+                            TickPlacement="BottomRight"
+                            TickFrequency="100"
+                            IsSnapToTickEnabled="true"
+                            Name="Magnifier"
+                            Grid.Row="3"
+                            Focusable="false" />
                         <Image
                             Source="{Binding CurrentHintBitmapImage}"
                             Height="256"
