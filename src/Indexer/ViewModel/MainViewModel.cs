@@ -4,7 +4,7 @@ using Indexer.Model;
 
 namespace Indexer.ViewModel
 {
-    internal class MainViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase
     {
         private Session? _session;
         public bool IsSessionOpen => _session != null;

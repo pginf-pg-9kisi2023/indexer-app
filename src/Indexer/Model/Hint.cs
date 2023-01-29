@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 namespace Indexer.Model
 {
     [DataContract(Name = "point", Namespace = "")]
-    internal class Hint
+    public class Hint
     {
         [DataMember(Name = "name", Order = 0, IsRequired = true)]
         public string Name { get; private set; }
@@ -17,7 +17,7 @@ namespace Indexer.Model
             private set => _image = new(value);
         }
 
-        internal Hint(string name, string description, string imagePath)
+        public Hint(string name, string description, string imagePath)
         {
             Name = name;
             Description = description;

@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 namespace Indexer.Model
 {
     [DataContract(Name = "point", Namespace = "")]
-    internal class Label
+    public class Label
     {
         [DataMember(Name = "name", IsRequired = true)]
         public string Name { get; private set; }
@@ -12,7 +12,7 @@ namespace Indexer.Model
         [DataMember(Name = "y", IsRequired = true)]
         public int Y { get; private set; }
 
-        internal Label(string name, int x, int y)
+        public Label(string name, int x, int y)
         {
             Name = name;
             X = x;

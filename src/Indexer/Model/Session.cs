@@ -12,7 +12,7 @@ namespace Indexer.Model
     using ReadOnlyIndexedImageCollection = ReadOnlyKeyedCollection<string, IndexedImage>;
 
     [DataContract(Name = "session", Namespace = "")]
-    internal class Session
+    public class Session
     {
         public string? FilePath { get; set; }
         [DataMember(Name = "config", IsRequired = true)]
