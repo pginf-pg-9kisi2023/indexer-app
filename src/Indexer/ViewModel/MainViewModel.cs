@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 using Indexer.Model;
 
@@ -8,6 +9,31 @@ namespace Indexer.ViewModel
     {
         public string ProgramName { get; private set; } = "Indexer";
         private Session? _session;
+        public string? SessionFilePath => _session?.FilePath;
+        public string? SessionFileDirectory
+        {
+            get
+            {
+                if (_session?.FilePath == null)
+                {
+                    return null;
+                }
+
+                return Path.GetDirectoryName(_session.FilePath);
+            }
+        }
+        public string? SessionFileName
+        {
+            get
+            {
+                if (_session?.FilePath == null)
+                {
+                    return null;
+                }
+
+                return Path.GetFileName(_session.FilePath);
+            }
+        }
         public string SessionFileTitle => _session?.FilePath ?? "Bez tytułu";
         public bool IsSessionOpen => _session != null;
         public bool IsSessionOnDisk => _session != null && _session.FilePath != null;
@@ -46,27 +72,53 @@ namespace Indexer.ViewModel
 
         public void NewSession(string configFilePath)
         {
-            _session = new Session(Config.FromFile(configFilePath));
+            SetSession(
+                new Session(Config.FromFile(configFilePath)), isSessionModified: true
+            );
         }
 
         public void OpenSession(string sessionFilePath)
         {
-            _session = Session.FromFile(sessionFilePath);
+            SetSession(Session.FromFile(sessionFilePath), isSessionModified: false);
         }
 
-        public void SaveSession()
+        public void SaveSession(string? sessionFilePath = null)
         {
             if (_session is null)
             {
                 throw new InvalidOperationException("No session is open.");
             }
 
+            if (sessionFilePath != null)
+            {
+                _session.FilePath = sessionFilePath;
+                OnPropertyChanged(nameof(SessionFilePath));
+                OnPropertyChanged(nameof(SessionFileDirectory));
+                OnPropertyChanged(nameof(SessionFileName));
+                OnPropertyChanged(nameof(SessionFileTitle));
+                OnPropertyChanged(nameof(Title));
+            }
+
             _session.Save();
+            IsSessionModified = false;
         }
 
         public void CloseSession()
         {
-            _session = null;
+            SetSession(null, isSessionModified: false);
+        }
+
+        private void SetSession(Session? value, bool isSessionModified)
+        {
+            _session = value;
+            IsSessionModified = isSessionModified;
+            OnPropertyChanged(nameof(IsSessionOpen));
+            OnPropertyChanged(nameof(IsSessionOnDisk));
+            OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(SessionFilePath));
+            OnPropertyChanged(nameof(SessionFileDirectory));
+            OnPropertyChanged(nameof(SessionFileName));
+            OnPropertyChanged(nameof(SessionFileTitle));
         }
     }
 }
