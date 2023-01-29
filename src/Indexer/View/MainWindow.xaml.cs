@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Windows;
+using System.Windows.Input;
 
 using Indexer.ViewModel;
 
@@ -223,6 +224,16 @@ namespace Indexer.View
             {
                 return;
             }
+        }
+
+        private void Export_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ExportAs_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void ShortcutsHelp_Click(object sender, RoutedEventArgs e)
