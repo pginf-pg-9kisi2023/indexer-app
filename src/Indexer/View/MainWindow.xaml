@@ -43,6 +43,10 @@
                         IsEnabled="{Binding IsSessionOpen}" />
                     <MenuItem Header="Zamknij" Click="Exit_Click" />
                 </MenuItem>
+                <MenuItem Header="Pomoc" Focusable="false">
+                    <MenuItem Header="Skróty klawiaturowe" Click="ShortcutsHelp_Click" />
+                    <MenuItem Header="O programie" Click="About_Click" />
+                </MenuItem>
             </Menu>
         </DockPanel>
     </Grid>
