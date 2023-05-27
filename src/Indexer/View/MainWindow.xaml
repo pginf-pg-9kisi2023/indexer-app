@@ -184,7 +184,7 @@
                             MouseMove="MainImage_MouseMove"
                             MouseDown="MainImage_MouseDown"
                             Name="MainImage"
-                            Stretch="None"
+                            Stretch="Uniform"
                             Source="{Binding CurrentBitmapImage}" />
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
