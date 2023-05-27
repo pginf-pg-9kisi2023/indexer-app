@@ -75,7 +75,35 @@ namespace Indexer.Model
 
         public void ExportPointsToXML(string filePath)
         {
-
+            using var fs = new FileStream(filePath, FileMode.Create);
+            using var sw = new StreamWriter(fs);
+            var xmlWriterSettings =new XmlWriterSettings();
+            xmlWriterSettings.Indent = true;
+            xmlWriterSettings.OmitXmlDeclaration = true;
+            xmlWriterSettings.IndentChars = "\t";
+            using var xmlWriter = XmlWriter.Create(sw,xmlWriterSettings);
+            xmlWriter.WriteStartElement("images");
+            foreach (var image in _indexedImages)
+            {
+                xmlWriter.WriteStartElement("image");
+                xmlWriter.WriteAttributeString("path", image.ImagePath);
+                xmlWriter.WriteStartElement("points");
+                foreach (var point in image.Labels)
+                {
+                    xmlWriter.WriteStartElement("point");
+                    xmlWriter.WriteAttributeString("name", point.Name);
+                    xmlWriter.WriteStartElement("x");
+                    xmlWriter.WriteValue(point.X);
+                    xmlWriter.WriteEndElement();
+                    xmlWriter.WriteStartElement("y");
+                    xmlWriter.WriteValue(point.Y);
+                    xmlWriter.WriteEndElement();
+                    xmlWriter.WriteEndElement();
+                }
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteEndElement();
+            }
+            xmlWriter.WriteEndElement();
         }
 
         public static Session FromFile(string filePath)
