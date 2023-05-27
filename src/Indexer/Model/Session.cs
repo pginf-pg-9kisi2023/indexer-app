@@ -76,13 +76,13 @@ namespace Indexer.Model
             var data = new StringBuilder();
             header.Append("image_filename");
             char delimiter = ',';
-            foreach(var image in _indexedImages)
+            foreach (var image in _indexedImages)
             {
                 data.AppendFormat("{0}", image.ImagePath);
-                foreach(var label in image.Labels)
+                foreach (var label in image.Labels)
                 {
                     header.AppendFormat("{0}{1} x{2}{3} y", delimiter, label.Name, delimiter, label.Name);
-                    data.AppendFormat("{0}{1}{2}{3}", delimiter,label.X,delimiter, label.Y);
+                    data.AppendFormat("{0}{1}{2}{3}", delimiter, label.X, delimiter, label.Y);
                 }
             }
             sw.WriteLine(header.ToString());
@@ -93,11 +93,11 @@ namespace Indexer.Model
         {
             using var fs = new FileStream(filePath, FileMode.Create);
             using var sw = new StreamWriter(fs);
-            var xmlWriterSettings =new XmlWriterSettings();
+            var xmlWriterSettings = new XmlWriterSettings();
             xmlWriterSettings.Indent = true;
             xmlWriterSettings.OmitXmlDeclaration = true;
             xmlWriterSettings.IndentChars = "\t";
-            using var xmlWriter = XmlWriter.Create(sw,xmlWriterSettings);
+            using var xmlWriter = XmlWriter.Create(sw, xmlWriterSettings);
             xmlWriter.WriteStartElement("images");
             foreach (var image in _indexedImages)
             {

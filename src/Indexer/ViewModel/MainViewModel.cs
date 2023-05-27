@@ -405,7 +405,7 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(CurrentHintBitmapImage));
         }
 
-        public void ExportPointsToXML(string? filePath=null)
+        public void ExportPointsToXML(string? filePath = null)
         {
             if (_session is null)
             {
@@ -414,7 +414,9 @@ namespace Indexer.ViewModel
             else
             {
                 if (filePath is null)
+                {
                     throw new FileNotFoundException();
+                }
                 else
                 {
                     _session.ExportPointsToXML(filePath);
@@ -430,7 +432,9 @@ namespace Indexer.ViewModel
             else
             {
                 if (filePath is null)
+                {
                     throw new FileNotFoundException();
+                }
                 else
                 {
                     _session.ExportPointsToCSV(filePath);

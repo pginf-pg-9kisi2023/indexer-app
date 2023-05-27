@@ -241,7 +241,7 @@ namespace Indexer.View
                 "Plik csv|*.csv"),
                 RestoreDirectory = true
             };
-            if(saveFileDialog.ShowDialog() == true)
+            if (saveFileDialog.ShowDialog() == true)
             {
                 return saveFileDialog.FileName;
             }
