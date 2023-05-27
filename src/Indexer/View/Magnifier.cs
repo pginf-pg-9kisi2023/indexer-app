@@ -94,9 +94,9 @@ namespace Indexer.View
         {
             base.OnPropertyChanged(e);
 
-            if (e.Property == ContentPanelProperty)
+            if (e.Property == MagnifiedPanelProperty)
             {
-                if (VisualTreeHelper.GetParent(ContentPanel) is Panel container)
+                if (VisualTreeHelper.GetParent(MagnifiedPanel) is Panel container)
                 {
                     MagnifierBrush = new VisualBrush(ContentPanel)
                     {
@@ -125,16 +125,11 @@ namespace Indexer.View
 
         private void ContentPanel_OnMouseMove(object sender, MouseEventArgs e)
         {
-            var center = e.GetPosition(ContentPanel);
             var length = MagnifierRectangle.ActualWidth * (1 / ZoomFactor);
             var radius = length / 2;
+            var container = VisualTreeHelper.GetParent(ContentPanel) as Grid;
+            var center = e.GetPosition(container);
             ViewBox = new Rect(center.X - radius, center.Y - radius, length, length);
-            MagnifierRectangle.SetValue(
-                LeftProperty, center.X - MagnifierRectangle.ActualWidth / 2
-            );
-            MagnifierRectangle.SetValue(
-                TopProperty, center.Y - MagnifierRectangle.ActualHeight / 2
-            );
         }
     }
 }
