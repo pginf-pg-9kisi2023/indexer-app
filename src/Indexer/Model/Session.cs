@@ -70,7 +70,23 @@ namespace Indexer.Model
 
         public void ExportPointsToCSV(string filePath)
         {
-
+            using var fs = new FileStream(filePath, FileMode.Create);
+            using var sw = new StreamWriter(fs);
+            var header = new StringBuilder();
+            var data = new StringBuilder();
+            header.Append("image_filename");
+            char delimiter = ',';
+            foreach(var image in _indexedImages)
+            {
+                data.AppendFormat("{0}", image.ImagePath);
+                foreach(var label in image.Labels)
+                {
+                    header.AppendFormat("{0}{1} x{2}{3} y", delimiter, label.Name, delimiter, label.Name);
+                    data.AppendFormat("{0}{1}{2}{3}", delimiter,label.X,delimiter, label.Y);
+                }
+            }
+            sw.WriteLine(header.ToString());
+            sw.WriteLine(data.ToString());
         }
 
         public void ExportPointsToXML(string filePath)
@@ -88,15 +104,15 @@ namespace Indexer.Model
                 xmlWriter.WriteStartElement("image");
                 xmlWriter.WriteAttributeString("path", image.ImagePath);
                 xmlWriter.WriteStartElement("points");
-                foreach (var point in image.Labels)
+                foreach (var label in image.Labels)
                 {
                     xmlWriter.WriteStartElement("point");
-                    xmlWriter.WriteAttributeString("name", point.Name);
+                    xmlWriter.WriteAttributeString("name", label.Name);
                     xmlWriter.WriteStartElement("x");
-                    xmlWriter.WriteValue(point.X);
+                    xmlWriter.WriteValue(label.X);
                     xmlWriter.WriteEndElement();
                     xmlWriter.WriteStartElement("y");
-                    xmlWriter.WriteValue(point.Y);
+                    xmlWriter.WriteValue(label.Y);
                     xmlWriter.WriteEndElement();
                     xmlWriter.WriteEndElement();
                 }
