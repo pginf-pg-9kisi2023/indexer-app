@@ -127,10 +127,9 @@ namespace Indexer.View
         {
             var length = MagnifierRectangle.ActualWidth * (1 / ZoomFactor);
             var radius = length / 2;
-            Grid container = VisualTreeHelper.GetParent(ContentPanel) as Grid;
+            var container = VisualTreeHelper.GetParent(ContentPanel) as Grid;
             var center = e.GetPosition(container);
-            ViewBox = new Rect(center.X-radius,center.Y-radius, length, length);
-           
+            ViewBox = new Rect(center.X - radius, center.Y - radius, length, length);
         }
     }
 }
