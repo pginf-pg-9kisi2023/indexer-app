@@ -97,6 +97,7 @@ namespace Indexer.Model
             xmlWriterSettings.Indent = true;
             xmlWriterSettings.OmitXmlDeclaration = true;
             xmlWriterSettings.IndentChars = "    ";
+            xmlWriterSettings.NewLineChars = "\n";
             using var xmlWriter = XmlWriter.Create(sw, xmlWriterSettings);
             xmlWriter.WriteStartElement("images");
             foreach (var image in _indexedImages)
