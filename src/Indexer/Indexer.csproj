@@ -15,6 +15,7 @@
     <AnalysisLevel>7.0-All</AnalysisLevel>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
