@@ -70,12 +70,12 @@ namespace Indexer.Model
 
         public void ExportPointsToCSV(string filePath)
         {
-
+            throw new NotImplementedException();
         }
 
         public void ExportPointsToXML(string filePath)
         {
-
+            throw new NotImplementedException();
         }
 
         public static Session FromFile(string filePath)
