@@ -122,7 +122,7 @@ namespace Indexer.ViewModel
         // and whether this is needed at all
         public void Scale()
         {
-
+            throw new NotImplementedException();
         }
 
         public void UnloadImage()
