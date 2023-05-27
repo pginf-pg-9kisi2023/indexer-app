@@ -161,4 +161,50 @@ public class SessionTests
             File.Delete(session.FilePath);
         }
     }
+
+    [TestMethod]
+    [DeploymentItem(@"test_data\session_valid.xml")]
+    [DeploymentItem(@"test_data\session_exported_points.csv")]
+    public void ExportPointsToCSV_CheckOutput()
+    {
+        var expected = File.ReadAllText("session_exported_points.csv", Encoding.UTF8);
+        expected = expected.Replace("\r\n", "\n");
+        var session = Session.FromFile("session_valid.xml");
+        var filePath = Path.GetTempFileName();
+
+        try
+        {
+            session.ExportPointsToCSV(filePath);
+            var actual = File.ReadAllText(filePath, Encoding.UTF8);
+
+            Assert.AreEqual(expected, actual);
+        }
+        finally
+        {
+            File.Delete(filePath);
+        }
+    }
+
+    [TestMethod]
+    [DeploymentItem(@"test_data\session_valid.xml")]
+    [DeploymentItem(@"test_data\session_exported_points.xml")]
+    public void ExportPointsToXML_CheckOutput()
+    {
+        var expected = File.ReadAllText("session_exported_points.xml", Encoding.UTF8);
+        expected = expected.Replace("\r\n", "\n");
+        var session = Session.FromFile("session_valid.xml");
+        var filePath = Path.GetTempFileName();
+
+        try
+        {
+            session.ExportPointsToXML(filePath);
+            var actual = File.ReadAllText(filePath, Encoding.UTF8);
+
+            Assert.AreEqual(expected, actual);
+        }
+        finally
+        {
+            File.Delete(filePath);
+        }
+    }
 }
