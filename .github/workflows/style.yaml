@@ -24,6 +24,11 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Install dotnet-format
+        run: >
+          dotnet tool install -g dotnet-format --version "7.*" --add-source
+          https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet7/nuget/v3/index.json
+
       - name: Add dotnet format problem matcher
         uses: xt0rted/dotnet-format-problem-matcher@v1
 
@@ -34,5 +39,5 @@ jobs:
         run: dotnet build --no-restore /warnaserror
 
       - name: Run dotnet format
-        run: dotnet format --no-restore --verify-no-changes --verbosity diagnostic
+        run: dotnet-format --no-restore --verify-no-changes --verbosity diagnostic
         if: always()

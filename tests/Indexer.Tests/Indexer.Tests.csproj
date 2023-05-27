@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
