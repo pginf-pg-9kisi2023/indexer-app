@@ -239,7 +239,7 @@
                         </Grid.RowDefinitions>
                         <TextBlock
                             Name="SavedCoordinatesStatusText"
-                            Text="{Binding SavedPosition}"
+                            Text="{Binding SavedPositionText}"
                             HorizontalAlignment="Center"
                             Grid.Row="1" />
                         <local:Magnifier

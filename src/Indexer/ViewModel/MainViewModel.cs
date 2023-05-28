@@ -121,7 +121,7 @@ namespace Indexer.ViewModel
             }
         }
         public bool HasImages => _session?.CurrentImageIndex != null;
-        public string SavedPosition
+        public string SavedPositionText
         {
             get
             {
@@ -296,6 +296,7 @@ namespace Indexer.ViewModel
                 OnPropertyChanged(nameof(CurrentBitmapImage));
                 OnPropertyChanged(nameof(CurrentLabel));
                 OnPropertyChanged(nameof(CurrentLabels));
+                OnPropertyChanged(nameof(SavedPositionText));
                 OnPropertyChanged(nameof(CurrentHint));
                 OnPropertyChanged(nameof(CurrentHintImage));
                 OnPropertyChanged(nameof(CurrentHintBitmapImage));
@@ -327,6 +328,7 @@ namespace Indexer.ViewModel
             );
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
+            OnPropertyChanged(nameof(SavedPositionText));
         }
 
         public void SetCurrentLabelPosition(int x, int y)
@@ -350,6 +352,7 @@ namespace Indexer.ViewModel
             currentLabel.Y = y;
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
+            OnPropertyChanged(nameof(SavedPositionText));
         }
 
         public void RemoveCurrentLabelPosition()
@@ -371,6 +374,7 @@ namespace Indexer.ViewModel
 
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
+            OnPropertyChanged(nameof(SavedPositionText));
         }
 
         public void SwitchToNextLabel()
@@ -400,6 +404,7 @@ namespace Indexer.ViewModel
 
             IsSessionModified = true;
             OnPropertyChanged(nameof(CurrentLabel));
+            OnPropertyChanged(nameof(SavedPositionText));
             OnPropertyChanged(nameof(CurrentHint));
             OnPropertyChanged(nameof(CurrentHintImage));
             OnPropertyChanged(nameof(CurrentHintBitmapImage));
