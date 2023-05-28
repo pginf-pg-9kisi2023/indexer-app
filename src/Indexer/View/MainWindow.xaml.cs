@@ -229,9 +229,14 @@ namespace Indexer.View
         private void ExportAsCSV_Click(object sender, RoutedEventArgs e)
         {
             var csvFileLocation = PromptForCSVLocation();
+            if (csvFileLocation == null)
+            {
+                return;
+            }
+
             Data.ExportPointsToCSV(csvFileLocation);
         }
-        private string? PromptForCSVLocation()
+        private static string? PromptForCSVLocation()
         {
             var saveFileDialog = new SaveFileDialog()
             {
@@ -250,16 +255,21 @@ namespace Indexer.View
 
         private void ExportAsXML_Click(object sender, RoutedEventArgs e)
         {
-            var csvFileLocation = PromptForXMLLocation();
-            Data.ExportPointsToXML(csvFileLocation);
+            var xmlFileLocation = PromptForXMLLocation();
+            if (xmlFileLocation == null)
+            {
+                return;
+            }
+
+            Data.ExportPointsToXML(xmlFileLocation);
         }
 
-        private string? PromptForXMLLocation()
+        private static string? PromptForXMLLocation()
         {
             var saveFileDialog = new SaveFileDialog()
             {
                 Title = "Utwórz plik XML",
-                DefaultExt = "csv",
+                DefaultExt = "xml",
                 Filter = (
                 "Plik XML|*.xml"),
                 RestoreDirectory = true

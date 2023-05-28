@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -72,32 +74,61 @@ namespace Indexer.Model
         {
             using var fs = new FileStream(filePath, FileMode.Create);
             using var sw = new StreamWriter(fs);
+            sw.NewLine = "\n";
             var header = new StringBuilder();
             var data = new StringBuilder();
-            header.Append("image_filename");
+            header.Append("\"image_filename\"");
             char delimiter = ',';
+            var labels = new HashSet<string>();
+            CultureInfo cultureInfo = CultureInfo.InvariantCulture;
             foreach (var image in _indexedImages)
             {
-                data.AppendFormat("{0}", image.ImagePath);
                 foreach (var label in image.Labels)
                 {
-                    header.AppendFormat("{0}{1} x{2}{3} y", delimiter, label.Name, delimiter, label.Name);
-                    data.AppendFormat("{0}{1}{2}{3}", delimiter, label.X, delimiter, label.Y);
+
+                    if (labels.Add(label.Name))
+                    {
+                        header.AppendFormat(cultureInfo, "{0}\"{1} x\"{2}\"{3} y\"", delimiter, label.Name, delimiter, label.Name);
+                    }
                 }
             }
             sw.WriteLine(header.ToString());
-            sw.WriteLine(data.ToString());
+            foreach (var image in _indexedImages)
+            {
+                data.AppendFormat(cultureInfo, "\"{0}\"", image.ImagePath);
+                foreach (var label in labels)
+                {
+                    if (image.Labels.TryGetValue(label, out Label? toExport))
+                    {
+                        if (toExport != null)
+                        {
+                            data.AppendFormat(cultureInfo, "{0}{1}{2}{3}", delimiter, toExport.X, delimiter, toExport.Y);
+                        }
+                    }
+                    else
+                    {
+                        data.AppendFormat(cultureInfo, "{0}{1}", delimiter, delimiter);
+                    }
+                }
+                sw.WriteLine(data.ToString());
+                data.Clear();
+            }
+
+
+
         }
 
         public void ExportPointsToXML(string filePath)
         {
             using var fs = new FileStream(filePath, FileMode.Create);
             using var sw = new StreamWriter(fs);
-            var xmlWriterSettings = new XmlWriterSettings();
-            xmlWriterSettings.Indent = true;
-            xmlWriterSettings.OmitXmlDeclaration = true;
-            xmlWriterSettings.IndentChars = "    ";
-            xmlWriterSettings.NewLineChars = "\n";
+            var xmlWriterSettings = new XmlWriterSettings
+            {
+                Indent = true,
+                OmitXmlDeclaration = true,
+                IndentChars = "    ",
+                NewLineChars = "\n"
+            };
             using var xmlWriter = XmlWriter.Create(sw, xmlWriterSettings);
             xmlWriter.WriteStartElement("images");
             foreach (var image in _indexedImages)
