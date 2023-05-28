@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
@@ -121,6 +122,18 @@ namespace Indexer.ViewModel
             }
         }
         public bool HasImages => _session?.CurrentImageIndex != null;
+        public Point? ImageCursorPosition { get; private set; }
+        public string ImageCursorPositionText
+        {
+            get
+            {
+                if (ImageCursorPosition is Point pos)
+                {
+                    return $"{pos.X}, {pos.Y}";
+                }
+                return "";
+            }
+        }
         public string SavedPositionText
         {
             get
@@ -375,6 +388,20 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
             OnPropertyChanged(nameof(SavedPositionText));
+        }
+
+        public void SetCurrentImageCursorPosition(int x, int y)
+        {
+            ImageCursorPosition = new Point(x, y);
+            OnPropertyChanged(nameof(ImageCursorPosition));
+            OnPropertyChanged(nameof(ImageCursorPositionText));
+        }
+
+        public void ClearCurrentImageCursorPosition()
+        {
+            ImageCursorPosition = null;
+            OnPropertyChanged(nameof(ImageCursorPosition));
+            OnPropertyChanged(nameof(ImageCursorPositionText));
         }
 
         public void SwitchToNextLabel()

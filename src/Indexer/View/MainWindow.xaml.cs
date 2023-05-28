@@ -261,20 +261,31 @@ namespace Indexer.View
             );
         }
 
+        private Point GetImageCursorPosition(MouseEventArgs e)
+        {
+            Point mousePos = e.GetPosition(MainImage);
+            var x = mousePos.X * MainImage.Source.Width / MainImage.ActualWidth;
+            var y = mousePos.Y * MainImage.Source.Width / MainImage.ActualWidth;
+            return new Point((int)x, (int)y);
+        }
+
         private void MainImage_MouseMove(object sender, MouseEventArgs e)
         {
-            System.Windows.Point mousePosition = e.GetPosition(MainImage);
-            Coordinates.Text = $"{(int)mousePosition.X}, {(int)mousePosition.Y}";
+            var pos = GetImageCursorPosition(e);
+            Data.SetCurrentImageCursorPosition((int)pos.X, (int)pos.Y);
+        }
+
+        private void MainImage_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Data.ClearCurrentImageCursorPosition();
         }
 
         private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                System.Windows.Point mousePosition = e.GetPosition(MainImage);
-                Data.SetCurrentLabelPosition(
-                    (int)mousePosition.X, (int)mousePosition.Y
-                );
+                var pos = GetImageCursorPosition(e);
+                Data.SetCurrentLabelPosition((int)pos.X, (int)pos.Y);
             }
             else if (e.RightButton == MouseButtonState.Pressed)
             {
