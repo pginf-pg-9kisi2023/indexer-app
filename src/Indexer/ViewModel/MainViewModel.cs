@@ -395,8 +395,22 @@ namespace Indexer.ViewModel
             }
             var newHint = collection[collection.IndexOf(_session.CurrentHint!) + 1];
 
+            SetCurrentHintByName(newHint.Name);
+        }
+
+        public void SetCurrentLabel([NotNull] LabelViewModel label)
+        {
+            if (_session is null)
+            {
+                return;
+            }
+            SetCurrentHintByName(label.Name);
+        }
+
+        private void SetCurrentHintByName(string name)
+        {
             var oldHintImage = CurrentHintImage;
-            _session.CurrentHintName = newHint.Name;
+            _session!.CurrentHintName = name;
             CurrentHint = new(_session.CurrentHint!);
             CurrentHintImage = CurrentHint.Image;
             CurrentHintImage?.LoadImage();
