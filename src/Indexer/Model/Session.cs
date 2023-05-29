@@ -81,24 +81,17 @@ namespace Indexer.Model
             char delimiter = ',';
             var labels = new HashSet<string>();
             CultureInfo cultureInfo = CultureInfo.InvariantCulture;
-            foreach (var image in _indexedImages)
+            foreach (var hint in Config.Hints)
             {
-                foreach (var label in image.Labels)
-                {
-
-                    if (labels.Add(label.Name))
-                    {
-                        header.AppendFormat(cultureInfo, "{0}\"{1} x\"{2}\"{3} y\"", delimiter, label.Name, delimiter, label.Name);
-                    }
-                }
+                header.AppendFormat(cultureInfo, "{0}\"{1} x\"{2}\"{3} y\"", delimiter, hint.Name, delimiter, hint.Name);
             }
             sw.WriteLine(header.ToString());
             foreach (var image in _indexedImages)
             {
                 data.AppendFormat(cultureInfo, "\"{0}\"", image.ImagePath);
-                foreach (var label in labels)
+                foreach (var hint in Config.Hints)
                 {
-                    if (image.Labels.TryGetValue(label, out Label? toExport))
+                    if (image.Labels.TryGetValue(hint.Name, out Label? toExport))
                     {
                         if (toExport != null)
                         {
