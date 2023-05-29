@@ -228,22 +228,22 @@ namespace Indexer.View
 
         private void ExportAsCSV_Click(object sender, RoutedEventArgs e)
         {
-            var csvFileLocation = PromptForCSVLocation();
-            if (csvFileLocation == null)
+            var fileLocation = PromptForExportLocation("csv");
+            if (fileLocation is null)
             {
                 return;
             }
 
-            Data.ExportPointsToCSV(csvFileLocation);
+            Data.ExportPointsToCSV(fileLocation);
         }
-        private static string? PromptForCSVLocation()
+
+        private static string? PromptForExportLocation(string fileExt)
         {
             var saveFileDialog = new SaveFileDialog()
             {
-                Title = "Utwórz plik CSV",
-                DefaultExt = "csv",
-                Filter = (
-                "Plik csv|*.csv"),
+                Title = $"Eksportuj do pliku {fileExt.ToUpperInvariant()}",
+                DefaultExt = fileExt,
+                Filter = $"Pliki {fileExt.ToUpperInvariant()}|*.{fileExt}",
                 RestoreDirectory = true
             };
             if (saveFileDialog.ShowDialog() == true)
