@@ -25,7 +25,7 @@ jobs:
           path: |
             ~/.nuget/packages
             ~/.dotnet/tools
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          key: ${{ runner.os }}-nuget-${{ github.workflow }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: ${{ runner.os }}-nuget-
 
       - name: Set up .NET CLI
