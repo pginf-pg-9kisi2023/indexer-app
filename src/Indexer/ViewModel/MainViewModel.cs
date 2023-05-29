@@ -282,6 +282,11 @@ namespace Indexer.ViewModel
             }
         }
 
+        public void SetCurrentImage(IndexedImageViewModel indexedImage)
+        {
+            SetCurrentImageIndex(IndexedImages.IndexOf(indexedImage));
+        }
+
         private void SetCurrentImageIndex(int? idx, bool desynced = false)
         {
             if (_session is null)

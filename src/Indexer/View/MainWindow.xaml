@@ -119,6 +119,9 @@
                         <ListView.Resources>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="Focusable" Value="false" />
+                                <EventSetter
+                                    Event="MouseDoubleClick"
+                                    Handler="FilesListViewItem_MouseDoubleClick" />
                             </Style>
                         </ListView.Resources>
                         <ListView.View>

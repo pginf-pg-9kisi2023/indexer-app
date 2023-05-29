@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 using Indexer.ViewModel;
@@ -352,6 +353,20 @@ namespace Indexer.View
                 case Key.Enter:
                     Data.SwitchToNextLabel();
                     return;
+            }
+        }
+
+        private void FilesListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var item = sender as ListViewItem;
+            if (item is null)
+            {
+                return;
+            }
+            var indexedImage = item.Content as IndexedImageViewModel;
+            if (indexedImage is not null)
+            {
+                Data.SetCurrentImage(indexedImage);
             }
         }
     }
