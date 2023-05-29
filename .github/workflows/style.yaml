@@ -19,15 +19,20 @@ jobs:
       - name: Clone the repository
         uses: actions/checkout@v3
 
-      - name: Set up .NET CLI
-        uses: actions/setup-dotnet@v3
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
         with:
-          global-json-file: global.json
+          path: |
+            ~/.nuget/packages
+            ~/.dotnet/tools
+          key: ${{ runner.os }}-nuget-${{ github.workflow }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: ${{ runner.os }}-nuget-
 
       - name: Install dotnet-format
-        run: >
-          dotnet tool install -g dotnet-format --version "7.*" --add-source
-          https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet7/nuget/v3/index.json
+        run: |
+          if (!(Test-Path -Path ~/.dotnet/tools/dotnet-format.exe)) {
+            dotnet tool install -g dotnet-format --version "7.*" --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet7/nuget/v3/index.json
+          }
 
       - name: Add dotnet format problem matcher
         uses: xt0rted/dotnet-format-problem-matcher@v1
