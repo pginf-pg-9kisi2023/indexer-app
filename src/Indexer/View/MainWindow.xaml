@@ -45,14 +45,17 @@
                         Header="Zapisz sesję jako..."
                         Click="SaveSessionAs_Click"
                         IsEnabled="{Binding IsSessionOpen}" />
-                    <MenuItem
-                        Header="Wyeksportuj"
-                        Click="Export_Click"
-                        IsEnabled="{Binding IsSessionOpen}" />
-                    <MenuItem
-                        Header="Wyeksportuj do..."
-                        Click="ExportAs_Click"
-                        IsEnabled="{Binding IsSessionOpen}" />
+                    <MenuItem Header="Wyeksportuj do..." IsEnabled="{Binding IsSessionOpen}">
+                        <MenuItem
+                            Header="pliku CSV"
+                            IsEnabled="{Binding IsSessionOpen}"
+                            Click="ExportAsCSV_Click"
+                            />
+                        <MenuItem
+                            Header="pliku XML"
+                            IsEnabled="{Binding IsSessionOpen}"
+                            Click="ExportAsXML_Click"/>
+                    </MenuItem>
                     <MenuItem
                         Header="Zamknij sesję"
                         Click="CloseSession_Click"

@@ -436,5 +436,23 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(CurrentHintImage));
             OnPropertyChanged(nameof(CurrentHintBitmapImage));
         }
+
+        public void ExportPointsToXML([NotNull] string filePath)
+        {
+            if (_session is null)
+            {
+                throw new InvalidOperationException("No session is open.");
+            }
+            _session.ExportPointsToXML(filePath);
+        }
+
+        public void ExportPointsToCSV([NotNull] string filePath)
+        {
+            if (_session is null)
+            {
+                throw new InvalidOperationException("No session is open.");
+            }
+            _session.ExportPointsToCSV(filePath);
+        }
     }
 }

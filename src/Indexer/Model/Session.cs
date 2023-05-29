@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -70,12 +71,75 @@ namespace Indexer.Model
 
         public void ExportPointsToCSV(string filePath)
         {
-            throw new NotImplementedException();
+            using var fs = new FileStream(filePath, FileMode.Create);
+            using var sw = new StreamWriter(fs);
+            sw.NewLine = "\n";
+            var header = new StringBuilder();
+            var data = new StringBuilder();
+            header.Append("\"image_filename\"");
+            char delimiter = ',';
+            CultureInfo cultureInfo = CultureInfo.InvariantCulture;
+            foreach (var hint in Config.Hints)
+            {
+                header.AppendFormat(cultureInfo, "{0}\"{1} x\"{2}\"{3} y\"", delimiter, hint.Name, delimiter, hint.Name);
+            }
+            sw.WriteLine(header.ToString());
+            foreach (var image in _indexedImages)
+            {
+                data.AppendFormat(cultureInfo, "\"{0}\"", image.ImagePath);
+                foreach (var hint in Config.Hints)
+                {
+                    if (image.Labels.TryGetValue(hint.Name, out Label? toExport))
+                    {
+                        if (toExport != null)
+                        {
+                            data.AppendFormat(cultureInfo, "{0}{1}{2}{3}", delimiter, toExport.X, delimiter, toExport.Y);
+                        }
+                    }
+                    else
+                    {
+                        data.AppendFormat(cultureInfo, "{0}{1}", delimiter, delimiter);
+                    }
+                }
+                sw.WriteLine(data.ToString());
+                data.Clear();
+            }
         }
 
         public void ExportPointsToXML(string filePath)
         {
-            throw new NotImplementedException();
+            using var fs = new FileStream(filePath, FileMode.Create);
+            using var sw = new StreamWriter(fs);
+            var xmlWriterSettings = new XmlWriterSettings
+            {
+                Indent = true,
+                OmitXmlDeclaration = true,
+                IndentChars = "    ",
+                NewLineChars = "\n"
+            };
+            using var xmlWriter = XmlWriter.Create(sw, xmlWriterSettings);
+            xmlWriter.WriteStartElement("images");
+            foreach (var image in _indexedImages)
+            {
+                xmlWriter.WriteStartElement("image");
+                xmlWriter.WriteAttributeString("path", image.ImagePath);
+                xmlWriter.WriteStartElement("points");
+                foreach (var label in image.Labels)
+                {
+                    xmlWriter.WriteStartElement("point");
+                    xmlWriter.WriteAttributeString("name", label.Name);
+                    xmlWriter.WriteStartElement("x");
+                    xmlWriter.WriteValue(label.X);
+                    xmlWriter.WriteEndElement();
+                    xmlWriter.WriteStartElement("y");
+                    xmlWriter.WriteValue(label.Y);
+                    xmlWriter.WriteEndElement();
+                    xmlWriter.WriteEndElement();
+                }
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteEndElement();
+            }
+            xmlWriter.WriteEndElement();
         }
 
         public static Session FromFile(string filePath)

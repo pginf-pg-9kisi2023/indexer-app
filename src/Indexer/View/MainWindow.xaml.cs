@@ -226,14 +226,42 @@ namespace Indexer.View
             }
         }
 
-        private void Export_Click(object sender, RoutedEventArgs e)
+        private void ExportAsCSV_Click(object sender, RoutedEventArgs e)
         {
+            var fileLocation = PromptForExportLocation("csv");
+            if (fileLocation is null)
+            {
+                return;
+            }
 
+            Data.ExportPointsToCSV(fileLocation);
         }
 
-        private void ExportAs_Click(object sender, RoutedEventArgs e)
+        private void ExportAsXML_Click(object sender, RoutedEventArgs e)
         {
+            var fileLocation = PromptForExportLocation("xml");
+            if (fileLocation == null)
+            {
+                return;
+            }
 
+            Data.ExportPointsToXML(fileLocation);
+        }
+
+        private static string? PromptForExportLocation(string fileExt)
+        {
+            var saveFileDialog = new SaveFileDialog()
+            {
+                Title = $"Eksportuj do pliku {fileExt.ToUpperInvariant()}",
+                DefaultExt = fileExt,
+                Filter = $"Pliki {fileExt.ToUpperInvariant()}|*.{fileExt}",
+                RestoreDirectory = true
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                return saveFileDialog.FileName;
+            }
+            return null;
         }
 
         private void ShortcutsHelp_Click(object sender, RoutedEventArgs e)
