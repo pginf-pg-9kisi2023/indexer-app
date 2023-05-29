@@ -411,17 +411,11 @@ namespace Indexer.ViewModel
             {
                 throw new InvalidOperationException("No session is open.");
             }
-            else
+            if (filePath is null)
             {
-                if (filePath is null)
-                {
-                    throw new FileNotFoundException();
-                }
-                else
-                {
-                    _session.ExportPointsToXML(filePath);
-                }
+                throw new FileNotFoundException();
             }
+            _session.ExportPointsToXML(filePath);
         }
         public void ExportPointsToCSV(string? filePath = null)
         {
@@ -429,17 +423,11 @@ namespace Indexer.ViewModel
             {
                 throw new InvalidOperationException("No session is open.");
             }
-            else
+            if (filePath is null)
             {
-                if (filePath is null)
-                {
-                    throw new FileNotFoundException();
-                }
-                else
-                {
-                    _session.ExportPointsToCSV(filePath);
-                }
+                throw new FileNotFoundException();
             }
+            _session.ExportPointsToCSV(filePath);
         }
     }
 }
