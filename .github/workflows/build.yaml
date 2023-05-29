@@ -14,10 +14,12 @@ jobs:
       - name: Clone the repository
         uses: actions/checkout@v3
 
-      - name: Set up .NET CLI
-        uses: actions/setup-dotnet@v3
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
         with:
-          global-json-file: global.json
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ github.workflow }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: ${{ runner.os }}-nuget-
 
       - name: Install dependencies
         run: dotnet restore
