@@ -418,6 +418,7 @@ namespace Indexer.ViewModel
             }
             _session.ExportPointsToXML(filePath);
         }
+
         public void ExportPointsToCSV([NotNull] string filePath)
         {
             if (_session is null)
