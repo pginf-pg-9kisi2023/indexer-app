@@ -104,9 +104,6 @@ namespace Indexer.Model
                 sw.WriteLine(data.ToString());
                 data.Clear();
             }
-
-
-
         }
 
         public void ExportPointsToXML(string filePath)
