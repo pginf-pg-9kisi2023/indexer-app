@@ -83,7 +83,9 @@
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="2" />
                 <StatusBarItem Grid.Column="3">
-                    <TextBlock Name="Coordinates" Text="" />
+                    <TextBlock
+                        Name="Coordinates"
+                        Text="{Binding ImageCursorPositionText}" />
                 </StatusBarItem>
             </StatusBar>
             <Grid>
@@ -179,6 +181,7 @@
                         <Image
                             Grid.Row="0"
                             MouseMove="MainImage_MouseMove"
+                            MouseLeave="MainImage_MouseLeave"
                             MouseDown="MainImage_MouseDown"
                             Name="MainImage"
                             Stretch="Uniform"
