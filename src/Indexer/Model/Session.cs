@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -79,7 +78,6 @@ namespace Indexer.Model
             var data = new StringBuilder();
             header.Append("\"image_filename\"");
             char delimiter = ',';
-            var labels = new HashSet<string>();
             CultureInfo cultureInfo = CultureInfo.InvariantCulture;
             foreach (var hint in Config.Hints)
             {
