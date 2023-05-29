@@ -237,6 +237,17 @@ namespace Indexer.View
             Data.ExportPointsToCSV(fileLocation);
         }
 
+        private void ExportAsXML_Click(object sender, RoutedEventArgs e)
+        {
+            var fileLocation = PromptForExportLocation("xml");
+            if (fileLocation == null)
+            {
+                return;
+            }
+
+            Data.ExportPointsToXML(fileLocation);
+        }
+
         private static string? PromptForExportLocation(string fileExt)
         {
             var saveFileDialog = new SaveFileDialog()
@@ -244,34 +255,6 @@ namespace Indexer.View
                 Title = $"Eksportuj do pliku {fileExt.ToUpperInvariant()}",
                 DefaultExt = fileExt,
                 Filter = $"Pliki {fileExt.ToUpperInvariant()}|*.{fileExt}",
-                RestoreDirectory = true
-            };
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                return saveFileDialog.FileName;
-            }
-            return null;
-        }
-
-        private void ExportAsXML_Click(object sender, RoutedEventArgs e)
-        {
-            var xmlFileLocation = PromptForXMLLocation();
-            if (xmlFileLocation == null)
-            {
-                return;
-            }
-
-            Data.ExportPointsToXML(xmlFileLocation);
-        }
-
-        private static string? PromptForXMLLocation()
-        {
-            var saveFileDialog = new SaveFileDialog()
-            {
-                Title = "Utwórz plik XML",
-                DefaultExt = "xml",
-                Filter = (
-                "Plik XML|*.xml"),
                 RestoreDirectory = true
             };
             if (saveFileDialog.ShowDialog() == true)
