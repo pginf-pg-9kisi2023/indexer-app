@@ -15,7 +15,7 @@ namespace Indexer.ViewModel
         private const int PropertyTagOrientation = 0x0112;
 
         public string Path { get; private set; }
-        public BitmapSource? LoadedImage { get; private set; }
+        public BitmapSource? LoadedImage { get; set; }
         public int Height => LoadedImage is null ? 0 : LoadedImage.PixelHeight;
         public int Width => LoadedImage is null ? 0 : LoadedImage.PixelWidth;
         public int OriginalOrientation { get; private set; }
