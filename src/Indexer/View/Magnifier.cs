@@ -1,7 +1,8 @@
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace Indexer.View
@@ -44,10 +45,42 @@ namespace Indexer.View
                 new PropertyMetadata(default(SolidColorBrush))
             );
 
+        public static readonly DependencyProperty ImageSourceProperty
+            = DependencyProperty.Register(
+                "ImageBitmap",
+                typeof(ImageSource),
+                typeof(Magnifier),
+                new PropertyMetadata(default(ImageSource))
+            );
+
+        public static readonly DependencyProperty SavedPositionProperty
+            = DependencyProperty.Register(
+                "SavedPosition",
+                typeof(String),
+                typeof(Magnifier),
+                new PropertyMetadata(default(String))
+            );
+        public static readonly DependencyProperty ImageCursorProperty
+            = DependencyProperty.Register(
+                "ImageCursor",
+                typeof(String),
+                typeof(Magnifier),
+                new PropertyMetadata(default(String))
+            );
         public SolidColorBrush Stroke
         {
             get => (SolidColorBrush)GetValue(StrokeProperty);
             set => SetValue(StrokeProperty, value);
+        }
+        public String SavedPosition
+        {
+            get => (String)GetValue(SavedPositionProperty);
+            set => SetValue(SavedPositionProperty, value);
+        }
+        public String ImageCursor
+        {
+            get => (String)GetValue(ImageCursorProperty);
+            set => SetValue(ImageCursorProperty, value);
         }
         public UIElement ContentPanel
         {
@@ -58,6 +91,11 @@ namespace Indexer.View
         {
             get => (UIElement)GetValue(MagnifiedPanelProperty);
             set => SetValue(MagnifiedPanelProperty, value);
+        }
+        public BitmapSource ImageBitmap
+        {
+            get => (BitmapSource)GetValue(ImageSourceProperty);
+            set => SetValue(ImageSourceProperty, value);
         }
         public double Radius
         {
@@ -71,16 +109,14 @@ namespace Indexer.View
         }
         protected Rect ViewBox
         {
-            get => MagnifierBrush.Viewbox;
-            set => MagnifierBrush.Viewbox = value;
+            get => MagnifierImageBrush.Viewbox;
+            set => MagnifierImageBrush.Viewbox = value;
         }
-        protected VisualBrush MagnifierBrush { get; set; } = new();
+        protected ImageBrush MagnifierImageBrush { get; set; } = new();
         protected Rectangle MagnifierRectangle { get; set; } = new();
         protected Canvas MagnifierPanel { get; set; }
-
         public Magnifier()
         {
-            ZoomFactor = 3; // 3x
             Radius = 50;
             Stroke = Brushes.Black;
 
@@ -94,11 +130,11 @@ namespace Indexer.View
         {
             base.OnPropertyChanged(e);
 
-            if (e.Property == MagnifiedPanelProperty)
+            if (e.Property == ImageSourceProperty)
             {
                 if (VisualTreeHelper.GetParent(MagnifiedPanel) is Panel container)
                 {
-                    MagnifierBrush = new VisualBrush(ContentPanel)
+                    MagnifierImageBrush = new ImageBrush(ImageBitmap)
                     {
                         ViewboxUnits = BrushMappingMode.Absolute
                     };
@@ -108,28 +144,44 @@ namespace Indexer.View
                         Stroke = Stroke,
                         Width = 2 * Radius,
                         Height = 2 * Radius,
-                        Visibility = Visibility.Hidden,
-                        Fill = MagnifierBrush
+                        Visibility = Visibility.Visible,
+                        Fill = MagnifierImageBrush
                     };
 
+                    MagnifierPanel.Children.Clear();
                     MagnifierPanel.Children.Add(MagnifierRectangle);
-                    container.Children.Add(MagnifierPanel);
-                    ContentPanel.MouseEnter += delegate
+                    if (!container.Children.Contains(MagnifierPanel))
                     {
-                        MagnifierRectangle.Visibility = Visibility.Visible;
-                    };
-                    ContentPanel.MouseMove += ContentPanel_OnMouseMove;
+                        container.Children.Add(MagnifierPanel);
+                    }
                 }
             }
-        }
+            if (e.Property == SavedPositionProperty || e.Property == ImageCursorProperty)
+            {
+                if (SavedPosition != null && ImageCursor != null)
+                {
+                    var length = MagnifierRectangle.ActualWidth * (1 / ZoomFactor);
+                    var radius = length / 2;
+                    int x = 0;
+                    int y = 0;
+                    if (SavedPosition != "")
+                    {
 
-        private void ContentPanel_OnMouseMove(object sender, MouseEventArgs e)
-        {
-            var length = MagnifierRectangle.ActualWidth * (1 / ZoomFactor);
-            var radius = length / 2;
-            var container = VisualTreeHelper.GetParent(ContentPanel) as Grid;
-            var center = e.GetPosition(container);
-            ViewBox = new Rect(center.X - radius, center.Y - radius, length, length);
+                        string[] cordinates = SavedPosition.Split(',');
+                        x = int.Parse(cordinates[0]);
+                        y = int.Parse(cordinates[1]);
+
+                    }
+                    else if (ImageCursor != "")
+                    {
+                        string[] cordinates = ImageCursor.Split(',');
+                        x = int.Parse(cordinates[0]);
+                        y = int.Parse(cordinates[1]);
+                    }
+
+                    ViewBox = new Rect(x - radius, y - radius, length, length);
+                }
+            }
         }
     }
 }
