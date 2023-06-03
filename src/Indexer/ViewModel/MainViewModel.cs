@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Windows.Media.Imaging;
 
 using Indexer.Collections;
 using Indexer.Model;
@@ -89,7 +88,7 @@ namespace Indexer.ViewModel
             }
         }
         public ImageViewModel? CurrentImage { get; private set; }
-        public BitmapSource? CurrentBitmapImage => CurrentImage?.LoadedImage;
+        public MemoryStream? CurrentBitmapImage => CurrentImage?.LoadedImage;
         public LabelVMObservableCollection CurrentLabels
         {
             get
@@ -104,7 +103,7 @@ namespace Indexer.ViewModel
         }
         public HintViewModel? CurrentHint { get; private set; }
         public ImageViewModel? CurrentHintImage { get; private set; }
-        public BitmapSource? CurrentHintBitmapImage => CurrentHint?.Image?.LoadedImage;
+        public MemoryStream? CurrentHintBitmapImage => CurrentHint?.Image?.LoadedImage;
         public LabelViewModel? CurrentLabel
         {
             get
