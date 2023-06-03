@@ -301,11 +301,13 @@ namespace Indexer.View
         {
             var pos = GetImageCursorPosition(e);
             Data.SetCurrentImageCursorPosition((int)pos.X, (int)pos.Y);
+            this.Cursor = Cursors.Cross;
         }
 
         private void MainImage_MouseLeave(object sender, MouseEventArgs e)
         {
             Data.ClearCurrentImageCursorPosition();
+            this.Cursor = Cursors.Arrow;
         }
 
         private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
@@ -314,10 +316,12 @@ namespace Indexer.View
             {
                 var pos = GetImageCursorPosition(e);
                 Data.SetCurrentLabelPosition((int)pos.X, (int)pos.Y);
+                Data.DrawCross((int)pos.X, (int)pos.Y);
             }
             else if (e.RightButton == MouseButtonState.Pressed)
             {
                 Data.RemoveCurrentLabelPosition();
+                Data.ChangeCurrentImageToPrevious();
             }
         }
 
@@ -337,17 +341,34 @@ namespace Indexer.View
             {
                 case Key.Up:
                     Data.MoveCurrentLabelPositionRelatively(y: -1);
+                    if (Data.CurrentLabel is not null)
+                    {
+                        Data.DrawCross(Data.CurrentLabel.X, Data.CurrentLabel.Y);
+                    }
                     break;
                 case Key.Down:
                     Data.MoveCurrentLabelPositionRelatively(y: 1);
+                    if (Data.CurrentLabel is not null)
+                    {
+                        Data.DrawCross(Data.CurrentLabel.X, Data.CurrentLabel.Y);
+                    }
                     break;
                 case Key.Left:
                     Data.MoveCurrentLabelPositionRelatively(x: -1);
+                    if (Data.CurrentLabel is not null)
+                    {
+                        Data.DrawCross(Data.CurrentLabel.X, Data.CurrentLabel.Y);
+                    }
                     break;
                 case Key.Right:
                     Data.MoveCurrentLabelPositionRelatively(x: 1);
+                    if (Data.CurrentLabel is not null)
+                    {
+                        Data.DrawCross(Data.CurrentLabel.X, Data.CurrentLabel.Y);
+                    }
                     break;
                 case Key.Enter:
+                    Data.DrawNewLabel(Data.CurrentLabel.X, Data.CurrentLabel.Y);
                     Data.SwitchToNextLabel();
                     return;
             }
