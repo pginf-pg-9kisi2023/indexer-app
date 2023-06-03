@@ -249,20 +249,13 @@
                             HorizontalAlignment="Center"
                             Grid.Row="1" />
                         <local:Magnifier
-                            Stroke="black"
-                            Radius="128"
                             ZoomFactor="5"
                             ImageBitmap="{Binding CurrentBitmapImage}"
                             CurrentLabel="{Binding CurrentLabel}"
                             ImageCursor="{Binding ImageCursorPosition}"
-                            ContentPanel="{Binding ElementName=MainImage}"
-                            MagnifiedPanel="{Binding ElementName=MagnifiedImage}"
                             Height="256"
                             Width="256"
                             Grid.Row="2" />
-                        <DockPanel Height="256" Width="256" Grid.Row="2">
-                            <Canvas Name="MagnifiedImage" />
-                        </DockPanel>
                         <Slider
                             Minimum="100"
                             Maximum="500"

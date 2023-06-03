@@ -11,7 +11,7 @@ using Point = System.Drawing.Point;
 
 namespace Indexer.View
 {
-    public class Magnifier : Canvas
+    public class Magnifier : DockPanel
     {
         public static readonly DependencyProperty ZoomFactorProperty
             = DependencyProperty.Register(
@@ -20,36 +20,15 @@ namespace Indexer.View
                 typeof(Magnifier),
                 new PropertyMetadata(default(double))
             );
-        public static readonly DependencyProperty RadiusProperty
-            = DependencyProperty.Register(
-                "Radius",
-                typeof(double),
-                typeof(Magnifier),
-                new PropertyMetadata(default(double))
-            );
-        public static readonly DependencyProperty ContentPanelProperty
-            = DependencyProperty.Register(
-                "ContentPanel",
-                typeof(UIElement),
-                typeof(Magnifier),
-                new PropertyMetadata(default(UIElement))
-            );
-        public static readonly DependencyProperty MagnifiedPanelProperty
-            = DependencyProperty.Register(
-                "MagnifiedPanel",
-                typeof(UIElement),
-                typeof(Magnifier),
-                new PropertyMetadata(default(UIElement))
-            );
         public static readonly DependencyProperty StrokeProperty
             = DependencyProperty.Register(
                 "Stroke",
                 typeof(SolidColorBrush),
                 typeof(Magnifier),
-                new PropertyMetadata(default(SolidColorBrush))
+                new PropertyMetadata(Brushes.Black)
             );
 
-        public static readonly DependencyProperty ImageSourceProperty
+        public static readonly DependencyProperty ImageBitmapProperty
             = DependencyProperty.Register(
                 "ImageBitmap",
                 typeof(ImageSource),
@@ -86,31 +65,17 @@ namespace Indexer.View
             get => (Point?)GetValue(ImageCursorProperty);
             set => SetValue(ImageCursorProperty, value);
         }
-        public UIElement ContentPanel
-        {
-            get => (UIElement)GetValue(ContentPanelProperty);
-            set => SetValue(ContentPanelProperty, value);
-        }
-        public UIElement MagnifiedPanel
-        {
-            get => (UIElement)GetValue(MagnifiedPanelProperty);
-            set => SetValue(MagnifiedPanelProperty, value);
-        }
         public BitmapSource ImageBitmap
         {
-            get => (BitmapSource)GetValue(ImageSourceProperty);
-            set => SetValue(ImageSourceProperty, value);
-        }
-        public double Radius
-        {
-            get => (double)GetValue(RadiusProperty);
-            set => SetValue(RadiusProperty, value);
+            get => (BitmapSource)GetValue(ImageBitmapProperty);
+            set => SetValue(ImageBitmapProperty, value);
         }
         public double ZoomFactor
         {
             get => (double)GetValue(ZoomFactorProperty);
             set => SetValue(ZoomFactorProperty, value);
         }
+
         protected Rect ViewBox
         {
             get => MagnifierImageBrush.Viewbox;
@@ -118,16 +83,10 @@ namespace Indexer.View
         }
         protected ImageBrush MagnifierImageBrush { get; set; } = new();
         protected Rectangle MagnifierRectangle { get; set; } = new();
-        protected Canvas MagnifierPanel { get; set; }
+
         public Magnifier()
         {
-            Radius = 50;
-            Stroke = Brushes.Black;
-
-            MagnifierPanel = new Canvas
-            {
-                IsHitTestVisible = false
-            };
+            TriggerMagnifierUpdate();
         }
 
         private static void OnImageBitmapChange(
@@ -144,29 +103,22 @@ namespace Indexer.View
 
         private void TriggerMagnifierUpdate()
         {
-            if (VisualTreeHelper.GetParent(MagnifiedPanel) is Panel container)
+            MagnifierImageBrush = new ImageBrush(ImageBitmap)
             {
-                MagnifierImageBrush = new ImageBrush(ImageBitmap)
-                {
-                    ViewboxUnits = BrushMappingMode.Absolute
-                };
+                ViewboxUnits = BrushMappingMode.Absolute
+            };
 
-                MagnifierRectangle = new Rectangle
-                {
-                    Stroke = Stroke,
-                    Width = 2 * Radius,
-                    Height = 2 * Radius,
-                    Visibility = Visibility.Visible,
-                    Fill = MagnifierImageBrush
-                };
+            MagnifierRectangle = new Rectangle
+            {
+                Stroke = Stroke,
+                Width = Width,
+                Height = Height,
+                Visibility = Visibility.Visible,
+                Fill = MagnifierImageBrush
+            };
 
-                MagnifierPanel.Children.Clear();
-                MagnifierPanel.Children.Add(MagnifierRectangle);
-                if (!container.Children.Contains(MagnifierPanel))
-                {
-                    container.Children.Add(MagnifierPanel);
-                }
-            }
+            Children.Clear();
+            Children.Add(MagnifierRectangle);
         }
 
         private static void OnImageCursorChange(
