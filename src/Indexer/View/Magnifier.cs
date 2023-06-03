@@ -13,21 +13,6 @@ namespace Indexer.View
 {
     public class Magnifier : DockPanel
     {
-        public static readonly DependencyProperty ZoomFactorProperty
-            = DependencyProperty.Register(
-                "ZoomFactor",
-                typeof(double),
-                typeof(Magnifier),
-                new PropertyMetadata(default(double))
-            );
-        public static readonly DependencyProperty StrokeProperty
-            = DependencyProperty.Register(
-                "Stroke",
-                typeof(SolidColorBrush),
-                typeof(Magnifier),
-                new PropertyMetadata(Brushes.Black)
-            );
-
         public static readonly DependencyProperty ImageBitmapProperty
             = DependencyProperty.Register(
                 "ImageBitmap",
@@ -35,6 +20,11 @@ namespace Indexer.View
                 typeof(Magnifier),
                 new PropertyMetadata(default(ImageSource), OnImageBitmapChange)
             );
+        public BitmapSource ImageBitmap
+        {
+            get => (BitmapSource)GetValue(ImageBitmapProperty);
+            set => SetValue(ImageBitmapProperty, value);
+        }
 
         public static readonly DependencyProperty CurrentLabelProperty
             = DependencyProperty.Register(
@@ -43,6 +33,11 @@ namespace Indexer.View
                 typeof(Magnifier),
                 new PropertyMetadata(default(LabelViewModel), OnCurrentLabelChange)
             );
+        public LabelViewModel? CurrentLabel
+        {
+            get => (LabelViewModel)GetValue(CurrentLabelProperty);
+            set => SetValue(CurrentLabelProperty, value);
+        }
         public static readonly DependencyProperty ImageCursorProperty
             = DependencyProperty.Register(
                 "ImageCursor",
@@ -50,26 +45,31 @@ namespace Indexer.View
                 typeof(Magnifier),
                 new PropertyMetadata(default(Point?), OnImageCursorChange)
             );
-        public SolidColorBrush Stroke
-        {
-            get => (SolidColorBrush)GetValue(StrokeProperty);
-            set => SetValue(StrokeProperty, value);
-        }
-        public LabelViewModel? CurrentLabel
-        {
-            get => (LabelViewModel)GetValue(CurrentLabelProperty);
-            set => SetValue(CurrentLabelProperty, value);
-        }
         public Point? ImageCursor
         {
             get => (Point?)GetValue(ImageCursorProperty);
             set => SetValue(ImageCursorProperty, value);
         }
-        public BitmapSource ImageBitmap
+
+        public static readonly DependencyProperty StrokeProperty
+            = DependencyProperty.Register(
+                "Stroke",
+                typeof(SolidColorBrush),
+                typeof(Magnifier),
+                new PropertyMetadata(Brushes.Black)
+            );
+        public SolidColorBrush Stroke
         {
-            get => (BitmapSource)GetValue(ImageBitmapProperty);
-            set => SetValue(ImageBitmapProperty, value);
+            get => (SolidColorBrush)GetValue(StrokeProperty);
+            set => SetValue(StrokeProperty, value);
         }
+        public static readonly DependencyProperty ZoomFactorProperty
+            = DependencyProperty.Register(
+                "ZoomFactor",
+                typeof(double),
+                typeof(Magnifier),
+                new PropertyMetadata(default(double))
+            );
         public double ZoomFactor
         {
             get => (double)GetValue(ZoomFactorProperty);
