@@ -253,8 +253,7 @@
                             ImageBitmap="{Binding CurrentBitmapImage}"
                             CurrentLabel="{Binding CurrentLabel}"
                             ImageCursor="{Binding ImageCursorPosition}"
-                            Height="256"
-                            Width="256"
+                            Height="250"
                             Grid.Row="2" />
                         <Slider
                             Minimum="100"

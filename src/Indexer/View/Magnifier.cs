@@ -108,6 +108,7 @@ namespace Indexer.View
                 ViewboxUnits = BrushMappingMode.Absolute
             };
 
+            MagnifierRectangle.SizeChanged -= OnRectangleSizeChange;
             MagnifierRectangle = new Rectangle
             {
                 Stroke = Stroke,
@@ -116,6 +117,7 @@ namespace Indexer.View
                 Visibility = Visibility.Visible,
                 Fill = MagnifierImageBrush
             };
+            MagnifierRectangle.SizeChanged += OnRectangleSizeChange;
 
             Children.Clear();
             Children.Add(MagnifierRectangle);
@@ -163,10 +165,13 @@ namespace Indexer.View
             }
         }
 
-        private void TriggerViewBoxUpdate()
+        private void OnRectangleSizeChange(object sender, SizeChangedEventArgs e)
         {
-            var length = MagnifierRectangle.ActualWidth * (1 / ZoomFactor);
-            var radius = length / 2;
+            TriggerViewBoxUpdate(resetViewBox: true);
+        }
+
+        private void TriggerViewBoxUpdate(bool resetViewBox = false)
+        {
             int x = 0;
             int y = 0;
             if (CurrentLabel != null)
@@ -179,8 +184,14 @@ namespace Indexer.View
                 x = pos.X;
                 y = pos.Y;
             }
-
-            ViewBox = new Rect(x - radius, y - radius, length, length);
+            else if (!resetViewBox)
+            {
+                // keep the current viewbox
+                return;
+            }
+            var width = MagnifierRectangle.ActualWidth * (1 / ZoomFactor);
+            var height = MagnifierRectangle.ActualHeight * (1 / ZoomFactor);
+            ViewBox = new Rect(x - width / 2, y - height / 2, width, height);
         }
     }
 }
