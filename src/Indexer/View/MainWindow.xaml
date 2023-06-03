@@ -249,7 +249,7 @@
                             HorizontalAlignment="Center"
                             Grid.Row="1" />
                         <local:Magnifier
-                            ZoomFactor="5"
+                            ZoomFactor="1"
                             ImageBitmap="{Binding CurrentBitmapImage}"
                             CurrentLabel="{Binding CurrentLabel}"
                             ImageCursor="{Binding ImageCursorPosition}"
