@@ -1,9 +1,13 @@
-using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+
+using Indexer.ViewModel;
+
+using Point = System.Drawing.Point;
 
 namespace Indexer.View
 {
@@ -50,36 +54,36 @@ namespace Indexer.View
                 "ImageBitmap",
                 typeof(ImageSource),
                 typeof(Magnifier),
-                new PropertyMetadata(default(ImageSource))
+                new PropertyMetadata(default(ImageSource), OnImageBitmapChange)
             );
 
-        public static readonly DependencyProperty SavedPositionProperty
+        public static readonly DependencyProperty CurrentLabelProperty
             = DependencyProperty.Register(
-                "SavedPosition",
-                typeof(String),
+                "CurrentLabel",
+                typeof(LabelViewModel),
                 typeof(Magnifier),
-                new PropertyMetadata(default(String))
+                new PropertyMetadata(default(LabelViewModel), OnCurrentLabelChange)
             );
         public static readonly DependencyProperty ImageCursorProperty
             = DependencyProperty.Register(
                 "ImageCursor",
-                typeof(String),
+                typeof(Point?),
                 typeof(Magnifier),
-                new PropertyMetadata(default(String))
+                new PropertyMetadata(default(Point?), OnImageCursorChange)
             );
         public SolidColorBrush Stroke
         {
             get => (SolidColorBrush)GetValue(StrokeProperty);
             set => SetValue(StrokeProperty, value);
         }
-        public String SavedPosition
+        public LabelViewModel? CurrentLabel
         {
-            get => (String)GetValue(SavedPositionProperty);
-            set => SetValue(SavedPositionProperty, value);
+            get => (LabelViewModel)GetValue(CurrentLabelProperty);
+            set => SetValue(CurrentLabelProperty, value);
         }
-        public String ImageCursor
+        public Point? ImageCursor
         {
-            get => (String)GetValue(ImageCursorProperty);
+            get => (Point?)GetValue(ImageCursorProperty);
             set => SetValue(ImageCursorProperty, value);
         }
         public UIElement ContentPanel
@@ -126,62 +130,105 @@ namespace Indexer.View
             };
         }
 
-        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        private static void OnImageBitmapChange(
+            DependencyObject sender, DependencyPropertyChangedEventArgs e
+        )
         {
-            base.OnPropertyChanged(e);
-
-            if (e.Property == ImageSourceProperty)
+            var self = (Magnifier)sender;
+            if (self is null)
             {
-                if (VisualTreeHelper.GetParent(MagnifiedPanel) is Panel container)
+                return;
+            }
+            self.TriggerMagnifierUpdate();
+        }
+
+        private void TriggerMagnifierUpdate()
+        {
+            if (VisualTreeHelper.GetParent(MagnifiedPanel) is Panel container)
+            {
+                MagnifierImageBrush = new ImageBrush(ImageBitmap)
                 {
-                    MagnifierImageBrush = new ImageBrush(ImageBitmap)
-                    {
-                        ViewboxUnits = BrushMappingMode.Absolute
-                    };
+                    ViewboxUnits = BrushMappingMode.Absolute
+                };
 
-                    MagnifierRectangle = new Rectangle
-                    {
-                        Stroke = Stroke,
-                        Width = 2 * Radius,
-                        Height = 2 * Radius,
-                        Visibility = Visibility.Visible,
-                        Fill = MagnifierImageBrush
-                    };
+                MagnifierRectangle = new Rectangle
+                {
+                    Stroke = Stroke,
+                    Width = 2 * Radius,
+                    Height = 2 * Radius,
+                    Visibility = Visibility.Visible,
+                    Fill = MagnifierImageBrush
+                };
 
-                    MagnifierPanel.Children.Clear();
-                    MagnifierPanel.Children.Add(MagnifierRectangle);
-                    if (!container.Children.Contains(MagnifierPanel))
-                    {
-                        container.Children.Add(MagnifierPanel);
-                    }
+                MagnifierPanel.Children.Clear();
+                MagnifierPanel.Children.Add(MagnifierRectangle);
+                if (!container.Children.Contains(MagnifierPanel))
+                {
+                    container.Children.Add(MagnifierPanel);
                 }
             }
-            if (e.Property == SavedPositionProperty || e.Property == ImageCursorProperty)
+        }
+
+        private static void OnImageCursorChange(
+            DependencyObject sender, DependencyPropertyChangedEventArgs e
+        )
+        {
+            var self = (Magnifier)sender;
+            if (self is null)
             {
-                if (SavedPosition != null && ImageCursor != null)
-                {
-                    var length = MagnifierRectangle.ActualWidth * (1 / ZoomFactor);
-                    var radius = length / 2;
-                    int x = 0;
-                    int y = 0;
-                    if (SavedPosition != "")
-                    {
-
-                        string[] cordinates = SavedPosition.Split(',');
-                        x = int.Parse(cordinates[0]);
-                        y = int.Parse(cordinates[1]);
-
-                    }
-                    else if (ImageCursor != "")
-                    {
-                        string[] cordinates = ImageCursor.Split(',');
-                        x = int.Parse(cordinates[0]);
-                        y = int.Parse(cordinates[1]);
-                    }
-
-                    ViewBox = new Rect(x - radius, y - radius, length, length);
-                }
+                return;
             }
+
+            self.TriggerViewBoxUpdate();
+        }
+
+        private static void OnCurrentLabelChange(
+            DependencyObject sender, DependencyPropertyChangedEventArgs e
+        )
+        {
+            var self = (Magnifier)sender;
+            if (self is null)
+            {
+                return;
+            }
+
+            self.TriggerViewBoxUpdate();
+            if (e.OldValue is LabelViewModel oldValue)
+            {
+                oldValue.PropertyChanged -= self.OnLabelPropertyChanged;
+            }
+            if (e.NewValue is LabelViewModel newValue)
+            {
+                newValue.PropertyChanged += self.OnLabelPropertyChanged;
+            }
+        }
+
+        private void OnLabelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "X" || e.PropertyName == "Y")
+            {
+                TriggerViewBoxUpdate();
+            }
+        }
+
+        private void TriggerViewBoxUpdate()
+        {
+            var length = MagnifierRectangle.ActualWidth * (1 / ZoomFactor);
+            var radius = length / 2;
+            int x = 0;
+            int y = 0;
+            if (CurrentLabel != null)
+            {
+                x = CurrentLabel.X;
+                y = CurrentLabel.Y;
+            }
+            else if (ImageCursor is Point pos)
+            {
+                x = pos.X;
+                y = pos.Y;
+            }
+
+            ViewBox = new Rect(x - radius, y - radius, length, length);
         }
     }
 }
