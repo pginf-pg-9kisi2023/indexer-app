@@ -181,14 +181,16 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="20" />
                         </Grid.RowDefinitions>
-                        <local:MemoryBackedImage
+                        <local:ImageWithLabels
                             Grid.Row="0"
                             MouseMove="MainImage_MouseMove"
                             MouseLeave="MainImage_MouseLeave"
                             MouseDown="MainImage_MouseDown"
                             x:Name="MainImage"
                             Stretch="Uniform"
-                            StreamSource="{Binding CurrentBitmapImage}" />
+                            StreamSource="{Binding CurrentBitmapImage}"
+                            CurrentLabel="{Binding CurrentLabel}"
+                            CurrentLabels="{Binding CurrentLabels}" />
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />

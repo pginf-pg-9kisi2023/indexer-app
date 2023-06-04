@@ -348,7 +348,6 @@ namespace Indexer.View
                     Data.MoveCurrentLabelPositionRelatively(x: 1);
                     break;
                 case Key.Enter:
-                    Data.DrawNewLabel(Data.CurrentLabel.X, Data.CurrentLabel.Y);
                     Data.SwitchToNextLabel();
                     return;
             }

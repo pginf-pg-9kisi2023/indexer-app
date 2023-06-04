@@ -5,15 +5,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 using Indexer.Collections;
 using Indexer.Model;
-
-using Brushes = System.Windows.Media.Brushes;
-using Pen = System.Windows.Media.Pen;
-using Point = System.Windows.Point;
 
 namespace Indexer.ViewModel
 {
@@ -309,7 +303,6 @@ namespace Indexer.ViewModel
                 CurrentHintImage?.LoadImage();
                 oldHintImage?.UnloadImage();
                 IsSessionModified = true;
-                DrawLabels();
                 OnPropertyChanged(nameof(CurrentIndexedImage));
                 OnPropertyChanged(nameof(CurrentImage));
                 OnPropertyChanged(nameof(CurrentBitmapImage));
@@ -461,50 +454,6 @@ namespace Indexer.ViewModel
                 throw new InvalidOperationException("No session is open.");
             }
             _session.ExportPointsToCSV(filePath);
-        }
-
-        public void DrawLabels()
-        {
-            DrawingVisual drawingVisual = new DrawingVisual();
-            DrawingContext drawingContext = drawingVisual.RenderOpen();
-            drawingContext.DrawImage(CurrentImage.LoadedImage, new Rect(0, 0, CurrentImage.LoadedImage.Width, CurrentImage.LoadedImage.Height));
-            foreach (var label in CurrentLabels)
-            {
-                //if(label.confirmed)
-                drawingContext.DrawEllipse(Brushes.Black, new Pen(), new Point(label.X, label.Y), 10, 10);
-                drawingContext.DrawEllipse(Brushes.White, new Pen(), new Point(label.X, label.Y), 8, 8);
-            }
-            drawingContext.Close();
-
-            RenderTargetBitmap rtb = new RenderTargetBitmap(CurrentImage.LoadedImage.PixelWidth,
-                CurrentImage.LoadedImage.PixelHeight,
-                CurrentImage.LoadedImage.DpiX,
-                CurrentImage.LoadedImage.DpiY,
-                PixelFormats.Pbgra32);
-
-            rtb.Render(drawingVisual);
-            CurrentImage.LoadedImage = rtb;
-        }
-
-        public void DrawNewLabel(int X, int Y)
-        {
-            DrawingVisual drawingVisual = new DrawingVisual();
-            DrawingContext drawingContext = drawingVisual.RenderOpen();
-            drawingContext.DrawImage(CurrentImage.LoadedImage, new Rect(0, 0, CurrentImage.LoadedImage.Width, CurrentImage.LoadedImage.Height));
-            drawingContext.DrawEllipse(Brushes.Black, new Pen(), new Point(X, Y), 10, 10);
-            drawingContext.DrawEllipse(Brushes.White, new Pen(), new Point(X, Y), 8, 8);
-            drawingContext.Close();
-
-            RenderTargetBitmap rtb = new RenderTargetBitmap(CurrentImage.LoadedImage.PixelWidth,
-                CurrentImage.LoadedImage.PixelHeight,
-                CurrentImage.LoadedImage.DpiX,
-                CurrentImage.LoadedImage.DpiY,
-                PixelFormats.Pbgra32);
-
-            rtb.Render(drawingVisual);
-            CurrentImage.LoadedImage = rtb;
-            IsSessionModified = true;
-            OnPropertyChanged(nameof(CurrentBitmapImage));
         }
     }
 }
