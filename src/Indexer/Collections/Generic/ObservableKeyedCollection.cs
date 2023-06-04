@@ -19,11 +19,7 @@ namespace Indexer.Collections.Generic
         protected override void ClearItems()
         {
             base.ClearItems();
-            OnCollectionChanged(
-                new NotifyCollectionChangedEventArgs(
-                    NotifyCollectionChangedAction.Reset
-                )
-            );
+            TriggerReset();
         }
 
         protected override void InsertItem(int index, TItem item)
@@ -78,11 +74,7 @@ namespace Indexer.Collections.Generic
             }
             finally
             {
-                OnCollectionChanged(
-                    new NotifyCollectionChangedEventArgs(
-                        NotifyCollectionChangedAction.Reset
-                    )
-                );
+                TriggerReset();
             }
         }
 
@@ -99,11 +91,7 @@ namespace Indexer.Collections.Generic
             }
             finally
             {
-                OnCollectionChanged(
-                    new NotifyCollectionChangedEventArgs(
-                        NotifyCollectionChangedAction.Reset
-                    )
-                );
+                TriggerReset();
             }
         }
 
@@ -120,6 +108,15 @@ namespace Indexer.Collections.Generic
             {
                 CollectionChanged(this, e);
             }
+        }
+
+        public void TriggerReset()
+        {
+            OnCollectionChanged(
+                new NotifyCollectionChangedEventArgs(
+                    NotifyCollectionChangedAction.Reset
+                )
+            );
         }
     }
 }

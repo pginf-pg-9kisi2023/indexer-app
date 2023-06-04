@@ -5,17 +5,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security.RightsManagement;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 using Indexer.Collections;
 using Indexer.Model;
-
-using Brushes = System.Windows.Media.Brushes;
-using Pen = System.Windows.Media.Pen;
-using Point = System.Windows.Point;
 
 namespace Indexer.ViewModel
 {
@@ -48,7 +40,6 @@ namespace Indexer.ViewModel
                 return Path.GetFileName(_session.FilePath);
             }
         }
-        public bool IsCrossDrawn = false;
         public string SessionFileTitle => _session?.FilePath ?? "Bez tytułu";
         public bool IsSessionOpen => _session != null;
         public bool IsSessionOnDisk => _session != null && _session.FilePath != null;
@@ -97,7 +88,7 @@ namespace Indexer.ViewModel
             }
         }
         public ImageViewModel? CurrentImage { get; private set; }
-        public BitmapSource? CurrentBitmapImage => CurrentImage?.LoadedImage;
+        public MemoryStream? CurrentBitmapImage => CurrentImage?.LoadedImage;
         public LabelVMObservableCollection CurrentLabels
         {
             get
@@ -112,7 +103,7 @@ namespace Indexer.ViewModel
         }
         public HintViewModel? CurrentHint { get; private set; }
         public ImageViewModel? CurrentHintImage { get; private set; }
-        public BitmapSource? CurrentHintBitmapImage => CurrentHint?.Image?.LoadedImage;
+        public MemoryStream? CurrentHintBitmapImage => CurrentHint?.Image?.LoadedImage;
         public LabelViewModel? CurrentLabel
         {
             get
@@ -312,7 +303,6 @@ namespace Indexer.ViewModel
                 CurrentHintImage?.LoadImage();
                 oldHintImage?.UnloadImage();
                 IsSessionModified = true;
-                DrawLabels();
                 OnPropertyChanged(nameof(CurrentIndexedImage));
                 OnPropertyChanged(nameof(CurrentImage));
                 OnPropertyChanged(nameof(CurrentBitmapImage));
@@ -341,12 +331,14 @@ namespace Indexer.ViewModel
                 var label = new Label(_session.CurrentHintName);
                 currentLabel = CurrentIndexedImage.AddLabel(label); ;
             }
+
             currentLabel.X = Math.Min(
                 Math.Max(0, currentLabel.X + x), CurrentIndexedImage.Image.Width
             );
             currentLabel.Y = Math.Min(
                 Math.Max(0, currentLabel.Y + y), CurrentIndexedImage.Image.Height
             );
+            CurrentLabels.TriggerReset();
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
             OnPropertyChanged(nameof(SavedPositionText));
@@ -371,6 +363,7 @@ namespace Indexer.ViewModel
 
             currentLabel.X = x;
             currentLabel.Y = y;
+            CurrentLabels.TriggerReset();
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
             OnPropertyChanged(nameof(SavedPositionText));
@@ -461,101 +454,6 @@ namespace Indexer.ViewModel
                 throw new InvalidOperationException("No session is open.");
             }
             _session.ExportPointsToCSV(filePath);
-        }
-        public void DrawLabels()
-        {
-            DrawingVisual drawingVisual = new DrawingVisual();
-            DrawingContext drawingContext = drawingVisual.RenderOpen();
-            drawingContext.DrawImage(CurrentImage.LoadedImage, new Rect(0, 0, CurrentImage.LoadedImage.Width, CurrentImage.LoadedImage.Height));
-            foreach (var label in CurrentLabels)
-            {
-                drawingContext.DrawEllipse(null, new Pen(Brushes.Black, 2), new Point(label.X, label.Y), 10, 10);
-                drawingContext.DrawEllipse(null, new Pen(Brushes.White, 2), new Point(label.X, label.Y), 8, 8);
-            }
-            drawingContext.Close();
-
-            RenderTargetBitmap rtb = new RenderTargetBitmap(CurrentImage.LoadedImage.PixelWidth,
-                CurrentImage.LoadedImage.PixelHeight,
-                CurrentImage.LoadedImage.DpiX,
-                CurrentImage.LoadedImage.DpiY,
-                PixelFormats.Pbgra32);
-
-            rtb.Render(drawingVisual);
-            CurrentImage.LoadedImage = rtb;
-
-            CurrentImage.PreviousImage = CurrentImage.LoadedImage;
-        }
-
-        public void DrawNewLabel(int X, int Y)
-        {
-            DrawingVisual drawingVisual = new DrawingVisual();
-            DrawingContext drawingContext = drawingVisual.RenderOpen();
-            drawingContext.DrawImage(CurrentImage.PreviousImage, new Rect(0, 0, CurrentImage.LoadedImage.Width, CurrentImage.LoadedImage.Height));
-            drawingContext.DrawEllipse(null, new Pen(Brushes.Black, 2), new Point(X, Y), 10, 10);
-            drawingContext.DrawEllipse(null, new Pen(Brushes.White, 2), new Point(X, Y), 8, 8);
-            drawingContext.Close();
-
-            RenderTargetBitmap rtb = new RenderTargetBitmap(CurrentImage.LoadedImage.PixelWidth,
-                CurrentImage.LoadedImage.PixelHeight,
-                CurrentImage.LoadedImage.DpiX,
-                CurrentImage.LoadedImage.DpiY,
-                PixelFormats.Pbgra32);
-
-            rtb.Render(drawingVisual);
-            CurrentImage.PreviousImage = CurrentImage.LoadedImage;
-            CurrentImage.LoadedImage = rtb;
-            IsCrossDrawn = false;
-            IsSessionModified = true;
-            OnPropertyChanged(nameof(CurrentBitmapImage));
-        }
-
-        public void DrawCross(int X, int Y)
-        {
-            /*if (IsCrossDrawn)
-            {
-                return;
-            }*/
-            DrawingVisual drawingVisual = new DrawingVisual();
-            DrawingContext drawingContext = drawingVisual.RenderOpen();
-            if (!IsCrossDrawn)
-            {
-                drawingContext.DrawImage(CurrentImage.LoadedImage, new Rect(0, 0, CurrentImage.LoadedImage.Width, CurrentImage.LoadedImage.Height));
-            }
-            else
-            {
-                drawingContext.DrawImage(CurrentImage.PreviousImage, new Rect(0, 0, CurrentImage.LoadedImage.Width, CurrentImage.LoadedImage.Height));
-            }
-
-            Pen pen = new Pen(Brushes.Red, 2);
-            drawingContext.DrawLine(pen, new Point(X, Y + 10), new Point(X, Y - 10));
-            drawingContext.DrawLine(pen, new Point(X + 10, Y), new Point(X - 10, Y));
-            drawingContext.Close();
-
-            RenderTargetBitmap rtb = new RenderTargetBitmap(CurrentImage.LoadedImage.PixelWidth,
-                CurrentImage.LoadedImage.PixelHeight,
-                CurrentImage.LoadedImage.DpiX,
-                CurrentImage.LoadedImage.DpiY,
-                PixelFormats.Pbgra32);
-
-            rtb.Render(drawingVisual);
-            if (!IsCrossDrawn)
-            {
-                CurrentImage.PreviousImage = CurrentImage.LoadedImage;
-                CurrentImage.LoadedImage = rtb;
-            }
-            else
-            {
-                CurrentImage.LoadedImage = rtb;
-            }
-            IsSessionModified = true;
-            IsCrossDrawn = true;
-            OnPropertyChanged(nameof(CurrentBitmapImage));
-        }
-
-        public void ChangeCurrentImageToPrevious()
-        {
-            CurrentImage.LoadedImage = CurrentImage.PreviousImage;
-            OnPropertyChanged(nameof(CurrentBitmapImage));
         }
     }
 }
