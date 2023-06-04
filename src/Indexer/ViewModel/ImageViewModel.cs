@@ -50,7 +50,7 @@ namespace Indexer.ViewModel
             }
             using var bitmap = tmpBitmap;
             Width = bitmap.Width;
-            Height = bitmap.Width;
+            Height = bitmap.Height;
 
             try
             {
