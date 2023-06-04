@@ -255,6 +255,7 @@
                             ImageBitmap="{Binding BitmapSource, ElementName=MainImage}"
                             CurrentLabel="{Binding CurrentLabel}"
                             ImageCursor="{Binding ImageCursorPosition}"
+                            Width="250"
                             Height="250"
                             Grid.Row="2" />
                         <Slider

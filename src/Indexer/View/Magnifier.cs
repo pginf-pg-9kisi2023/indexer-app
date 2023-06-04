@@ -119,8 +119,33 @@ namespace Indexer.View
             };
             MagnifierRectangle.SizeChanged += OnRectangleSizeChange;
 
+            Canvas canvas = new Canvas();
+            canvas.Children.Add(MagnifierRectangle);
+            if (!double.IsNaN(Width)&&!double.IsNaN(Height)) {
+            var verticalLine = new Line
+            {
+                X1 = Width / 2,
+                Y1 = 0,
+                X2 = Width / 2,
+                Y2 = Height,
+                Stroke = Brushes.Red,
+                StrokeThickness = 1
+            };
+
+            var horizontalLine = new Line
+            {
+                X1 = 0,
+                Y1 = Height / 2,
+                X2 = Width,
+                Y2 = Height / 2,
+                Stroke = Brushes.Red,
+                StrokeThickness = 1
+            };
+            canvas.Children.Add(verticalLine);
+            canvas.Children.Add(horizontalLine);
+        }
             Children.Clear();
-            Children.Add(MagnifierRectangle);
+            Children.Add(canvas);
         }
 
         private static void OnImageCursorChange(
