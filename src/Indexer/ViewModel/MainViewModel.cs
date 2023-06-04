@@ -345,6 +345,7 @@ namespace Indexer.ViewModel
             currentLabel.Y = Math.Min(
                 Math.Max(0, currentLabel.Y + y), CurrentIndexedImage.Image.Height
             );
+            CurrentLabels.TriggerReset();
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
             OnPropertyChanged(nameof(SavedPositionText));
@@ -369,6 +370,7 @@ namespace Indexer.ViewModel
 
             currentLabel.X = x;
             currentLabel.Y = y;
+            CurrentLabels.TriggerReset();
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
             OnPropertyChanged(nameof(SavedPositionText));
