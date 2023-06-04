@@ -301,11 +301,13 @@ namespace Indexer.View
         {
             var pos = GetImageCursorPosition(e);
             Data.SetCurrentImageCursorPosition((int)pos.X, (int)pos.Y);
+            this.Cursor = Cursors.Cross;
         }
 
         private void MainImage_MouseLeave(object sender, MouseEventArgs e)
         {
             Data.ClearCurrentImageCursorPosition();
+            this.Cursor = Cursors.Arrow;
         }
 
         private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)

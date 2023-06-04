@@ -135,7 +135,21 @@ namespace Indexer.View
             [NotNull] DrawingContext drawingContext, LabelViewModel label
         )
         {
-            if (label != CurrentLabel)
+            if (label == CurrentLabel)
+            {
+                Pen pen = new Pen(Brushes.Red, 2);
+                drawingContext.DrawLine(
+                    pen,
+                    new Point(label.X, label.Y + 10),
+                    new Point(label.X, label.Y - 10)
+                );
+                drawingContext.DrawLine(
+                    pen,
+                    new Point(label.X + 10, label.Y),
+                    new Point(label.X - 10, label.Y)
+                );
+            }
+            else
             {
                 drawingContext.DrawEllipse(
                     null, new Pen(Brushes.Black, 2), new Point(label.X, label.Y), 10, 10
