@@ -172,6 +172,11 @@ namespace Indexer.View
 
         private void TriggerViewBoxUpdate(bool resetViewBox = false)
         {
+            if (ImageBitmap == null)
+            {
+                ViewBox = new Rect(0, 0, 0, 0);
+                return;
+            }
             int x = 0;
             int y = 0;
             if (CurrentLabel != null)
@@ -189,9 +194,13 @@ namespace Indexer.View
                 // keep the current viewbox
                 return;
             }
-            var width = MagnifierRectangle.ActualWidth * (1 / ZoomFactor);
-            var height = MagnifierRectangle.ActualHeight * (1 / ZoomFactor);
-            ViewBox = new Rect(x - width / 2, y - height / 2, width, height);
+            var factorX = 96 / (ImageBitmap.DpiX * ZoomFactor);
+            var factorY = 96 / (ImageBitmap.DpiY * ZoomFactor);
+            var width = factorX * MagnifierRectangle.ActualWidth;
+            var height = factorY * MagnifierRectangle.ActualHeight;
+            ViewBox = new Rect(
+                factorX * x - width / 2, factorY * y - height / 2, width, height
+            );
         }
     }
 }

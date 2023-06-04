@@ -188,6 +188,7 @@
                             MouseDown="MainImage_MouseDown"
                             x:Name="MainImage"
                             Stretch="Uniform"
+                            StretchDirection="DownOnly"
                             StreamSource="{Binding CurrentBitmapImage}"
                             CurrentLabel="{Binding CurrentLabel}"
                             CurrentLabels="{Binding CurrentLabels}" />
