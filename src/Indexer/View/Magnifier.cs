@@ -68,7 +68,7 @@ namespace Indexer.View
                 "ZoomFactor",
                 typeof(double),
                 typeof(Magnifier),
-                new PropertyMetadata(default(double))
+                new PropertyMetadata(default(double), OnZoomFactorChange)
             );
         public double ZoomFactor
         {
@@ -170,6 +170,18 @@ namespace Indexer.View
             TriggerViewBoxUpdate(resetViewBox: true);
         }
 
+        private static void OnZoomFactorChange(
+            DependencyObject sender, DependencyPropertyChangedEventArgs e
+        )
+        {
+            var self = (Magnifier)sender;
+            if (self is null)
+            {
+                return;
+            }
+            self.TriggerViewBoxUpdate(resetViewBox: true);
+        }
+
         private void TriggerViewBoxUpdate(bool resetViewBox = false)
         {
             if (ImageBitmap == null)
@@ -194,10 +206,10 @@ namespace Indexer.View
                 // keep the current viewbox
                 return;
             }
-            var factorX = 96 / (ImageBitmap.DpiX * ZoomFactor);
-            var factorY = 96 / (ImageBitmap.DpiY * ZoomFactor);
-            var width = factorX * MagnifierRectangle.ActualWidth;
-            var height = factorY * MagnifierRectangle.ActualHeight;
+            var factorX = 96 / ImageBitmap.DpiX;
+            var factorY = 96 / ImageBitmap.DpiY;
+            var width = factorX * MagnifierRectangle.ActualWidth / ZoomFactor;
+            var height = factorY * MagnifierRectangle.ActualHeight / ZoomFactor;
             ViewBox = new Rect(
                 factorX * x - width / 2, factorY * y - height / 2, width, height
             );
