@@ -107,17 +107,25 @@ namespace Indexer.View
             {
                 ViewboxUnits = BrushMappingMode.Absolute
             };
+            TriggerMagnifierRectangleUpdate();
+        }
 
-            MagnifierRectangle.SizeChanged -= OnRectangleSizeChange;
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            base.OnRenderSizeChanged(sizeInfo);
+            TriggerMagnifierRectangleUpdate();
+        }
+
+        private void TriggerMagnifierRectangleUpdate()
+        {
             MagnifierRectangle = new Rectangle
             {
                 Stroke = Stroke,
-                Width = Width,
-                Height = Height,
+                Width = ActualWidth,
+                Height = ActualHeight,
                 Visibility = Visibility.Visible,
                 Fill = MagnifierImageBrush
             };
-            MagnifierRectangle.SizeChanged += OnRectangleSizeChange;
 
             Canvas canvas = new Canvas();
             canvas.Children.Add(MagnifierRectangle);
@@ -174,6 +182,7 @@ namespace Indexer.View
             }
             Children.Clear();
             Children.Add(canvas);
+            TriggerViewBoxUpdate(resetViewBox: true);
         }
 
         private static void OnImageCursorChange(
@@ -218,11 +227,6 @@ namespace Indexer.View
             }
         }
 
-        private void OnRectangleSizeChange(object sender, SizeChangedEventArgs e)
-        {
-            TriggerViewBoxUpdate(resetViewBox: true);
-        }
-
         private static void OnZoomFactorChange(
             DependencyObject sender, DependencyPropertyChangedEventArgs e
         )
@@ -232,7 +236,7 @@ namespace Indexer.View
             {
                 return;
             }
-            self.TriggerViewBoxUpdate(resetViewBox: true);
+            self.TriggerMagnifierRectangleUpdate();
         }
 
         private void TriggerViewBoxUpdate(bool resetViewBox = false)
@@ -261,10 +265,13 @@ namespace Indexer.View
             }
             var factorX = 96 / ImageBitmap.DpiX;
             var factorY = 96 / ImageBitmap.DpiY;
-            var width = factorX * MagnifierRectangle.ActualWidth / ZoomFactor;
-            var height = factorY * MagnifierRectangle.ActualHeight / ZoomFactor;
+            var width = factorX * ActualWidth / ZoomFactor;
+            var height = factorY * ActualHeight / ZoomFactor;
             ViewBox = new Rect(
-                factorX * x - width / 2, factorY * y - height / 2, width, height
+                factorX * (x + 0.5) - width / 2,
+                factorY * (y + 0.5) - height / 2,
+                width,
+                height
             );
         }
     }
