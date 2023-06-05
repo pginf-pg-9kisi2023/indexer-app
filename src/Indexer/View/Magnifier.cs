@@ -129,60 +129,70 @@ namespace Indexer.View
 
             Canvas canvas = new Canvas();
             canvas.Children.Add(MagnifierRectangle);
-            if (!double.IsNaN(Width) && !double.IsNaN(Height))
-            {
-                var verticalLine = new Line
-                {
-                    X1 = Width / 2,
-                    Y1 = 0,
-                    X2 = Width / 2,
-                    Y2 = Height,
-                    Stroke = Brushes.Black,
-                    StrokeThickness = 1,
-                    StrokeDashArray = new DoubleCollection(new double[] { 4, 4 }),
-                    StrokeDashOffset = 1
-                };
-                var verticalBackgroundLine = new Line
-                {
-                    X1 = Width / 2,
-                    Y1 = 0,
-                    X2 = Width / 2,
-                    Y2 = Height,
-                    Stroke = Brushes.White,
-                    StrokeThickness = 1,
-                    StrokeDashArray = new DoubleCollection(new double[] { 123, 4, 123 })
-                };
+            CreateVerticalLines(canvas);
+            CreateHorizontalLines(canvas);
 
-                var horizontalLine = new Line
-                {
-                    X1 = 0,
-                    Y1 = Height / 2,
-                    X2 = Width,
-                    Y2 = Height / 2,
-                    Stroke = Brushes.Black,
-                    StrokeThickness = 1,
-                    StrokeDashArray = new DoubleCollection(new double[] { 4, 4 }),
-                    StrokeDashOffset = 1
-                };
-
-                var horizontalBackgroundLine = new Line
-                {
-                    X1 = 0,
-                    Y1 = Height / 2,
-                    X2 = Width,
-                    Y2 = Height / 2,
-                    Stroke = Brushes.White,
-                    StrokeThickness = 1,
-                    StrokeDashArray = new DoubleCollection(new double[] { 123, 4, 123 })
-                };
-                canvas.Children.Add(verticalBackgroundLine);
-                canvas.Children.Add(verticalLine);
-                canvas.Children.Add(horizontalBackgroundLine);
-                canvas.Children.Add(horizontalLine);
-            }
             Children.Clear();
             Children.Add(canvas);
             TriggerViewBoxUpdate(resetViewBox: true);
+        }
+
+        private void CreateVerticalLines(Canvas canvas)
+        {
+            // top line
+            CreateLine(
+                canvas,
+                X1: ActualWidth / 2,
+                Y1: ActualHeight / 2 - 1.5 * ZoomFactor,
+                X2: ActualWidth / 2,
+                Y2: 0
+            );
+            // bottom line
+            CreateLine(
+                canvas,
+                X1: ActualWidth / 2,
+                Y1: ActualHeight / 2 + 1.5 * ZoomFactor,
+                X2: ActualWidth / 2,
+                Y2: ActualHeight
+            );
+        }
+
+        private void CreateHorizontalLines(Canvas canvas)
+        {
+            // left line
+            CreateLine(
+                canvas,
+                X1: ActualWidth / 2 - 1.5 * ZoomFactor,
+                Y1: ActualHeight / 2,
+                X2: 0,
+                Y2: ActualHeight / 2
+            );
+            // right line
+            CreateLine(
+                canvas,
+                X1: ActualWidth / 2 + 1.5 * ZoomFactor,
+                Y1: ActualHeight / 2,
+                X2: ActualWidth,
+                Y2: ActualHeight / 2
+            );
+        }
+
+        private void CreateLine(
+            Canvas canvas, double X1, double Y1, double X2, double Y2
+        )
+        {
+            var stroke = new Line { X1 = X1, Y1 = Y1, X2 = X2, Y2 = Y2 };
+            stroke.Stroke = Brushes.Black;
+            stroke.StrokeThickness = 4 * ZoomFactor;
+            stroke.StrokeDashArray = new DoubleCollection(new double[] { 2, 1 });
+            canvas.Children.Add(stroke);
+
+            var fill = new Line { X1 = X1, Y1 = Y1, X2 = X2, Y2 = Y2 };
+            fill.Stroke = Brushes.White;
+            fill.StrokeThickness = 2 * ZoomFactor;
+            fill.StrokeDashOffset = -0.5;
+            fill.StrokeDashArray = new DoubleCollection(new double[] { 3, 3 });
+            canvas.Children.Add(fill);
         }
 
         private static void OnImageCursorChange(
