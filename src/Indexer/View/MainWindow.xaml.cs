@@ -382,5 +382,19 @@ namespace Indexer.View
                 e.Handled = true;
             }
         }
+
+        private void FilesListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var item = sender as ListViewItem;
+            if (item is null)
+            {
+                return;
+            }
+            var indexedImage = item.Content as IndexedImageViewModel;
+            if (indexedImage is not null)
+            {
+                Data.SetCurrentImage(indexedImage);
+            }
+        }
     }
 }
