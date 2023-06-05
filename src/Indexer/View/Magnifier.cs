@@ -68,7 +68,7 @@ namespace Indexer.View
                 "ZoomFactor",
                 typeof(double),
                 typeof(Magnifier),
-                new PropertyMetadata(default(double))
+                new PropertyMetadata(default(double), OnZoomFactorChange)
             );
         public double ZoomFactor
         {
@@ -170,8 +170,25 @@ namespace Indexer.View
             TriggerViewBoxUpdate(resetViewBox: true);
         }
 
+        private static void OnZoomFactorChange(
+            DependencyObject sender, DependencyPropertyChangedEventArgs e
+        )
+        {
+            var self = (Magnifier)sender;
+            if (self is null)
+            {
+                return;
+            }
+            self.TriggerViewBoxUpdate(resetViewBox: true);
+        }
+
         private void TriggerViewBoxUpdate(bool resetViewBox = false)
         {
+            if (ImageBitmap == null)
+            {
+                ViewBox = new Rect(0, 0, 0, 0);
+                return;
+            }
             int x = 0;
             int y = 0;
             if (CurrentLabel != null)
@@ -189,9 +206,13 @@ namespace Indexer.View
                 // keep the current viewbox
                 return;
             }
-            var width = MagnifierRectangle.ActualWidth * (1 / ZoomFactor);
-            var height = MagnifierRectangle.ActualHeight * (1 / ZoomFactor);
-            ViewBox = new Rect(x - width / 2, y - height / 2, width, height);
+            var factorX = 96 / ImageBitmap.DpiX;
+            var factorY = 96 / ImageBitmap.DpiY;
+            var width = factorX * MagnifierRectangle.ActualWidth / ZoomFactor;
+            var height = factorY * MagnifierRectangle.ActualHeight / ZoomFactor;
+            ViewBox = new Rect(
+                factorX * x - width / 2, factorY * y - height / 2, width, height
+            );
         }
     }
 }
