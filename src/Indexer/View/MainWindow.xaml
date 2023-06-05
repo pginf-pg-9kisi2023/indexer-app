@@ -252,7 +252,7 @@
                             HorizontalAlignment="Center"
                             Grid.Row="1" />
                         <local:Magnifier
-                            ZoomFactor="1"
+                            ZoomFactor="{Binding Value, ElementName=Magnifier}"
                             ImageBitmap="{Binding BitmapSource, ElementName=MainImage}"
                             CurrentLabel="{Binding CurrentLabel}"
                             ImageCursor="{Binding ImageCursorPosition}"
@@ -260,12 +260,13 @@
                             Height="250"
                             Grid.Row="2" />
                         <Slider
-                            Minimum="100"
-                            Maximum="500"
+                            Minimum="1"
+                            Maximum="5"
                             TickPlacement="BottomRight"
-                            TickFrequency="100"
+                            TickFrequency="1"
                             IsSnapToTickEnabled="true"
                             Name="Magnifier"
+                            Foreground="Black"
                             Grid.Row="3"
                             Focusable="false" />
                         <local:MemoryBackedImage
