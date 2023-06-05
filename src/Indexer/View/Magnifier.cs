@@ -183,13 +183,13 @@ namespace Indexer.View
         {
             var stroke = new Line { X1 = X1, Y1 = Y1, X2 = X2, Y2 = Y2 };
             stroke.Stroke = Brushes.Black;
-            stroke.StrokeThickness = 4 * ZoomFactor;
+            stroke.StrokeThickness = 4 * ZoomFactor / 2;
             stroke.StrokeDashArray = new DoubleCollection(new double[] { 2, 1 });
             canvas.Children.Add(stroke);
 
             var fill = new Line { X1 = X1, Y1 = Y1, X2 = X2, Y2 = Y2 };
             fill.Stroke = Brushes.White;
-            fill.StrokeThickness = 2 * ZoomFactor;
+            fill.StrokeThickness = 2 * ZoomFactor / 2;
             fill.StrokeDashOffset = -0.5;
             fill.StrokeDashArray = new DoubleCollection(new double[] { 3, 3 });
             canvas.Children.Add(fill);
