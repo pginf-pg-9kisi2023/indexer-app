@@ -104,7 +104,8 @@ namespace Indexer.View
             Drawing = new DrawingVisual();
             var drawingContext = Drawing.RenderOpen();
             drawingContext.DrawImage(
-                BitmapSource, new Rect(0, 0, BitmapSource.Width, BitmapSource.Height)
+                BitmapSource,
+                new Rect(0, 0, BitmapSource.PixelWidth, BitmapSource.PixelHeight)
             );
             foreach (var label in CurrentLabels)
             {
@@ -123,8 +124,8 @@ namespace Indexer.View
             var rtb = new RenderTargetBitmap(
                 BitmapSource.PixelWidth,
                 BitmapSource.PixelHeight,
-                BitmapSource.DpiX,
-                BitmapSource.DpiY,
+                96,
+                96,
                 PixelFormats.Pbgra32
             );
             rtb.Render(Drawing);

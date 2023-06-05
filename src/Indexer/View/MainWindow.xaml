@@ -184,16 +184,24 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="20" />
                         </Grid.RowDefinitions>
-                        <local:ImageWithLabels
+                        <ScrollViewer
+                            Name="MainImageScrollViewer"
                             Grid.Row="0"
-                            MouseMove="MainImage_MouseMove"
-                            MouseLeave="MainImage_MouseLeave"
-                            MouseDown="MainImage_MouseDown"
-                            x:Name="MainImage"
-                            Stretch="Uniform"
-                            StreamSource="{Binding CurrentBitmapImage}"
-                            CurrentLabel="{Binding CurrentLabel}"
-                            CurrentLabels="{Binding CurrentLabels}" />
+                            VerticalScrollBarVisibility="Disabled"
+                            HorizontalScrollBarVisibility="Disabled"
+                            PreviewMouseWheel="MainImageScrollViewer_PreviewMouseWheel"
+                        >
+                            <local:ImageWithLabels
+                                MouseMove="MainImage_MouseMove"
+                                MouseLeave="MainImage_MouseLeave"
+                                MouseDown="MainImage_MouseDown"
+                                x:Name="MainImage"
+                                Stretch="Uniform"
+                                StretchDirection="DownOnly"
+                                StreamSource="{Binding CurrentBitmapImage}"
+                                CurrentLabel="{Binding CurrentLabel}"
+                                CurrentLabels="{Binding CurrentLabels}" />
+                        </ScrollViewer>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
@@ -247,6 +255,7 @@
                             <RowDefinition Height="0.25*" />
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="20" />
+                            <RowDefinition Height="20" />
                         </Grid.RowDefinitions>
                         <TextBlock
                             Name="SavedCoordinatesStatusText"
@@ -254,19 +263,20 @@
                             HorizontalAlignment="Center"
                             Grid.Row="1" />
                         <local:Magnifier
-                            ZoomFactor="1"
+                            ZoomFactor="{Binding Value, ElementName=Magnifier}"
                             ImageBitmap="{Binding BitmapSource, ElementName=MainImage}"
                             CurrentLabel="{Binding CurrentLabel}"
                             ImageCursor="{Binding ImageCursorPosition}"
                             Height="250"
                             Grid.Row="2" />
                         <Slider
-                            Minimum="100"
-                            Maximum="500"
+                            Minimum="1"
+                            Maximum="5"
                             TickPlacement="BottomRight"
-                            TickFrequency="100"
+                            TickFrequency="1"
                             IsSnapToTickEnabled="true"
                             Name="Magnifier"
+                            Foreground="Black"
                             Grid.Row="3"
                             Focusable="false" />
                         <local:MemoryBackedImage
@@ -280,6 +290,15 @@
                             Text="{Binding CurrentHint.Description}"
                             HorizontalAlignment="Center"
                             Grid.Row="6" />
+                        <ToggleButton
+                            Name="ShowActualSizeButton"
+                            Checked="ShowActualSizeButton_Checked"
+                            Unchecked="ShowActualSizeButton_Unchecked"
+                            KeyboardNavigation.AcceptsReturn="False"
+                            Grid.Row="7"
+                        >
+                            Rzeczywisty rozmiar (1:1)
+                        </ToggleButton>
                     </Grid>
                 </StackPanel>
             </Grid>

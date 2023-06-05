@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 using Indexer.ViewModel;
 
@@ -293,8 +294,8 @@ namespace Indexer.View
         private Point GetImageCursorPosition(MouseEventArgs e)
         {
             Point mousePos = e.GetPosition(MainImage);
-            var x = mousePos.X * MainImage.Source.Width / MainImage.ActualWidth;
-            var y = mousePos.Y * MainImage.Source.Width / MainImage.ActualWidth;
+            var x = mousePos.X * Data.CurrentImage!.Width / MainImage.ActualWidth;
+            var y = mousePos.Y * Data.CurrentImage!.Height / MainImage.ActualHeight;
             return new Point((int)x, (int)y);
         }
 
@@ -353,6 +354,32 @@ namespace Indexer.View
                 case Key.Enter:
                     Data.SwitchToNextLabel();
                     return;
+            }
+        }
+
+        private void ShowActualSizeButton_Checked(object sender, RoutedEventArgs e)
+        {
+            MainImage.Stretch = Stretch.None;
+            MainImageScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            MainImageScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+        }
+
+        private void ShowActualSizeButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            MainImage.Stretch = Stretch.Uniform;
+            MainImageScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+            MainImageScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+        }
+
+        private void MainImageScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            // enable horizontal scrolling when Shift key is held
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                MainImageScrollViewer.ScrollToHorizontalOffset(
+                    MainImageScrollViewer.HorizontalOffset - e.Delta
+                );
+                e.Handled = true;
             }
         }
 
