@@ -265,6 +265,7 @@
                             TickFrequency="100"
                             IsSnapToTickEnabled="true"
                             Name="Magnifier"
+                            Foreground="Black"
                             Grid.Row="3"
                             Focusable="false" />
                         <local:MemoryBackedImage
