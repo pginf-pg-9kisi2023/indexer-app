@@ -19,6 +19,19 @@
     </Window.DataContext>
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <DrawingBrush
+            x:Key="CheckerboardPattern"
+            TileMode="Tile"
+            Viewport="0,0,32,32"
+            ViewportUnits="Absolute"
+        >
+            <DrawingBrush.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Geometry="M0,0 H2 V2 H0 Z" Brush="White"/>
+                    <GeometryDrawing Geometry="M0,0 H1 V1 H2 V2 H1 V1 H0 Z" Brush="LightGray"/>
+                </DrawingGroup>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
     </Window.Resources>
     <Grid>
         <DockPanel>
@@ -198,6 +211,7 @@
                             HorizontalScrollBarVisibility="Disabled"
                             PreviewMouseWheel="MainImageScrollViewer_PreviewMouseWheel"
                             Focusable="false"
+                            Background="{StaticResource CheckerboardPattern}"
                         >
                             <local:ImageWithLabels
                                 MouseMove="MainImage_MouseMove"
@@ -281,6 +295,7 @@
                                 SavedPosition="{Binding SavedPosition}"
                                 ImageCursor="{Binding ImageCursorPosition}"
                                 Height="250"
+                                Background="{StaticResource CheckerboardPattern}"
                                 Grid.Row="2" />
                             <Slider
                                 Minimum="1"
