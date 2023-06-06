@@ -132,8 +132,11 @@ namespace Indexer.View
 
             Canvas canvas = new Canvas();
             canvas.Children.Add(MagnifierRectangle);
-            CreateVerticalLines(canvas);
-            CreateHorizontalLines(canvas);
+            if (ActualWidth - 2 * MagnifierRectangle.StrokeThickness >= StrokeThickness)
+            {
+                CreateVerticalLines(canvas);
+                CreateHorizontalLines(canvas);
+            }
 
             Children.Clear();
             Children.Add(canvas);
