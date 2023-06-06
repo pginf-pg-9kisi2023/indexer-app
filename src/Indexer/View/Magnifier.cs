@@ -76,6 +76,9 @@ namespace Indexer.View
             set => SetValue(ZoomFactorProperty, value);
         }
 
+        protected double FillThickness => ZoomFactor + 1;
+        protected double StrokeThickness => 2 * FillThickness;
+        protected double CrosshairOffset => 1.5 * FillThickness;
         protected Rect ViewBox
         {
             get => MagnifierImageBrush.Viewbox;
@@ -107,20 +110,95 @@ namespace Indexer.View
             {
                 ViewboxUnits = BrushMappingMode.Absolute
             };
+            TriggerMagnifierRectangleUpdate();
+        }
 
-            MagnifierRectangle.SizeChanged -= OnRectangleSizeChange;
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            base.OnRenderSizeChanged(sizeInfo);
+            TriggerMagnifierRectangleUpdate();
+        }
+
+        private void TriggerMagnifierRectangleUpdate()
+        {
             MagnifierRectangle = new Rectangle
             {
                 Stroke = Stroke,
-                Width = Width,
-                Height = Height,
+                Width = ActualWidth,
+                Height = ActualHeight,
                 Visibility = Visibility.Visible,
                 Fill = MagnifierImageBrush
             };
-            MagnifierRectangle.SizeChanged += OnRectangleSizeChange;
+
+            Canvas canvas = new Canvas();
+            canvas.Children.Add(MagnifierRectangle);
+            if (ActualWidth - 2 * MagnifierRectangle.StrokeThickness >= StrokeThickness)
+            {
+                CreateVerticalLines(canvas);
+                CreateHorizontalLines(canvas);
+            }
 
             Children.Clear();
-            Children.Add(MagnifierRectangle);
+            Children.Add(canvas);
+            TriggerViewBoxUpdate(resetViewBox: true);
+        }
+
+        private void CreateVerticalLines(Canvas canvas)
+        {
+            // top line
+            CreateLine(
+                canvas,
+                X1: ActualWidth / 2,
+                Y1: ActualHeight / 2 - CrosshairOffset,
+                X2: ActualWidth / 2,
+                Y2: 0
+            );
+            // bottom line
+            CreateLine(
+                canvas,
+                X1: ActualWidth / 2,
+                Y1: ActualHeight / 2 + CrosshairOffset,
+                X2: ActualWidth / 2,
+                Y2: ActualHeight
+            );
+        }
+
+        private void CreateHorizontalLines(Canvas canvas)
+        {
+            // left line
+            CreateLine(
+                canvas,
+                X1: ActualWidth / 2 - CrosshairOffset,
+                Y1: ActualHeight / 2,
+                X2: 0,
+                Y2: ActualHeight / 2
+            );
+            // right line
+            CreateLine(
+                canvas,
+                X1: ActualWidth / 2 + CrosshairOffset,
+                Y1: ActualHeight / 2,
+                X2: ActualWidth,
+                Y2: ActualHeight / 2
+            );
+        }
+
+        private void CreateLine(
+            Canvas canvas, double X1, double Y1, double X2, double Y2
+        )
+        {
+            var stroke = new Line { X1 = X1, Y1 = Y1, X2 = X2, Y2 = Y2 };
+            stroke.Stroke = Brushes.Black;
+            stroke.StrokeThickness = StrokeThickness;
+            stroke.StrokeDashArray = new DoubleCollection(new double[] { 2, 1 });
+            canvas.Children.Add(stroke);
+
+            var fill = new Line { X1 = X1, Y1 = Y1, X2 = X2, Y2 = Y2 };
+            fill.Stroke = Brushes.White;
+            fill.StrokeThickness = FillThickness;
+            fill.StrokeDashOffset = -0.5;
+            fill.StrokeDashArray = new DoubleCollection(new double[] { 3, 3 });
+            canvas.Children.Add(fill);
         }
 
         private static void OnImageCursorChange(
@@ -165,11 +243,6 @@ namespace Indexer.View
             }
         }
 
-        private void OnRectangleSizeChange(object sender, SizeChangedEventArgs e)
-        {
-            TriggerViewBoxUpdate(resetViewBox: true);
-        }
-
         private static void OnZoomFactorChange(
             DependencyObject sender, DependencyPropertyChangedEventArgs e
         )
@@ -179,7 +252,7 @@ namespace Indexer.View
             {
                 return;
             }
-            self.TriggerViewBoxUpdate(resetViewBox: true);
+            self.TriggerMagnifierRectangleUpdate();
         }
 
         private void TriggerViewBoxUpdate(bool resetViewBox = false)
@@ -208,10 +281,13 @@ namespace Indexer.View
             }
             var factorX = 96 / ImageBitmap.DpiX;
             var factorY = 96 / ImageBitmap.DpiY;
-            var width = factorX * MagnifierRectangle.ActualWidth / ZoomFactor;
-            var height = factorY * MagnifierRectangle.ActualHeight / ZoomFactor;
+            var width = factorX * ActualWidth / ZoomFactor;
+            var height = factorY * ActualHeight / ZoomFactor;
             ViewBox = new Rect(
-                factorX * x - width / 2, factorY * y - height / 2, width, height
+                factorX * (x + 0.5) - width / 2,
+                factorY * (y + 0.5) - height / 2,
+                width,
+                height
             );
         }
     }
