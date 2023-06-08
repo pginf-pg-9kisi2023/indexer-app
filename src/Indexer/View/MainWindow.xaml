@@ -194,6 +194,7 @@
                             VerticalScrollBarVisibility="Disabled"
                             HorizontalScrollBarVisibility="Disabled"
                             PreviewMouseWheel="MainImageScrollViewer_PreviewMouseWheel"
+                            Focusable="false"
                         >
                             <local:ImageWithLabels
                                 MouseMove="MainImage_MouseMove"
@@ -303,7 +304,7 @@
                                 Name="ShowActualSizeButton"
                                 Checked="ShowActualSizeButton_Checked"
                                 Unchecked="ShowActualSizeButton_Unchecked"
-                                KeyboardNavigation.AcceptsReturn="False"
+                                Focusable="false"
                                 Grid.Row="9"
                             >
                                 Rzeczywisty rozmiar (1:1)
