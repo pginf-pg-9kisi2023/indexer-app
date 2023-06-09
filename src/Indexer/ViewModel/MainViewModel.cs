@@ -119,16 +119,17 @@ namespace Indexer.ViewModel
                 return "";
             }
         }
+        public Point? SavedPosition => CurrentLabel?.Position;
         public string SavedPositionText
         {
             get
             {
                 var currentLabel = CurrentLabel;
-                if (currentLabel is null)
+                if (SavedPosition is Point pos)
                 {
-                    return "";
+                    return $"{pos.X}, {pos.Y}";
                 }
-                return $"{currentLabel.X}, {currentLabel.Y}";
+                return "";
             }
         }
 
@@ -298,6 +299,7 @@ namespace Indexer.ViewModel
                 OnPropertyChanged(nameof(CurrentBitmapImage));
                 OnPropertyChanged(nameof(CurrentLabel));
                 OnPropertyChanged(nameof(CurrentLabels));
+                OnPropertyChanged(nameof(SavedPosition));
                 OnPropertyChanged(nameof(SavedPositionText));
                 OnPropertyChanged(nameof(CurrentHint));
                 OnPropertyChanged(nameof(CurrentHintImage));
@@ -331,6 +333,7 @@ namespace Indexer.ViewModel
             CurrentLabels.TriggerReset();
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
+            OnPropertyChanged(nameof(SavedPosition));
             OnPropertyChanged(nameof(SavedPositionText));
         }
 
@@ -356,6 +359,7 @@ namespace Indexer.ViewModel
             CurrentLabels.TriggerReset();
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
+            OnPropertyChanged(nameof(SavedPosition));
             OnPropertyChanged(nameof(SavedPositionText));
         }
 
@@ -377,6 +381,7 @@ namespace Indexer.ViewModel
 
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
+            OnPropertyChanged(nameof(SavedPosition));
             OnPropertyChanged(nameof(SavedPositionText));
         }
 
@@ -436,6 +441,7 @@ namespace Indexer.ViewModel
 
             IsSessionModified = true;
             OnPropertyChanged(nameof(CurrentLabel));
+            OnPropertyChanged(nameof(SavedPosition));
             OnPropertyChanged(nameof(SavedPositionText));
             OnPropertyChanged(nameof(CurrentHint));
             OnPropertyChanged(nameof(CurrentHintImage));
