@@ -42,6 +42,12 @@ namespace Indexer.View
 
         public ImageWithLabels() { }
 
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            base.OnRenderSizeChanged(sizeInfo);
+            DrawLabels();
+        }
+
         private static void OnCurrentLabelChange(
             DependencyObject sender, DependencyPropertyChangedEventArgs e
         )
@@ -136,27 +142,48 @@ namespace Indexer.View
             [NotNull] DrawingContext drawingContext, LabelViewModel label
         )
         {
+            if (BitmapSource is null)
+            {
+                return;
+            }
+            double factor = 1;
+            if (ActualWidth != 0 && BitmapSource.PixelWidth != ActualWidth)
+            {
+                factor = BitmapSource.PixelWidth / ActualWidth;
+            }
             if (label == CurrentLabel)
             {
-                Pen pen = new Pen(Brushes.Red, 2);
+                var radius = 8 * factor;
+                Pen pen = new Pen(Brushes.Red, 2 * factor);
                 drawingContext.DrawLine(
                     pen,
-                    new Point(label.X, label.Y + 10),
-                    new Point(label.X, label.Y - 10)
+                    new Point(label.X, label.Y + radius),
+                    new Point(label.X, label.Y - radius)
                 );
                 drawingContext.DrawLine(
                     pen,
-                    new Point(label.X + 10, label.Y),
-                    new Point(label.X - 10, label.Y)
+                    new Point(label.X + radius, label.Y),
+                    new Point(label.X - radius, label.Y)
                 );
             }
             else
             {
+                var radius = 6 * factor;
+                var strokeThickness = 4 * factor;
+                var fillThickness = 2 * factor;
                 drawingContext.DrawEllipse(
-                    null, new Pen(Brushes.Black, 2), new Point(label.X, label.Y), 10, 10
+                    null,
+                    new Pen(Brushes.White, strokeThickness),
+                    new Point(label.X, label.Y),
+                    radius,
+                    radius
                 );
                 drawingContext.DrawEllipse(
-                    null, new Pen(Brushes.White, 2), new Point(label.X, label.Y), 8, 8
+                    null,
+                    new Pen(Brushes.Black, fillThickness),
+                    new Point(label.X, label.Y),
+                    radius,
+                    radius
                 );
             }
         }
