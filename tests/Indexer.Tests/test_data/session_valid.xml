@@ -13,10 +13,10 @@
             </point>
         </points>
     </config>
-    <currentHintName>TOP_RT</currentHintName>
     <currentImageIndex>0</currentImageIndex>
     <images>
         <image>
+            <currentHintName>TOP_RT</currentHintName>
             <path>D:\absolute\path\to\image1.jpg</path>
             <points>
                 <point>
