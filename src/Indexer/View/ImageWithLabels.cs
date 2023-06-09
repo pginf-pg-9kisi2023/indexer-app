@@ -136,6 +136,10 @@ namespace Indexer.View
             [NotNull] DrawingContext drawingContext, LabelViewModel label
         )
         {
+            if (label.Position is null)
+            {
+                return;
+            }
             if (label == CurrentLabel)
             {
                 Pen pen = new Pen(Brushes.Red, 2);

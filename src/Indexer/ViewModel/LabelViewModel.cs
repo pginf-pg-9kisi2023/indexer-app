@@ -1,32 +1,88 @@
+using System;
+using System.Drawing;
+
 using Indexer.Model;
 
 namespace Indexer.ViewModel
 {
     public class LabelViewModel : ViewModelBase
     {
-        private readonly Label _label;
-        public string Name => _label.Name;
-        public int X
+        private readonly Hint _hint;
+        private Label? __label;
+        internal Label? _label
         {
-            get => _label.X;
+            get => __label;
             set
             {
-                _label.X = value;
-                OnPropertyChanged();
+                __label = value;
+                OnPropertyChanged(nameof(Position));
+                OnPropertyChanged(nameof(X));
+                OnPropertyChanged(nameof(XText));
+                OnPropertyChanged(nameof(Y));
+                OnPropertyChanged(nameof(YText));
+            }
+        }
+        public string Name => _hint.Name;
+        public Point? Position => _label is null ? null : new Point(X, Y);
+        // TODO: change this to 3 hyphens once GH-30 is resolved
+        public string XText => X >= 0 ? $"{X}" : "-----";
+        public string YText => Y >= 0 ? $"{Y}" : "-----";
+        public int X
+        {
+            get => _label?.X ?? -1;
+            set
+            {
+                if (value >= 0)
+                {
+                    if (_label is Label label)
+                    {
+                        label.X = value;
+                        OnPropertyChanged();
+                        OnPropertyChanged(nameof(XText));
+                        OnPropertyChanged(nameof(Position));
+                        return;
+                    }
+                }
+                else if (_label is null)
+                {
+                    return;
+                }
+
+                throw new ArgumentException(
+                    "X can only be assigned if object has a backing label."
+                );
             }
         }
         public int Y
         {
-            get => _label.Y;
+            get => _label?.Y ?? -1;
             set
             {
-                _label.Y = value;
-                OnPropertyChanged();
+                if (value >= 0)
+                {
+                    if (_label is Label label)
+                    {
+                        label.Y = value;
+                        OnPropertyChanged();
+                        OnPropertyChanged(nameof(YText));
+                        OnPropertyChanged(nameof(Position));
+                        return;
+                    }
+                }
+                else if (_label is null)
+                {
+                    return;
+                }
+
+                throw new ArgumentException(
+                    "Y can only be assigned if object has a backing label."
+                );
             }
         }
 
-        public LabelViewModel(Label label)
+        public LabelViewModel(Hint hint, Label? label)
         {
+            _hint = hint;
             _label = label;
         }
     }
