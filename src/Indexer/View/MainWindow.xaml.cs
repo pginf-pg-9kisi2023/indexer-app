@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 using Indexer.ViewModel;
 
@@ -227,14 +228,42 @@ namespace Indexer.View
             }
         }
 
-        private void Export_Click(object sender, RoutedEventArgs e)
+        private void ExportAsCSV_Click(object sender, RoutedEventArgs e)
         {
+            var fileLocation = PromptForExportLocation("csv");
+            if (fileLocation is null)
+            {
+                return;
+            }
 
+            Data.ExportPointsToCSV(fileLocation);
         }
 
-        private void ExportAs_Click(object sender, RoutedEventArgs e)
+        private void ExportAsXML_Click(object sender, RoutedEventArgs e)
         {
+            var fileLocation = PromptForExportLocation("xml");
+            if (fileLocation == null)
+            {
+                return;
+            }
 
+            Data.ExportPointsToXML(fileLocation);
+        }
+
+        private static string? PromptForExportLocation(string fileExt)
+        {
+            var saveFileDialog = new SaveFileDialog()
+            {
+                Title = $"Eksportuj do pliku {fileExt.ToUpperInvariant()}",
+                DefaultExt = fileExt,
+                Filter = $"Pliki {fileExt.ToUpperInvariant()}|*.{fileExt}",
+                RestoreDirectory = true
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                return saveFileDialog.FileName;
+            }
+            return null;
         }
 
         private void ShortcutsHelp_Click(object sender, RoutedEventArgs e)
@@ -262,20 +291,33 @@ namespace Indexer.View
             );
         }
 
+        private Point GetImageCursorPosition(MouseEventArgs e)
+        {
+            Point mousePos = e.GetPosition(MainImage);
+            var x = mousePos.X * Data.CurrentImage!.Width / MainImage.ActualWidth;
+            var y = mousePos.Y * Data.CurrentImage!.Height / MainImage.ActualHeight;
+            return new Point((int)x, (int)y);
+        }
+
         private void MainImage_MouseMove(object sender, MouseEventArgs e)
         {
-            System.Windows.Point mousePosition = e.GetPosition(MainImage);
-            Coordinates.Text = $"{(int)mousePosition.X}, {(int)mousePosition.Y}";
+            var pos = GetImageCursorPosition(e);
+            Data.SetCurrentImageCursorPosition((int)pos.X, (int)pos.Y);
+            this.Cursor = Cursors.Cross;
+        }
+
+        private void MainImage_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Data.ClearCurrentImageCursorPosition();
+            this.Cursor = Cursors.Arrow;
         }
 
         private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                System.Windows.Point mousePosition = e.GetPosition(MainImage);
-                Data.SetCurrentLabelPosition(
-                    (int)mousePosition.X, (int)mousePosition.Y
-                );
+                var pos = GetImageCursorPosition(e);
+                Data.SetCurrentLabelPosition((int)pos.X, (int)pos.Y);
             }
             else if (e.RightButton == MouseButtonState.Pressed)
             {
@@ -312,6 +354,46 @@ namespace Indexer.View
                 case Key.Enter:
                     Data.SwitchToNextLabel();
                     return;
+            }
+        }
+
+        private void ShowActualSizeButton_Checked(object sender, RoutedEventArgs e)
+        {
+            MainImage.Stretch = Stretch.None;
+            MainImageScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            MainImageScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+        }
+
+        private void ShowActualSizeButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            MainImage.Stretch = Stretch.Uniform;
+            MainImageScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+            MainImageScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+        }
+
+        private void MainImageScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            // enable horizontal scrolling when Shift key is held
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                MainImageScrollViewer.ScrollToHorizontalOffset(
+                    MainImageScrollViewer.HorizontalOffset - e.Delta
+                );
+                e.Handled = true;
+            }
+        }
+
+        private void FilesListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var item = sender as ListViewItem;
+            if (item is null)
+            {
+                return;
+            }
+            var indexedImage = item.Content as IndexedImageViewModel;
+            if (indexedImage is not null)
+            {
+                Data.SetCurrentImage(indexedImage);
             }
         }
 

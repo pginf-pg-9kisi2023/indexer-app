@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Windows.Media.Imaging;
 
 using Indexer.Collections;
 using Indexer.Model;
@@ -88,7 +88,7 @@ namespace Indexer.ViewModel
             }
         }
         public ImageViewModel? CurrentImage { get; private set; }
-        public BitmapSource? CurrentBitmapImage => CurrentImage?.LoadedImage;
+        public MemoryStream? CurrentBitmapImage => CurrentImage?.LoadedImage;
         public LabelVMObservableCollection CurrentLabels
         {
             get
@@ -103,24 +103,22 @@ namespace Indexer.ViewModel
         }
         public HintViewModel? CurrentHint { get; private set; }
         public ImageViewModel? CurrentHintImage { get; private set; }
-        public BitmapSource? CurrentHintBitmapImage => CurrentHint?.Image?.LoadedImage;
-        public LabelViewModel? CurrentLabel
+        public MemoryStream? CurrentHintBitmapImage => CurrentHint?.Image?.LoadedImage;
+        public LabelViewModel? CurrentLabel =>
+            CurrentHint is null ? null : CurrentLabels[CurrentHint.Name];
+        public bool HasImages => _session?.CurrentImageIndex != null;
+        public Point? ImageCursorPosition { get; private set; }
+        public string ImageCursorPositionText
         {
             get
             {
-                if (CurrentHint is null)
+                if (ImageCursorPosition is Point pos)
                 {
-                    return null;
+                    return $"{pos.X}, {pos.Y}";
                 }
-                LabelViewModel? value;
-                if (CurrentLabels.TryGetValue(CurrentHint.Name, out value))
-                {
-                    return value;
-                }
-                return null;
+                return "";
             }
         }
-        public bool HasImages => _session?.CurrentImageIndex != null;
         public string SavedPositionText
         {
             get
@@ -183,7 +181,7 @@ namespace Indexer.ViewModel
             {
                 IndexedImages.AddRange(
                     from indexedImage in _session.IndexedImages
-                    select new IndexedImageViewModel(indexedImage)
+                    select new IndexedImageViewModel(_session, indexedImage)
                 );
                 if (IndexedImages.Count != 0)
                 {
@@ -223,7 +221,7 @@ namespace Indexer.ViewModel
                 {
                     continue;
                 }
-                var indexedImageVM = new IndexedImageViewModel(indexedImage);
+                var indexedImageVM = new IndexedImageViewModel(_session, indexedImage);
                 toAdd.Add(indexedImageVM);
             }
             var wasEmpty = IndexedImages.Count == 0;
@@ -270,6 +268,11 @@ namespace Indexer.ViewModel
             }
         }
 
+        public void SetCurrentImage(IndexedImageViewModel indexedImage)
+        {
+            SetCurrentImageIndex(IndexedImages.IndexOf(indexedImage));
+        }
+
         private void SetCurrentImageIndex(int? idx, bool desynced = false)
         {
             if (_session is null)
@@ -282,7 +285,6 @@ namespace Indexer.ViewModel
                 var oldImage = CurrentImage;
                 var oldHintImage = CurrentHintImage;
                 _session.CurrentImageIndex = idx;
-                _session.CurrentHintName = _session.Config.Hints.First().Name;
                 CurrentImage = CurrentIndexedImage?.Image;
                 CurrentImage?.LoadImage();
                 oldImage?.UnloadImage();
@@ -308,16 +310,16 @@ namespace Indexer.ViewModel
             if (
                 _session is null
                 || CurrentIndexedImage is null
-                || _session.CurrentHintName is null
+                || _session.CurrentHint is null
             )
             {
                 return;
             }
             var currentLabel = CurrentLabel;
-            if (currentLabel is null)
+            if (currentLabel?.Position is null)
             {
-                var label = new Label(_session.CurrentHintName);
-                currentLabel = CurrentIndexedImage.AddLabel(label); ;
+                var label = new Label(_session.CurrentHint.Name);
+                currentLabel = CurrentIndexedImage.AddLabel(label);
             }
 
             currentLabel.X = Math.Min(
@@ -326,6 +328,7 @@ namespace Indexer.ViewModel
             currentLabel.Y = Math.Min(
                 Math.Max(0, currentLabel.Y + y), CurrentIndexedImage.Image.Height
             );
+            CurrentLabels.TriggerReset();
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
             OnPropertyChanged(nameof(SavedPositionText));
@@ -336,20 +339,21 @@ namespace Indexer.ViewModel
             if (
                 _session is null
                 || CurrentIndexedImage is null
-                || _session.CurrentHintName is null
+                || _session.CurrentHint is null
             )
             {
                 return;
             }
             var currentLabel = CurrentLabel;
-            if (currentLabel is null)
+            if (currentLabel?.Position is null)
             {
-                var label = new Label(_session.CurrentHintName);
-                currentLabel = CurrentIndexedImage.AddLabel(label); ;
+                var label = new Label(_session.CurrentHint.Name);
+                currentLabel = CurrentIndexedImage.AddLabel(label);
             }
 
             currentLabel.X = x;
             currentLabel.Y = y;
+            CurrentLabels.TriggerReset();
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
             OnPropertyChanged(nameof(SavedPositionText));
@@ -360,16 +364,15 @@ namespace Indexer.ViewModel
             if (
                 _session is null
                 || CurrentIndexedImage is null
-                || _session.CurrentHintName is null
+                || _session.CurrentHint is null
             )
             {
                 return;
             }
             var currentLabel = CurrentLabel;
-            if (currentLabel is not null)
+            if (currentLabel?.Position is not null)
             {
-                CurrentIndexedImage.DeleteLabel(_session.CurrentHintName);
-                CurrentLabels.Remove(currentLabel);
+                CurrentIndexedImage.DeleteLabel(_session.CurrentHint.Name);
             }
 
             OnPropertyChanged(nameof(CurrentLabel));
@@ -377,25 +380,40 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(SavedPositionText));
         }
 
+        public void SetCurrentImageCursorPosition(int x, int y)
+        {
+            ImageCursorPosition = new Point(x, y);
+            OnPropertyChanged(nameof(ImageCursorPosition));
+            OnPropertyChanged(nameof(ImageCursorPositionText));
+        }
+
+        public void ClearCurrentImageCursorPosition()
+        {
+            ImageCursorPosition = null;
+            OnPropertyChanged(nameof(ImageCursorPosition));
+            OnPropertyChanged(nameof(ImageCursorPositionText));
+        }
+
         public void SwitchToNextLabel()
         {
             if (
                 _session is null
                 || CurrentIndexedImage is null
-                || _session.CurrentHintName is null
+                || _session.CurrentHint is null
             )
             {
                 return;
             }
             var collection = (ReadOnlyCollection<Hint>)_session.Config.Hints;
-            if (collection[^1].Name == _session.CurrentHintName)
+            if (collection[^1].Name == _session.CurrentHint.Name)
             {
+                _session.CurrentHint = null;
                 SwitchToNextImage();
                 return;
             }
             var newHint = collection[collection.IndexOf(_session.CurrentHint!) + 1];
 
-            SetCurrentHintByName(newHint.Name);
+            SetCurrentHint(newHint);
         }
 
         public void SetCurrentLabel([NotNull] LabelViewModel label)
@@ -404,13 +422,13 @@ namespace Indexer.ViewModel
             {
                 return;
             }
-            SetCurrentHintByName(label.Name);
+            SetCurrentHint(_session.Config.Hints[label.Name]);
         }
 
-        private void SetCurrentHintByName(string name)
+        private void SetCurrentHint(Hint newHint)
         {
             var oldHintImage = CurrentHintImage;
-            _session!.CurrentHintName = name;
+            _session!.CurrentHint = newHint;
             CurrentHint = new(_session.CurrentHint!);
             CurrentHintImage = CurrentHint.Image;
             CurrentHintImage?.LoadImage();
@@ -422,6 +440,24 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(CurrentHint));
             OnPropertyChanged(nameof(CurrentHintImage));
             OnPropertyChanged(nameof(CurrentHintBitmapImage));
+        }
+
+        public void ExportPointsToXML([NotNull] string filePath)
+        {
+            if (_session is null)
+            {
+                throw new InvalidOperationException("No session is open.");
+            }
+            _session.ExportPointsToXML(filePath);
+        }
+
+        public void ExportPointsToCSV([NotNull] string filePath)
+        {
+            if (_session is null)
+            {
+                throw new InvalidOperationException("No session is open.");
+            }
+            _session.ExportPointsToCSV(filePath);
         }
     }
 }

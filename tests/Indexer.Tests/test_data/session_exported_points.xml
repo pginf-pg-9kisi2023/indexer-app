@@ -1,0 +1,25 @@
+<images>
+    <image path="D:\absolute\path\to\image1.jpg">
+        <points>
+            <point name="TOP_LT">
+                <x>123</x>
+                <y>456</y>
+            </point>
+            <point name="TOP_RT">
+                <x>321</x>
+                <y>654</y>
+            </point>
+        </points>
+    </image>
+    <image path="D:\absolute\path\to\image2.jpg">
+        <points>
+            <point name="TOP_LT">
+                <x>404</x>
+                <y>103</y>
+            </point>
+        </points>
+    </image>
+    <image path="D:\absolute\path\to\image3.jpg">
+        <points />
+    </image>
+</images>

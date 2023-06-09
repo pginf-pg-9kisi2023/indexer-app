@@ -45,14 +45,17 @@
                         Header="Zapisz sesję jako..."
                         Click="SaveSessionAs_Click"
                         IsEnabled="{Binding IsSessionOpen}" />
-                    <MenuItem
-                        Header="Wyeksportuj"
-                        Click="Export_Click"
-                        IsEnabled="{Binding IsSessionOpen}" />
-                    <MenuItem
-                        Header="Wyeksportuj do..."
-                        Click="ExportAs_Click"
-                        IsEnabled="{Binding IsSessionOpen}" />
+                    <MenuItem Header="Wyeksportuj do..." IsEnabled="{Binding IsSessionOpen}">
+                        <MenuItem
+                            Header="pliku CSV"
+                            IsEnabled="{Binding IsSessionOpen}"
+                            Click="ExportAsCSV_Click"
+                            />
+                        <MenuItem
+                            Header="pliku XML"
+                            IsEnabled="{Binding IsSessionOpen}"
+                            Click="ExportAsXML_Click"/>
+                    </MenuItem>
                     <MenuItem
                         Header="Zamknij sesję"
                         Click="CloseSession_Click"
@@ -83,7 +86,9 @@
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="2" />
                 <StatusBarItem Grid.Column="3">
-                    <TextBlock Name="Coordinates" Text="" />
+                    <TextBlock
+                        Name="Coordinates"
+                        Text="{Binding ImageCursorPositionText}" />
                 </StatusBarItem>
             </StatusBar>
             <Grid>
@@ -94,72 +99,79 @@
                     <ColumnDefinition Width="5" />
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
-                <Grid
+                <Border
                     Grid.Column="0"
+                    BorderThickness="5,0,0,0"
+                    BorderBrush="{Binding Background, ElementName=StatusBar}"
                     Background="{Binding Background, ElementName=StatusBar}"
                 >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="20" />
-                        <RowDefinition Height="0.25*" />
-                        <RowDefinition Height="4" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="20" />
-                    </Grid.RowDefinitions>
-                    <ListView
-                        Name="FilesListView"
-                        Grid.Row="1"
-                        Focusable="false"
-                        ItemsSource="{Binding IndexedImages}"
-                    >
-                        <ListView.Resources>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="Focusable" Value="false" />
-                            </Style>
-                        </ListView.Resources>
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn
-                                    Header="Path"
-                                    DisplayMemberBinding="{Binding ImagePath}" />
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                    <ListView
-                        Name="PointsListView"
-                        Grid.Row="3"
-                        Focusable="false"
-                        ItemsSource="{Binding CurrentLabels}"
-                    >
-                        <ListView.Resources>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="Focusable" Value="false" />
-                                <EventSetter
-                                    Event="MouseDoubleClick"
-                                    Handler="PointsListViewItem_MouseDoubleClick" />
-                            </Style>
-                        </ListView.Resources>
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn
-                                    Header="Name"
-                                    DisplayMemberBinding="{Binding Name}" />
-                                <GridViewColumn
-                                    Header="X"
-                                    DisplayMemberBinding="{Binding X}" />
-                                <GridViewColumn
-                                    Header="Y"
-                                    DisplayMemberBinding="{Binding Y}" />
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                    <GridSplitter
-                        Grid.ColumnSpan="1"
-                        Grid.Row="2"
-                        Height="4"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Center"
-                        Focusable="false" />
-                </Grid>
+                    <Grid Background="{Binding Background, ElementName=StatusBar}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20" />
+                            <RowDefinition Height="0.25*" />
+                            <RowDefinition Height="4" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="20" />
+                        </Grid.RowDefinitions>
+                        <ListView
+                            Name="FilesListView"
+                            Grid.Row="1"
+                            Focusable="false"
+                            ItemsSource="{Binding IndexedImages}"
+                        >
+                            <ListView.Resources>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Focusable" Value="false" />
+                                    <EventSetter
+                                        Event="MouseDoubleClick"
+                                        Handler="FilesListViewItem_MouseDoubleClick" />
+                                </Style>
+                            </ListView.Resources>
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn
+                                        Header="Path"
+                                        DisplayMemberBinding="{Binding ImagePath}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <ListView
+                            Name="PointsListView"
+                            Grid.Row="3"
+                            Focusable="false"
+                            ItemsSource="{Binding CurrentLabels}"
+                        >
+                            <ListView.Resources>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Focusable" Value="false" />
+                                    <EventSetter
+                                        Event="MouseDoubleClick"
+                                        Handler="PointsListViewItem_MouseDoubleClick" />
+                                </Style>
+                            </ListView.Resources>
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn
+                                        Header="Name"
+                                        DisplayMemberBinding="{Binding Name}" />
+                                    <GridViewColumn
+                                        Header="X"
+                                        DisplayMemberBinding="{Binding XText}" />
+                                    <GridViewColumn
+                                        Header="Y"
+                                        DisplayMemberBinding="{Binding YText}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <GridSplitter
+                            Grid.ColumnSpan="1"
+                            Grid.Row="2"
+                            Height="4"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            Focusable="false" />
+                    </Grid>
+                </Border>
                 <GridSplitter
                     Grid.Column="1"
                     Width="5"
@@ -179,13 +191,25 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="20" />
                         </Grid.RowDefinitions>
-                        <Image
+                        <ScrollViewer
+                            Name="MainImageScrollViewer"
                             Grid.Row="0"
-                            MouseMove="MainImage_MouseMove"
-                            MouseDown="MainImage_MouseDown"
-                            Name="MainImage"
-                            Stretch="Uniform"
-                            Source="{Binding CurrentBitmapImage}" />
+                            VerticalScrollBarVisibility="Disabled"
+                            HorizontalScrollBarVisibility="Disabled"
+                            PreviewMouseWheel="MainImageScrollViewer_PreviewMouseWheel"
+                            Focusable="false"
+                        >
+                            <local:ImageWithLabels
+                                MouseMove="MainImage_MouseMove"
+                                MouseLeave="MainImage_MouseLeave"
+                                MouseDown="MainImage_MouseDown"
+                                x:Name="MainImage"
+                                Stretch="Uniform"
+                                StretchDirection="DownOnly"
+                                StreamSource="{Binding CurrentBitmapImage}"
+                                CurrentLabel="{Binding CurrentLabel}"
+                                CurrentLabels="{Binding CurrentLabels}" />
+                        </ScrollViewer>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
@@ -225,60 +249,72 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Stretch"
                     Focusable="false" />
-                <StackPanel
+                <Border
                     Grid.Column="4"
+                    BorderThickness="0,0,5,0"
+                    BorderBrush="{Binding Background, ElementName=StatusBar}"
                     Background="{Binding Background, ElementName=StatusBar}"
                 >
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="20" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="0.5*" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="0.25*" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="20" />
-                        </Grid.RowDefinitions>
-                        <TextBlock
-                            Name="SavedCoordinatesStatusText"
-                            Text="{Binding SavedPositionText}"
-                            HorizontalAlignment="Center"
-                            Grid.Row="1" />
-                        <local:Magnifier
-                            Stroke="black"
-                            Radius="128"
-                            ZoomFactor="5"
-                            ContentPanel="{Binding ElementName=MainImage}"
-                            MagnifiedPanel="{Binding ElementName=MagnifiedImage}"
-                            Height="256"
-                            Width="256"
-                            Grid.Row="2" />
-                        <DockPanel Height="256" Width="256" Grid.Row="2">
-                            <Canvas Name="MagnifiedImage" />
-                        </DockPanel>
-                        <Slider
-                            Minimum="100"
-                            Maximum="500"
-                            TickPlacement="BottomRight"
-                            TickFrequency="100"
-                            IsSnapToTickEnabled="true"
-                            Name="Magnifier"
-                            Grid.Row="3"
-                            Focusable="false" />
-                        <Image
-                            Source="{Binding CurrentHintBitmapImage}"
-                            Height="256"
-                            Width="256"
-                            Name="ReferenceImage"
-                            Grid.Row="5" />
-                        <TextBlock
-                            Name="ReferenceImageDecription"
-                            Text="{Binding CurrentHint.Description}"
-                            HorizontalAlignment="Center"
-                            Grid.Row="6" />
-                    </Grid>
-                </StackPanel>
+                    <StackPanel>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="0.5*" />
+                                <RowDefinition Height="3" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="0.25*" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="5" />
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="20" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                Name="SavedCoordinatesStatusText"
+                                Text="{Binding SavedPositionText}"
+                                HorizontalAlignment="Center"
+                                Grid.Row="1" />
+                            <local:Magnifier
+                                ZoomFactor="{Binding Value, ElementName=Magnifier}"
+                                ImageBitmap="{Binding BitmapSource, ElementName=MainImage}"
+                                CurrentLabel="{Binding CurrentLabel}"
+                                ImageCursor="{Binding ImageCursorPosition}"
+                                Height="250"
+                                Grid.Row="2" />
+                            <Slider
+                                Minimum="1"
+                                Maximum="5"
+                                TickPlacement="BottomRight"
+                                TickFrequency="1"
+                                IsSnapToTickEnabled="true"
+                                Name="Magnifier"
+                                Foreground="Black"
+                                Grid.Row="4"
+                                Focusable="false" />
+                            <local:MemoryBackedImage
+                                StreamSource="{Binding CurrentHintBitmapImage}"
+                                Height="256"
+                                Width="256"
+                                x:Name="ReferenceImage"
+                                Grid.Row="6" />
+                            <TextBlock
+                                Name="ReferenceImageDecription"
+                                Text="{Binding CurrentHint.Description}"
+                                HorizontalAlignment="Center"
+                                Grid.Row="7" />
+                            <ToggleButton
+                                Name="ShowActualSizeButton"
+                                Checked="ShowActualSizeButton_Checked"
+                                Unchecked="ShowActualSizeButton_Unchecked"
+                                Focusable="false"
+                                Grid.Row="9"
+                            >
+                                Rzeczywisty rozmiar (1:1)
+                            </ToggleButton>
+                        </Grid>
+                    </StackPanel>
+                </Border>
             </Grid>
         </DockPanel>
     </Grid>

@@ -1,12 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-
-using Color = System.Windows.Media.Color;
 
 namespace Indexer.ViewModel
 {
@@ -15,9 +10,9 @@ namespace Indexer.ViewModel
         private const int PropertyTagOrientation = 0x0112;
 
         public string Path { get; private set; }
-        public BitmapSource? LoadedImage { get; private set; }
-        public int Height => LoadedImage is null ? 0 : LoadedImage.PixelHeight;
-        public int Width => LoadedImage is null ? 0 : LoadedImage.PixelWidth;
+        public MemoryStream? LoadedImage { get; set; }
+        public int Height { get; private set; }
+        public int Width { get; private set; }
         public int OriginalOrientation { get; private set; }
 
         public ImageViewModel(string path)
@@ -49,23 +44,13 @@ namespace Indexer.ViewModel
             }
             catch (FileNotFoundException)
             {
-                LoadedImage = BitmapImage.Create(
-                    128,
-                    128,
-                    96,
-                    96,
-                    PixelFormats.Indexed1,
-                    new BitmapPalette(new List<Color> { Colors.Black }),
-                    new byte[2048],
-                    16
-                );
-                OnPropertyChanged(nameof(LoadedImage));
-                OnPropertyChanged(nameof(Height));
-                OnPropertyChanged(nameof(Width));
-                OnPropertyChanged(nameof(OriginalOrientation));
-                return;
+                using var pixel = new Bitmap(1, 1);
+                pixel.SetPixel(0, 0, Color.White);
+                tmpBitmap = new Bitmap(pixel, 128, 128);
             }
             using var bitmap = tmpBitmap;
+            Width = bitmap.Width;
+            Height = bitmap.Height;
 
             try
             {
@@ -104,13 +89,10 @@ namespace Indexer.ViewModel
 
             using var ms = new MemoryStream();
             bitmap.Save(ms, ImageFormat.Bmp);
-            var bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            ms.Seek(0, SeekOrigin.Begin);
-            bitmapImage.StreamSource = ms;
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.EndInit();
-            LoadedImage = bitmapImage;
+            var buffer = ms.ToArray();
+            LoadedImage = new MemoryStream(
+                buffer, 0, buffer.Length, writable: false, publiclyVisible: false
+            );
 
             OnPropertyChanged(nameof(LoadedImage));
             OnPropertyChanged(nameof(Height));

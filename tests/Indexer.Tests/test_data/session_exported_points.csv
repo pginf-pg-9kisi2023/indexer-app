@@ -1,0 +1,4 @@
+"image_filename","TOP_LT x","TOP_LT y","TOP_RT x","TOP_RT y"
+"D:\absolute\path\to\image1.jpg",123,456,321,654
+"D:\absolute\path\to\image2.jpg",404,103,,
+"D:\absolute\path\to\image3.jpg",,,,

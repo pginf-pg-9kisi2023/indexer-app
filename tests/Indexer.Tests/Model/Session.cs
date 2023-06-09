@@ -29,8 +29,8 @@ public class SessionTests
         Assert.AreEqual("Górne pole - prawy górny narożnik", hints[1].Description);
         Assert.AreEqual("V20_TOP_RT.jpg", hints[1].ImagePath);
 
-        // session.CurrentHintName
-        Assert.AreEqual("TOP_RT", session.CurrentHintName);
+        // session.CurrentHint.Name
+        Assert.AreEqual("TOP_RT", session.CurrentHint?.Name);
         // session.CurrentImageIndex
         Assert.AreEqual(0, session.CurrentImageIndex);
 
@@ -159,6 +159,52 @@ public class SessionTests
         finally
         {
             File.Delete(session.FilePath);
+        }
+    }
+
+    [TestMethod]
+    [DeploymentItem(@"test_data\session_valid.xml")]
+    [DeploymentItem(@"test_data\session_exported_points.csv")]
+    public void ExportPointsToCSV_CheckOutput()
+    {
+        var expected = File.ReadAllText("session_exported_points.csv", Encoding.UTF8);
+        expected = expected.Replace("\r\n", "\n");
+        var session = Session.FromFile("session_valid.xml");
+        var filePath = Path.GetTempFileName();
+
+        try
+        {
+            session.ExportPointsToCSV(filePath);
+            var actual = File.ReadAllText(filePath, Encoding.UTF8);
+
+            Assert.AreEqual(expected, actual);
+        }
+        finally
+        {
+            File.Delete(filePath);
+        }
+    }
+
+    [TestMethod]
+    [DeploymentItem(@"test_data\session_valid.xml")]
+    [DeploymentItem(@"test_data\session_exported_points.xml")]
+    public void ExportPointsToXML_CheckOutput()
+    {
+        var expected = File.ReadAllText("session_exported_points.xml", Encoding.UTF8);
+        expected = expected.Replace("\r\n", "\n");
+        var session = Session.FromFile("session_valid.xml");
+        var filePath = Path.GetTempFileName();
+
+        try
+        {
+            session.ExportPointsToXML(filePath);
+            var actual = File.ReadAllText(filePath, Encoding.UTF8);
+
+            Assert.AreEqual(expected, actual);
+        }
+        finally
+        {
+            File.Delete(filePath);
         }
     }
 }
