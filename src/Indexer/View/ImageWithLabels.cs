@@ -136,27 +136,33 @@ namespace Indexer.View
             [NotNull] DrawingContext drawingContext, LabelViewModel label
         )
         {
+            if (BitmapSource is null)
+            {
+                return;
+            }
+            int labelSize = BitmapSource.PixelWidth > BitmapSource.PixelHeight ? BitmapSource.PixelWidth / 50 : BitmapSource.PixelHeight / 50;
             if (label == CurrentLabel)
             {
-                Pen pen = new Pen(Brushes.Red, 2);
+
+                Pen pen = new Pen(Brushes.Red, labelSize / 4);
                 drawingContext.DrawLine(
                     pen,
-                    new Point(label.X, label.Y + 10),
-                    new Point(label.X, label.Y - 10)
+                    new Point(label.X, label.Y + labelSize),
+                    new Point(label.X, label.Y - labelSize)
                 );
                 drawingContext.DrawLine(
                     pen,
-                    new Point(label.X + 10, label.Y),
-                    new Point(label.X - 10, label.Y)
+                    new Point(label.X + labelSize, label.Y),
+                    new Point(label.X - labelSize, label.Y)
                 );
             }
             else
             {
                 drawingContext.DrawEllipse(
-                    null, new Pen(Brushes.Black, 2), new Point(label.X, label.Y), 10, 10
+                    null, new Pen(Brushes.White, labelSize / 2), new Point(label.X, label.Y), labelSize, labelSize
                 );
                 drawingContext.DrawEllipse(
-                    null, new Pen(Brushes.White, 2), new Point(label.X, label.Y), 8, 8
+                    null, new Pen(Brushes.Black, labelSize / 4), new Point(label.X, label.Y), labelSize, labelSize
                 );
             }
         }
