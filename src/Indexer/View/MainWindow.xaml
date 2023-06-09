@@ -153,10 +153,10 @@
                                         DisplayMemberBinding="{Binding Name}" />
                                     <GridViewColumn
                                         Header="X"
-                                        DisplayMemberBinding="{Binding X}" />
+                                        DisplayMemberBinding="{Binding XText}" />
                                     <GridViewColumn
                                         Header="Y"
-                                        DisplayMemberBinding="{Binding Y}" />
+                                        DisplayMemberBinding="{Binding YText}" />
                                 </GridView>
                             </ListView.View>
                         </ListView>

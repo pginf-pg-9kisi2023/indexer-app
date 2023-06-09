@@ -142,7 +142,7 @@ namespace Indexer.View
             [NotNull] DrawingContext drawingContext, LabelViewModel label
         )
         {
-            if (BitmapSource is null)
+            if (BitmapSource is null || label.Position is null)
             {
                 return;
             }

@@ -104,22 +104,8 @@ namespace Indexer.ViewModel
         public HintViewModel? CurrentHint { get; private set; }
         public ImageViewModel? CurrentHintImage { get; private set; }
         public MemoryStream? CurrentHintBitmapImage => CurrentHint?.Image?.LoadedImage;
-        public LabelViewModel? CurrentLabel
-        {
-            get
-            {
-                if (CurrentHint is null)
-                {
-                    return null;
-                }
-                LabelViewModel? value;
-                if (CurrentLabels.TryGetValue(CurrentHint.Name, out value))
-                {
-                    return value;
-                }
-                return null;
-            }
-        }
+        public LabelViewModel? CurrentLabel =>
+            CurrentHint is null ? null : CurrentLabels[CurrentHint.Name];
         public bool HasImages => _session?.CurrentImageIndex != null;
         public Point? ImageCursorPosition { get; private set; }
         public string ImageCursorPositionText
@@ -195,7 +181,7 @@ namespace Indexer.ViewModel
             {
                 IndexedImages.AddRange(
                     from indexedImage in _session.IndexedImages
-                    select new IndexedImageViewModel(indexedImage)
+                    select new IndexedImageViewModel(_session, indexedImage)
                 );
                 if (IndexedImages.Count != 0)
                 {
@@ -235,7 +221,7 @@ namespace Indexer.ViewModel
                 {
                     continue;
                 }
-                var indexedImageVM = new IndexedImageViewModel(indexedImage);
+                var indexedImageVM = new IndexedImageViewModel(_session, indexedImage);
                 toAdd.Add(indexedImageVM);
             }
             var wasEmpty = IndexedImages.Count == 0;
@@ -330,7 +316,7 @@ namespace Indexer.ViewModel
                 return;
             }
             var currentLabel = CurrentLabel;
-            if (currentLabel is null)
+            if (currentLabel?.Position is null)
             {
                 var label = new Label(_session.CurrentHint.Name);
                 currentLabel = CurrentIndexedImage.AddLabel(label);
@@ -359,7 +345,7 @@ namespace Indexer.ViewModel
                 return;
             }
             var currentLabel = CurrentLabel;
-            if (currentLabel is null)
+            if (currentLabel?.Position is null)
             {
                 var label = new Label(_session.CurrentHint.Name);
                 currentLabel = CurrentIndexedImage.AddLabel(label);
@@ -384,10 +370,9 @@ namespace Indexer.ViewModel
                 return;
             }
             var currentLabel = CurrentLabel;
-            if (currentLabel is not null)
+            if (currentLabel?.Position is not null)
             {
                 CurrentIndexedImage.DeleteLabel(_session.CurrentHint.Name);
-                CurrentLabels.Remove(currentLabel);
             }
 
             OnPropertyChanged(nameof(CurrentLabel));
