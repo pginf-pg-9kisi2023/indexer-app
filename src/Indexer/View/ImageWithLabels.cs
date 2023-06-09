@@ -38,10 +38,31 @@ namespace Indexer.View
             get => (LabelVMObservableCollection)GetValue(CurrentLabelsProperty);
             internal set => SetValue(CurrentLabelsProperty, value);
         }
+        public static new readonly DependencyProperty StretchProperty
+            = DependencyProperty.Register(
+                "Stretch",
+                typeof(Stretch),
+                typeof(ImageWithLabels),
+                new PropertyMetadata(
+                    default(Stretch), OnStretchChange
+                )
+            );
+
+        public new Stretch Stretch
+        {
+            get => (Stretch)GetValue(StretchProperty);
+            internal set => SetValue(StretchProperty, value);
+        }
         private DrawingVisual? Drawing;
 
         public ImageWithLabels() { }
 
+        private static void OnStretchChange(
+            DependencyObject sender, DependencyPropertyChangedEventArgs e
+        )
+        {
+            OnCurrentLabelChange(sender, e);
+        }
         private static void OnCurrentLabelChange(
             DependencyObject sender, DependencyPropertyChangedEventArgs e
         )
@@ -140,7 +161,11 @@ namespace Indexer.View
             {
                 return;
             }
-            int labelSize = BitmapSource.PixelWidth > BitmapSource.PixelHeight ? BitmapSource.PixelWidth / 50 : BitmapSource.PixelHeight / 50;
+            int labelSize = 20;
+            if (Stretch == Stretch.Uniform)
+            {
+                labelSize = BitmapSource.PixelWidth > BitmapSource.PixelHeight ? BitmapSource.PixelWidth / 50 : BitmapSource.PixelHeight / 50;
+            }
             if (label == CurrentLabel)
             {
 
