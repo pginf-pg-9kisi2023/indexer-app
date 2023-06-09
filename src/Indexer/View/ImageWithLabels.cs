@@ -63,6 +63,11 @@ namespace Indexer.View
         {
             OnCurrentLabelChange(sender, e);
         }
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            base.OnRenderSizeChanged(sizeInfo);
+            DrawLabels();
+        }
         private static void OnCurrentLabelChange(
             DependencyObject sender, DependencyPropertyChangedEventArgs e
         )
@@ -164,7 +169,10 @@ namespace Indexer.View
             int labelSize = 20;
             if (Stretch == Stretch.Uniform)
             {
-                labelSize = BitmapSource.PixelWidth > BitmapSource.PixelHeight ? BitmapSource.PixelWidth / 50 : BitmapSource.PixelHeight / 50;
+                if (ActualWidth != 0 && ActualHeight != 0)
+                {
+                    labelSize = (int)((labelSize / ActualWidth) * BitmapSource.PixelWidth);
+                }
             }
             if (label == CurrentLabel)
             {
