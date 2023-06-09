@@ -24,6 +24,10 @@ namespace Indexer.Model
                 Labels = new(value);
             }
         }
+        // This is `null` if labels for all hints are set and switching to this image
+        // should use the first hint as the current hint.
+        [DataMember(Name = "currentHintName", EmitDefaultValue = false)]
+        public string? CurrentHintName { get; set; }
 
         public IndexedImage(string imagePath)
         {

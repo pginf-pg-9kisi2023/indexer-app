@@ -299,7 +299,6 @@ namespace Indexer.ViewModel
                 var oldImage = CurrentImage;
                 var oldHintImage = CurrentHintImage;
                 _session.CurrentImageIndex = idx;
-                _session.CurrentHintName = _session.Config.Hints.First().Name;
                 CurrentImage = CurrentIndexedImage?.Image;
                 CurrentImage?.LoadImage();
                 oldImage?.UnloadImage();
@@ -325,7 +324,7 @@ namespace Indexer.ViewModel
             if (
                 _session is null
                 || CurrentIndexedImage is null
-                || _session.CurrentHintName is null
+                || _session.CurrentHint is null
             )
             {
                 return;
@@ -333,8 +332,8 @@ namespace Indexer.ViewModel
             var currentLabel = CurrentLabel;
             if (currentLabel is null)
             {
-                var label = new Label(_session.CurrentHintName);
-                currentLabel = CurrentIndexedImage.AddLabel(label); ;
+                var label = new Label(_session.CurrentHint.Name);
+                currentLabel = CurrentIndexedImage.AddLabel(label);
             }
 
             currentLabel.X = Math.Min(
@@ -354,7 +353,7 @@ namespace Indexer.ViewModel
             if (
                 _session is null
                 || CurrentIndexedImage is null
-                || _session.CurrentHintName is null
+                || _session.CurrentHint is null
             )
             {
                 return;
@@ -362,8 +361,8 @@ namespace Indexer.ViewModel
             var currentLabel = CurrentLabel;
             if (currentLabel is null)
             {
-                var label = new Label(_session.CurrentHintName);
-                currentLabel = CurrentIndexedImage.AddLabel(label); ;
+                var label = new Label(_session.CurrentHint.Name);
+                currentLabel = CurrentIndexedImage.AddLabel(label);
             }
 
             currentLabel.X = x;
@@ -379,7 +378,7 @@ namespace Indexer.ViewModel
             if (
                 _session is null
                 || CurrentIndexedImage is null
-                || _session.CurrentHintName is null
+                || _session.CurrentHint is null
             )
             {
                 return;
@@ -387,7 +386,7 @@ namespace Indexer.ViewModel
             var currentLabel = CurrentLabel;
             if (currentLabel is not null)
             {
-                CurrentIndexedImage.DeleteLabel(_session.CurrentHintName);
+                CurrentIndexedImage.DeleteLabel(_session.CurrentHint.Name);
                 CurrentLabels.Remove(currentLabel);
             }
 
@@ -415,21 +414,22 @@ namespace Indexer.ViewModel
             if (
                 _session is null
                 || CurrentIndexedImage is null
-                || _session.CurrentHintName is null
+                || _session.CurrentHint is null
             )
             {
                 return;
             }
             var collection = (ReadOnlyCollection<Hint>)_session.Config.Hints;
-            if (collection[^1].Name == _session.CurrentHintName)
+            if (collection[^1].Name == _session.CurrentHint.Name)
             {
+                _session.CurrentHint = null;
                 SwitchToNextImage();
                 return;
             }
             var newHint = collection[collection.IndexOf(_session.CurrentHint!) + 1];
 
             var oldHintImage = CurrentHintImage;
-            _session.CurrentHintName = newHint.Name;
+            _session.CurrentHint = newHint;
             CurrentHint = new(_session.CurrentHint!);
             CurrentHintImage = CurrentHint.Image;
             CurrentHintImage?.LoadImage();
