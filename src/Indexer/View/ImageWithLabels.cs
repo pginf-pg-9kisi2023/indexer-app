@@ -38,7 +38,6 @@ namespace Indexer.View
             get => (LabelVMObservableCollection)GetValue(CurrentLabelsProperty);
             internal set => SetValue(CurrentLabelsProperty, value);
         }
-
         private DrawingVisual? Drawing;
 
         public ImageWithLabels() { }
