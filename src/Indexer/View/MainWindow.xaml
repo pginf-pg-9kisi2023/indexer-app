@@ -278,7 +278,7 @@
                             <local:Magnifier
                                 ZoomFactor="{Binding Value, ElementName=Magnifier}"
                                 ImageBitmap="{Binding BitmapSource, ElementName=MainImage}"
-                                CurrentLabel="{Binding CurrentLabel}"
+                                SavedPosition="{Binding SavedPosition}"
                                 ImageCursor="{Binding ImageCursorPosition}"
                                 Height="250"
                                 Grid.Row="2" />
