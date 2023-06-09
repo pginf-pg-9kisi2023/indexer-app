@@ -147,33 +147,44 @@ namespace Indexer.View
             {
                 return;
             }
-            int labelSize = 20;
-            if (ActualWidth != 0)
+            double factor = 1;
+            if (ActualWidth != 0 && BitmapSource.PixelWidth != ActualWidth)
             {
-                labelSize = (int)((labelSize / ActualWidth) * BitmapSource.PixelWidth);
+                factor = BitmapSource.PixelWidth / ActualWidth;
             }
             if (label == CurrentLabel)
             {
-
-                Pen pen = new Pen(Brushes.Red, labelSize / 4);
+                var radius = 8 * factor;
+                Pen pen = new Pen(Brushes.Red, 2 * factor);
                 drawingContext.DrawLine(
                     pen,
-                    new Point(label.X, label.Y + labelSize),
-                    new Point(label.X, label.Y - labelSize)
+                    new Point(label.X, label.Y + radius),
+                    new Point(label.X, label.Y - radius)
                 );
                 drawingContext.DrawLine(
                     pen,
-                    new Point(label.X + labelSize, label.Y),
-                    new Point(label.X - labelSize, label.Y)
+                    new Point(label.X + radius, label.Y),
+                    new Point(label.X - radius, label.Y)
                 );
             }
             else
             {
+                var radius = 6 * factor;
+                var strokeThickness = 4 * factor;
+                var fillThickness = 2 * factor;
                 drawingContext.DrawEllipse(
-                    null, new Pen(Brushes.White, labelSize / 2), new Point(label.X, label.Y), labelSize, labelSize
+                    null,
+                    new Pen(Brushes.White, strokeThickness),
+                    new Point(label.X, label.Y),
+                    radius,
+                    radius
                 );
                 drawingContext.DrawEllipse(
-                    null, new Pen(Brushes.Black, labelSize / 4), new Point(label.X, label.Y), labelSize, labelSize
+                    null,
+                    new Pen(Brushes.Black, fillThickness),
+                    new Point(label.X, label.Y),
+                    radius,
+                    radius
                 );
             }
         }
