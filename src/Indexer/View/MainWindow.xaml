@@ -106,10 +106,6 @@
             Modifiers="Ctrl"
             Command="{x:Static commands:Commands.KeyboardShortcuts}" />
         <KeyBinding
-            Key="I"
-            Modifiers="Ctrl"
-            Command="{x:Static commands:Commands.AboutIndexer}" />
-        <KeyBinding
             Key="N"
             Modifiers="Ctrl+Shift"
             Command="{x:Static commands:Commands.ChangeToNextImage}" />
@@ -183,7 +179,6 @@
                         Command="{x:Static commands:Commands.KeyboardShortcuts}" />
                     <MenuItem
                         Header="O programie"
-                        InputGestureText="Ctrl+I"
                         Command="{x:Static commands:Commands.AboutIndexer}" />
                 </MenuItem>
             </Menu>

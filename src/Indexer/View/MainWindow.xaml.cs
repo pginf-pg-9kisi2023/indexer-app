@@ -283,7 +283,6 @@ namespace Indexer.View
                 Zamknięcie bieżącej sesji: Ctrl+X
                 Zamknięcie aplikacji: Alt+F4
                 Wyświetlenie pomocy dot. skrótów klawiaturowych: Ctrl+H
-                Informacje o aplikacji: Ctrl+I
                 Zmiana obecnie ideksowanego zdjęcia na następne: Ctrl+Shift+N
                 Zmiana obecnie ideksowanego zdjęcia na poprzednie: Ctrl+Shift+P
                 """,
