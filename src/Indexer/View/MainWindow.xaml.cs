@@ -409,5 +409,19 @@ namespace Indexer.View
                 Data.SetCurrentImage(indexedImage);
             }
         }
+
+        private void PointsListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var item = sender as ListViewItem;
+            if (item is null)
+            {
+                return;
+            }
+            var label = item.Content as LabelViewModel;
+            if (label is not null)
+            {
+                Data.SetCurrentLabel(label);
+            }
+        }
     }
 }

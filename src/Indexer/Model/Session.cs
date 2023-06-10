@@ -46,11 +46,37 @@ namespace Indexer.Model
                 return null;
             }
         }
-        [DataMember(Name = "currentHintName", IsRequired = true)]
-        public string? CurrentHintName { get; set; }
         public Hint? CurrentHint
         {
-            get => CurrentHintName != null ? Config.Hints[CurrentHintName] : null;
+            get
+            {
+                if (CurrentImage == null)
+                {
+                    return null;
+                }
+                if (CurrentImage.CurrentHintName == null)
+                {
+                    return Config.Hints.First();
+                }
+                return Config.Hints[CurrentImage.CurrentHintName];
+            }
+            set
+            {
+                if (CurrentImage == null)
+                {
+                    throw new ArgumentException(
+                        "This can only be set if CurrentImage is set."
+                    );
+                }
+                if (value == Config.Hints.First())
+                {
+                    CurrentImage.CurrentHintName = null;
+                }
+                else
+                {
+                    CurrentImage.CurrentHintName = value?.Name;
+                }
+            }
         }
 
         public Session(Config config)
@@ -65,7 +91,6 @@ namespace Indexer.Model
             if (CurrentImageIndex is null)
             {
                 CurrentImageIndex = 0;
-                CurrentHintName = Config.Hints.First().Name;
             }
         }
 

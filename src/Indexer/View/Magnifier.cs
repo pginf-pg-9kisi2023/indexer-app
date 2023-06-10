@@ -5,8 +5,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-using Indexer.ViewModel;
-
 using Point = System.Drawing.Point;
 
 namespace Indexer.View
@@ -26,17 +24,17 @@ namespace Indexer.View
             set => SetValue(ImageBitmapProperty, value);
         }
 
-        public static readonly DependencyProperty CurrentLabelProperty
+        public static readonly DependencyProperty SavedPositionProperty
             = DependencyProperty.Register(
-                "CurrentLabel",
-                typeof(LabelViewModel),
+                "SavedPosition",
+                typeof(Point?),
                 typeof(Magnifier),
-                new PropertyMetadata(default(LabelViewModel), OnCurrentLabelChange)
+                new PropertyMetadata(default(Point?), OnSavedPositionChange)
             );
-        public LabelViewModel? CurrentLabel
+        public Point? SavedPosition
         {
-            get => (LabelViewModel)GetValue(CurrentLabelProperty);
-            set => SetValue(CurrentLabelProperty, value);
+            get => (Point?)GetValue(SavedPositionProperty);
+            set => SetValue(SavedPositionProperty, value);
         }
         public static readonly DependencyProperty ImageCursorProperty
             = DependencyProperty.Register(
@@ -214,7 +212,7 @@ namespace Indexer.View
             self.TriggerViewBoxUpdate();
         }
 
-        private static void OnCurrentLabelChange(
+        private static void OnSavedPositionChange(
             DependencyObject sender, DependencyPropertyChangedEventArgs e
         )
         {
@@ -225,14 +223,6 @@ namespace Indexer.View
             }
 
             self.TriggerViewBoxUpdate();
-            if (e.OldValue is LabelViewModel oldValue)
-            {
-                oldValue.PropertyChanged -= self.OnLabelPropertyChanged;
-            }
-            if (e.NewValue is LabelViewModel newValue)
-            {
-                newValue.PropertyChanged += self.OnLabelPropertyChanged;
-            }
         }
 
         private void OnLabelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -264,15 +254,15 @@ namespace Indexer.View
             }
             int x = 0;
             int y = 0;
-            if (CurrentLabel != null)
+            if (SavedPosition is Point savedPosition)
             {
-                x = CurrentLabel.X;
-                y = CurrentLabel.Y;
+                x = savedPosition.X;
+                y = savedPosition.Y;
             }
-            else if (ImageCursor is Point pos)
+            else if (ImageCursor is Point cursor)
             {
-                x = pos.X;
-                y = pos.Y;
+                x = cursor.X;
+                y = cursor.Y;
             }
             else if (!resetViewBox)
             {

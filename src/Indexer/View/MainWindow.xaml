@@ -264,6 +264,9 @@
                             <ListView.Resources>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="Focusable" Value="false" />
+                                    <EventSetter
+                                        Event="MouseDoubleClick"
+                                        Handler="PointsListViewItem_MouseDoubleClick" />
                                 </Style>
                             </ListView.Resources>
                             <ListView.View>
@@ -273,10 +276,10 @@
                                         DisplayMemberBinding="{Binding Name}" />
                                     <GridViewColumn
                                         Header="X"
-                                        DisplayMemberBinding="{Binding X}" />
+                                        DisplayMemberBinding="{Binding XText}" />
                                     <GridViewColumn
                                         Header="Y"
-                                        DisplayMemberBinding="{Binding Y}" />
+                                        DisplayMemberBinding="{Binding YText}" />
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -313,6 +316,7 @@
                             VerticalScrollBarVisibility="Disabled"
                             HorizontalScrollBarVisibility="Disabled"
                             PreviewMouseWheel="MainImageScrollViewer_PreviewMouseWheel"
+                            Focusable="false"
                         >
                             <local:ImageWithLabels
                                 MouseMove="MainImage_MouseMove"
@@ -393,7 +397,7 @@
                             <local:Magnifier
                                 ZoomFactor="{Binding Value, ElementName=Magnifier}"
                                 ImageBitmap="{Binding BitmapSource, ElementName=MainImage}"
-                                CurrentLabel="{Binding CurrentLabel}"
+                                SavedPosition="{Binding SavedPosition}"
                                 ImageCursor="{Binding ImageCursorPosition}"
                                 Height="250"
                                 Grid.Row="2" />
@@ -422,7 +426,7 @@
                                 Name="ShowActualSizeButton"
                                 Checked="ShowActualSizeButton_Checked"
                                 Unchecked="ShowActualSizeButton_Unchecked"
-                                KeyboardNavigation.AcceptsReturn="False"
+                                Focusable="false"
                                 Grid.Row="9"
                             >
                                 Rzeczywisty rozmiar (1:1)
