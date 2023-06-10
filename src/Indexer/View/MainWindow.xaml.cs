@@ -295,6 +295,9 @@ namespace Indexer.View
                 messageBoxText: $"""
                 Etykietowanie zdjęć:
                 {bullet} Przesuń etykietę o 1 piksel: {arrows}
+                {bullet} Przesuń etykietę o 4 piksele: Ctrl+{arrows}
+                {bullet} Przesuń etykietę o 25 pikseli: Shift+{arrows}
+                {bullet} Przesuń etykietę o 100 pikseli: Ctrl+Shift+{arrows}
 
                 Nawigacja pomiędzy zdjęciami/punktami:
                 {bullet} Przejdź do wyboru następnego punktu: Enter
@@ -378,19 +381,28 @@ namespace Indexer.View
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            var multiplier = 1;
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                multiplier *= 4;
+            }
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                multiplier *= 25;
+            }
             switch (e.Key)
             {
                 case Key.Up:
-                    Data.MoveCurrentLabelPositionRelatively(y: -1);
+                    Data.MoveCurrentLabelPositionRelatively(y: multiplier * -1);
                     break;
                 case Key.Down:
-                    Data.MoveCurrentLabelPositionRelatively(y: 1);
+                    Data.MoveCurrentLabelPositionRelatively(y: multiplier * 1);
                     break;
                 case Key.Left:
-                    Data.MoveCurrentLabelPositionRelatively(x: -1);
+                    Data.MoveCurrentLabelPositionRelatively(x: multiplier * -1);
                     break;
                 case Key.Right:
-                    Data.MoveCurrentLabelPositionRelatively(x: 1);
+                    Data.MoveCurrentLabelPositionRelatively(x: multiplier * 1);
                     break;
                 case Key.Enter:
                     Data.SwitchToNextLabel();
