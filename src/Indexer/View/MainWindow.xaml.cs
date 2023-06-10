@@ -287,23 +287,31 @@ namespace Indexer.View
 
         private void ShortcutsHelp_Click(object sender, RoutedEventArgs e)
         {
+            var bullet = "\u2022";
+            var arrows = "\u2191/\u2193/\u2192/\u2190";
             MessageBox.Show(
                 owner: this,
                 caption: Data.ProgramName,
                 messageBoxText: $"""
-                Dostępne skróty klawiaturowe:
-                Utworzenie nowej sesji: Ctrl+N
-                Wczytanie sesji: Ctrl+O
-                Dodanie zdjęcia i/lub folderu: Ctrl+I
-                Zapisanie sesji: Ctrl+S
-                Zapisanie sesji jako...: Ctrl+Shift+S
-                Wyeksportowanie sesji do pliku CSV: Alt+C
-                Wyeksportowanie sesji do pliku XML: Alt+X
-                Zamknięcie bieżącej sesji: Ctrl+W
-                Zamknięcie aplikacji: Alt+F4
-                Wyświetlenie pomocy dot. skrótów klawiaturowych: Ctrl+F1
-                Zmiana obecnie indeksowanego zdjęcia na następne: Ctrl+Tab
-                Zmiana obecnie indeksowanego zdjęcia na poprzednie: Ctrl+Shift+Tab
+                Etykietowanie zdjęć:
+                {bullet} Przesuń etykietę o 1 piksel: {arrows}
+
+                Nawigacja pomiędzy zdjęciami/punktami:
+                {bullet} Przejdź do wyboru następnego punktu: Enter
+                {bullet} Przejdź do następnego zdjęcia: Ctrl+Tab
+                {bullet} Przejdź do poprzedniego zdjęcia: Ctrl+Shift+Tab
+
+                Główne menu:
+                {bullet} Utwórz nową sesję: Ctrl+N
+                {bullet} Wczytaj sesję: Ctrl+O
+                {bullet} Dodaj zdjęcia i/lub foldery: Ctrl+I
+                {bullet} Zapisz sesję: Ctrl+S
+                {bullet} Zapisz sesji jako...: Ctrl+Shift+S
+                {bullet} Wyeksportuj sesję do pliku CSV: Alt+C
+                {bullet} Wyeksportuj sesję do pliku XML: Alt+X
+                {bullet} Zamknij bieżącą sesję: Ctrl+W
+                {bullet} Zamknij aplikację: Alt+F4
+                {bullet} Wyświetl pomoc dot. skrótów klawiaturowych: Ctrl+F1
                 """,
                 button: MessageBoxButton.OK
             );
