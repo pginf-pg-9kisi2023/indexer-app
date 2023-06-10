@@ -31,22 +31,28 @@
             Executed="LoadSession_Click" />
         <CommandBinding
             Command="{x:Static commands:Commands.AddImageOrFolder}"
-            Executed="AddImageOrFolder_Click" />
+            Executed="AddImageOrFolder_Click"
+            CanExecute="CanExecute_IsSessionOpen" />
         <CommandBinding
             Command="{x:Static commands:Commands.SaveSession}"
-            Executed="SaveSession_Click" />
+            Executed="SaveSession_Click"
+            CanExecute="CanExecute_IsSessionModified" />
         <CommandBinding
             Command="{x:Static commands:Commands.SaveSessionAs}"
-            Executed="SaveSessionAs_Click" />
+            Executed="SaveSessionAs_Click"
+            CanExecute="CanExecute_IsSessionOpen" />
         <CommandBinding
             Command="{x:Static commands:Commands.ExportAsCSV}"
-            Executed="ExportAsCSV_Click" />
+            Executed="ExportAsCSV_Click"
+            CanExecute="CanExecute_IsSessionOpen" />
         <CommandBinding
             Command="{x:Static commands:Commands.ExportAsXML}"
-            Executed="ExportAsXML_Click" />
+            Executed="ExportAsXML_Click"
+            CanExecute="CanExecute_IsSessionOpen" />
         <CommandBinding
             Command="{x:Static commands:Commands.CloseSession}"
-            Executed="CloseSession_Click" />
+            Executed="CloseSession_Click"
+            CanExecute="CanExecute_IsSessionOpen" />
         <CommandBinding
             Command="{x:Static commands:Commands.Exit}"
             Executed="Exit_Click" />
@@ -58,10 +64,12 @@
             Executed="About_Click" />
         <CommandBinding
             Command="{x:Static commands:Commands.ChangeToNextImage}"
-            Executed="NextImageButton_Click" />
+            Executed="NextImageButton_Click"
+            CanExecute="CanExecute_HasImages" />
         <CommandBinding
             Command="{x:Static commands:Commands.ChangeToPreviousImage}"
-            Executed="PreviousImageButton_Click" />
+            Executed="PreviousImageButton_Click"
+            CanExecute="CanExecute_HasImages" />
     </Window.CommandBindings>
 
     <Window.InputBindings>
@@ -131,17 +139,14 @@
                     <MenuItem
                         Header="Otwórz obraz lub folder..."
                         InputGestureText="Ctrl+I"
-                        IsEnabled="{Binding IsSessionOpen}"
                         Command="{x:Static commands:Commands.AddImageOrFolder}" />
                     <MenuItem
                         Header="Zapisz sesję"
                         InputGestureText="Ctrl+S"
-                        IsEnabled="{Binding IsSessionModified}"
                         Command="{x:Static commands:Commands.SaveSession}" />
                     <MenuItem
                         Header="Zapisz sesję jako..."
                         InputGestureText="Ctrl+Shift+S"
-                        IsEnabled="{Binding IsSessionOpen}"
                         Command="{x:Static commands:Commands.SaveSessionAs}" />
                     <MenuItem
                         Header="Wyeksportuj do..."
@@ -149,18 +154,15 @@
                     >
                         <MenuItem
                             Header="pliku CSV"
-                            IsEnabled="{Binding IsSessionOpen}"
                             InputGestureText="Alt+C"
                             Command="{x:Static commands:Commands.ExportAsCSV}" />
                         <MenuItem
                             Header="pliku XML"
-                            IsEnabled="{Binding IsSessionOpen}"
                             InputGestureText="Alt+X"
                             Command="{x:Static commands:Commands.ExportAsXML}" />
                     </MenuItem>
                     <MenuItem
                         Header="Zamknij sesję"
-                        IsEnabled="{Binding IsSessionOpen}"
                         InputGestureText="Ctrl+W"
                         Command="{x:Static commands:Commands.CloseSession}" />
                     <MenuItem

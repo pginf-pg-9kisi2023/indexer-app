@@ -22,6 +22,25 @@ namespace Indexer.View
             InitializeComponent();
         }
 
+        private void CanExecute_IsSessionOpen(
+            object sender, CanExecuteRoutedEventArgs e
+        )
+        {
+            e.CanExecute = Data.IsSessionOpen;
+        }
+
+        private void CanExecute_IsSessionModified(
+            object sender, CanExecuteRoutedEventArgs e
+        )
+        {
+            e.CanExecute = Data.IsSessionModified;
+        }
+
+        private void CanExecute_HasImages(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Data.HasImages;
+        }
+
         private void CreateSession_Click(object sender, RoutedEventArgs e)
         {
             if (!PromptAboutUnsavedChanges())
