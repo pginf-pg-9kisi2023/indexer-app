@@ -271,20 +271,22 @@ namespace Indexer.View
             MessageBox.Show(
                 owner: this,
                 caption: Data.ProgramName,
-                messageBoxText: "Dostępne skróty klawiaturowe:\n" +
-                "Utworzenie nowej sesji: Ctrl+N\n" +
-                "Załadowanie sesji: Ctrl+L\n" +
-                "Dodanie zdjęcia i/lub folderu: Ctrl+O\n" +
-                "Zapisanie sesji: Ctrl+S\n" +
-                "Zapisanie sesji jako...: Ctrl+Shift+S\n" +
-                "Wyeksportowanie sesji do pliku CSV: Alt+C\n" +
-                "Wyeksportowanie sesji do pliku XML: Alt+X\n" +
-                "Zamknięcie bieżącej sesji: Ctrl+X\n" +
-                "Zamknięcie aplikacji: Alt+F4\n" +
-                "Wyświetlenie pomocy dot. skrótów klawiaturowych: Ctrl+H\n" +
-                "Informacje o aplikacji: Ctrl+I\n" +
-                "Zmiana obecnie ideksowanego zdjęcia na następne: Ctrl+Shift+N\n" +
-                "Zmiana obecnie ideksowanego zdjęcia na poprzednie: Ctrl+Shift+P\n",
+                messageBoxText: """
+                Dostępne skróty klawiaturowe:
+                Utworzenie nowej sesji: Ctrl+N
+                Załadowanie sesji: Ctrl+L
+                Dodanie zdjęcia i/lub folderu: Ctrl+O
+                Zapisanie sesji: Ctrl+S
+                Zapisanie sesji jako...: Ctrl+Shift+S
+                Wyeksportowanie sesji do pliku CSV: Alt+C
+                Wyeksportowanie sesji do pliku XML: Alt+X
+                Zamknięcie bieżącej sesji: Ctrl+X
+                Zamknięcie aplikacji: Alt+F4
+                Wyświetlenie pomocy dot. skrótów klawiaturowych: Ctrl+H
+                Informacje o aplikacji: Ctrl+I
+                Zmiana obecnie ideksowanego zdjęcia na następne: Ctrl+Shift+N
+                Zmiana obecnie ideksowanego zdjęcia na poprzednie: Ctrl+Shift+P
+                """,
                 button: MessageBoxButton.OK
             );
         }
