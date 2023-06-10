@@ -94,7 +94,7 @@
             Modifiers="Alt"
             Command="{x:Static commands:Commands.ExportAsXML}" />
         <KeyBinding
-            Key="X"
+            Key="W"
             Modifiers="Ctrl"
             Command="{x:Static commands:Commands.CloseSession}" />
         <KeyBinding
@@ -165,7 +165,7 @@
                     <MenuItem
                         Header="Zamknij sesję"
                         IsEnabled="{Binding IsSessionOpen}"
-                        InputGestureText="Ctrl+X"
+                        InputGestureText="Ctrl+W"
                         Command="{x:Static commands:Commands.CloseSession}" />
                     <MenuItem
                         Header="Zamknij"

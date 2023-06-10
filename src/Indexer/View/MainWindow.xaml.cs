@@ -280,7 +280,7 @@ namespace Indexer.View
                 Zapisanie sesji jako...: Ctrl+Shift+S
                 Wyeksportowanie sesji do pliku CSV: Alt+C
                 Wyeksportowanie sesji do pliku XML: Alt+X
-                Zamknięcie bieżącej sesji: Ctrl+X
+                Zamknięcie bieżącej sesji: Ctrl+W
                 Zamknięcie aplikacji: Alt+F4
                 Wyświetlenie pomocy dot. skrótów klawiaturowych: Ctrl+F1
                 Zmiana obecnie ideksowanego zdjęcia na następne: Ctrl+Tab
