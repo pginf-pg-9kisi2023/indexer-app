@@ -106,11 +106,11 @@
             Modifiers="Ctrl"
             Command="{x:Static commands:Commands.KeyboardShortcuts}" />
         <KeyBinding
-            Key="N"
-            Modifiers="Ctrl+Shift"
+            Key="Tab"
+            Modifiers="Ctrl"
             Command="{x:Static commands:Commands.ChangeToNextImage}" />
         <KeyBinding
-            Key="P"
+            Key="Tab"
             Modifiers="Ctrl+Shift"
             Command="{x:Static commands:Commands.ChangeToPreviousImage}" />
     </Window.InputBindings>
