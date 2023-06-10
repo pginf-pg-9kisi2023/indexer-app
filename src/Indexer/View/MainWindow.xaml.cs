@@ -290,7 +290,7 @@ namespace Indexer.View
             MessageBox.Show(
                 owner: this,
                 caption: Data.ProgramName,
-                messageBoxText: """
+                messageBoxText: $"""
                 Dostępne skróty klawiaturowe:
                 Utworzenie nowej sesji: Ctrl+N
                 Wczytanie sesji: Ctrl+O
@@ -302,8 +302,8 @@ namespace Indexer.View
                 Zamknięcie bieżącej sesji: Ctrl+W
                 Zamknięcie aplikacji: Alt+F4
                 Wyświetlenie pomocy dot. skrótów klawiaturowych: Ctrl+F1
-                Zmiana obecnie ideksowanego zdjęcia na następne: Ctrl+Tab
-                Zmiana obecnie ideksowanego zdjęcia na poprzednie: Ctrl+Shift+Tab
+                Zmiana obecnie indeksowanego zdjęcia na następne: Ctrl+Tab
+                Zmiana obecnie indeksowanego zdjęcia na poprzednie: Ctrl+Shift+Tab
                 """,
                 button: MessageBoxButton.OK
             );
