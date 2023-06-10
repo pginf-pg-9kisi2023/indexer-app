@@ -282,7 +282,7 @@ namespace Indexer.View
                 Wyeksportowanie sesji do pliku XML: Alt+X
                 Zamknięcie bieżącej sesji: Ctrl+X
                 Zamknięcie aplikacji: Alt+F4
-                Wyświetlenie pomocy dot. skrótów klawiaturowych: Ctrl+H
+                Wyświetlenie pomocy dot. skrótów klawiaturowych: Ctrl+F1
                 Zmiana obecnie ideksowanego zdjęcia na następne: Ctrl+Shift+N
                 Zmiana obecnie ideksowanego zdjęcia na poprzednie: Ctrl+Shift+P
                 """,

@@ -102,7 +102,7 @@
             Modifiers="Alt"
             Command="{x:Static commands:Commands.Exit}" />
         <KeyBinding
-            Key="H"
+            Key="F1"
             Modifiers="Ctrl"
             Command="{x:Static commands:Commands.KeyboardShortcuts}" />
         <KeyBinding
@@ -175,7 +175,7 @@
                 <MenuItem Header="Pomoc" Focusable="false">
                     <MenuItem
                         Header="Skróty klawiaturowe"
-                        InputGestureText="Ctrl+H"
+                        InputGestureText="Ctrl+F1"
                         Command="{x:Static commands:Commands.KeyboardShortcuts}" />
                     <MenuItem
                         Header="O programie"
