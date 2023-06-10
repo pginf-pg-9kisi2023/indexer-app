@@ -271,7 +271,20 @@ namespace Indexer.View
             MessageBox.Show(
                 owner: this,
                 caption: Data.ProgramName,
-                messageBoxText: "",
+                messageBoxText: "Dostępne skróty klawiaturowe:\n" +
+                "Utworzenie nowej sesji: Ctrl+N\n" +
+                "Załadowanie sesji: Ctrl+L\n" +
+                "Dodanie zdjęcia i/lub folderu: Ctrl+O\n" +
+                "Zapisanie sesji: Ctrl+S\n" +
+                "Zapisanie sesji jako...: Ctrl+Shift+S\n" +
+                "Wyeksportowanie sesji do pliku CSV: Alt+C\n" +
+                "Wyeksportowanie sesji do pliku XML: Alt+X\n" +
+                "Zamknięcie bieżącej sesji: Ctrl+X\n" +
+                "Zamknięcie aplikacji: Alt+F4\n" +
+                "Wyświetlenie pomocy dot. skrótów klawiaturowych: Ctrl+H\n" +
+                "Informacje o aplikacji: Ctrl+I\n" +
+                "Zmiana obecnie ideksowanego zdjęcia na następne: Ctrl+Shift+N\n" +
+                "Zmiana obecnie ideksowanego zdjęcia na poprzednie: Ctrl+Shift+P\n",
                 button: MessageBoxButton.OK
             );
         }
@@ -325,12 +338,12 @@ namespace Indexer.View
             }
         }
 
-        private void PreviousPictureButton_Click(object sender, RoutedEventArgs e)
+        private void PreviousImageButton_Click(object sender, RoutedEventArgs e)
         {
             Data.SwitchToPreviousImage();
         }
 
-        private void NextPictureButton_Click(object sender, RoutedEventArgs e)
+        private void NextImageButton_Click(object sender, RoutedEventArgs e)
         {
             Data.SwitchToNextImage();
         }
