@@ -274,8 +274,8 @@ namespace Indexer.View
                 messageBoxText: """
                 Dostępne skróty klawiaturowe:
                 Utworzenie nowej sesji: Ctrl+N
-                Załadowanie sesji: Ctrl+L
-                Dodanie zdjęcia i/lub folderu: Ctrl+O
+                Wczytanie sesji: Ctrl+O
+                Dodanie zdjęcia i/lub folderu: Ctrl+I
                 Zapisanie sesji: Ctrl+S
                 Zapisanie sesji jako...: Ctrl+Shift+S
                 Wyeksportowanie sesji do pliku CSV: Alt+C

@@ -70,11 +70,11 @@
             Modifiers="Ctrl"
             Command="{x:Static commands:Commands.CreateNewSession}" />
         <KeyBinding
-            Key="L"
+            Key="O"
             Modifiers="Ctrl"
             Command="{x:Static commands:Commands.LoadSession}" />
         <KeyBinding
-            Key="O"
+            Key="I"
             Modifiers="Ctrl"
             Command="{x:Static commands:Commands.AddImageOrFolder}" />
         <KeyBinding
@@ -130,11 +130,11 @@
                         Command="{x:Static commands:Commands.CreateNewSession}" />
                     <MenuItem
                         Header="Wczytaj sesję..."
-                        InputGestureText="Ctrl+L"
+                        InputGestureText="Ctrl+O"
                         Command="{x:Static commands:Commands.LoadSession}" />
                     <MenuItem
                         Header="Otwórz obraz lub folder..."
-                        InputGestureText="Ctrl+O"
+                        InputGestureText="Ctrl+I"
                         IsEnabled="{Binding IsSessionOpen}"
                         Command="{x:Static commands:Commands.AddImageOrFolder}" />
                     <MenuItem
