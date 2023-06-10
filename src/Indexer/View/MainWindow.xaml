@@ -303,7 +303,8 @@
                     Grid.Column="2"
                     Visibility="{
                         Binding Path=HasImages,
-                        Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Converter={StaticResource BooleanToVisibilityConverter}
+                    }"
                 >
                     <Grid>
                         <Grid.RowDefinitions>
