@@ -98,10 +98,6 @@
             Modifiers="Ctrl"
             Command="{x:Static commands:Commands.CloseSession}" />
         <KeyBinding
-            Key="F4"
-            Modifiers="Alt"
-            Command="{x:Static commands:Commands.Exit}" />
-        <KeyBinding
             Key="F1"
             Modifiers="Ctrl"
             Command="{x:Static commands:Commands.KeyboardShortcuts}" />
