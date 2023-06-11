@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Indexer.View"
     xmlns:vm="clr-namespace:Indexer.ViewModel"
+    xmlns:commands="clr-namespace:Indexer.View"
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen"
     Title="{Binding Title}"
@@ -20,6 +21,104 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
+
+    <Window.CommandBindings>
+        <CommandBinding
+            Command="{x:Static commands:Commands.CreateNewSession}"
+            Executed="CreateSession_Click" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.LoadSession}"
+            Executed="LoadSession_Click" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.AddImageOrFolder}"
+            Executed="AddImageOrFolder_Click"
+            CanExecute="CanExecute_IsSessionOpen" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.SaveSession}"
+            Executed="SaveSession_Click"
+            CanExecute="CanExecute_IsSessionModified" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.SaveSessionAs}"
+            Executed="SaveSessionAs_Click"
+            CanExecute="CanExecute_IsSessionOpen" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.ExportAsCSV}"
+            Executed="ExportAsCSV_Click"
+            CanExecute="CanExecute_IsSessionOpen" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.ExportAsXML}"
+            Executed="ExportAsXML_Click"
+            CanExecute="CanExecute_IsSessionOpen" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.CloseSession}"
+            Executed="CloseSession_Click"
+            CanExecute="CanExecute_IsSessionOpen" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.Exit}"
+            Executed="Exit_Click" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.KeyboardShortcuts}"
+            Executed="ShortcutsHelp_Click" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.AboutIndexer}"
+            Executed="About_Click" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.ChangeToNextImage}"
+            Executed="NextImageButton_Click"
+            CanExecute="CanExecute_HasImages" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.ChangeToPreviousImage}"
+            Executed="PreviousImageButton_Click"
+            CanExecute="CanExecute_HasImages" />
+    </Window.CommandBindings>
+
+    <Window.InputBindings>
+        <KeyBinding
+            Key="N"
+            Modifiers="Ctrl"
+            Command="{x:Static commands:Commands.CreateNewSession}" />
+        <KeyBinding
+            Key="O"
+            Modifiers="Ctrl"
+            Command="{x:Static commands:Commands.LoadSession}" />
+        <KeyBinding
+            Key="I"
+            Modifiers="Ctrl"
+            Command="{x:Static commands:Commands.AddImageOrFolder}" />
+        <KeyBinding
+            Key="S"
+            Modifiers="Ctrl"
+            Command="{x:Static commands:Commands.SaveSession}" />
+        <KeyBinding
+            Key="S"
+            Modifiers="Ctrl+Shift"
+            Command="{x:Static commands:Commands.SaveSessionAs}" />
+        <KeyBinding
+            Key="C"
+            Modifiers="Alt"
+            Command="{x:Static commands:Commands.ExportAsCSV}" />
+        <KeyBinding
+            Key="X"
+            Modifiers="Alt"
+            Command="{x:Static commands:Commands.ExportAsXML}" />
+        <KeyBinding
+            Key="W"
+            Modifiers="Ctrl"
+            Command="{x:Static commands:Commands.CloseSession}" />
+        <KeyBinding
+            Key="F1"
+            Modifiers="Ctrl"
+            Command="{x:Static commands:Commands.KeyboardShortcuts}" />
+        <KeyBinding
+            Key="Tab"
+            Modifiers="Ctrl"
+            Command="{x:Static commands:Commands.ChangeToNextImage}" />
+        <KeyBinding
+            Key="Tab"
+            Modifiers="Ctrl+Shift"
+            Command="{x:Static commands:Commands.ChangeToPreviousImage}" />
+    </Window.InputBindings>
+
     <Grid>
         <DockPanel>
             <Menu
@@ -31,40 +130,54 @@
                 <MenuItem Header="Plik" Focusable="false">
                     <MenuItem
                         Header="Utwórz nową sesję..."
-                        Click="CreateSession_Click" />
-                    <MenuItem Header="Wczytaj sesję..." Click="LoadSession_Click" />
+                        InputGestureText="Ctrl+N"
+                        Command="{x:Static commands:Commands.CreateNewSession}" />
                     <MenuItem
-                        Header="Dodaj obraz lub folder..."
-                        Click="AddImageOrFolder_Click"
-                        IsEnabled="{Binding IsSessionOpen}" />
+                        Header="Wczytaj sesję..."
+                        InputGestureText="Ctrl+O"
+                        Command="{x:Static commands:Commands.LoadSession}" />
+                    <MenuItem
+                        Header="Otwórz obraz lub folder..."
+                        InputGestureText="Ctrl+I"
+                        Command="{x:Static commands:Commands.AddImageOrFolder}" />
                     <MenuItem
                         Header="Zapisz sesję"
-                        Click="SaveSession_Click"
-                        IsEnabled="{Binding IsSessionModified}" />
+                        InputGestureText="Ctrl+S"
+                        Command="{x:Static commands:Commands.SaveSession}" />
                     <MenuItem
                         Header="Zapisz sesję jako..."
-                        Click="SaveSessionAs_Click"
-                        IsEnabled="{Binding IsSessionOpen}" />
-                    <MenuItem Header="Wyeksportuj do..." IsEnabled="{Binding IsSessionOpen}">
+                        InputGestureText="Ctrl+Shift+S"
+                        Command="{x:Static commands:Commands.SaveSessionAs}" />
+                    <MenuItem
+                        Header="Wyeksportuj do..."
+                        IsEnabled="{Binding IsSessionOpen}"
+                    >
                         <MenuItem
                             Header="pliku CSV"
-                            IsEnabled="{Binding IsSessionOpen}"
-                            Click="ExportAsCSV_Click"
-                            />
+                            InputGestureText="Alt+C"
+                            Command="{x:Static commands:Commands.ExportAsCSV}" />
                         <MenuItem
                             Header="pliku XML"
-                            IsEnabled="{Binding IsSessionOpen}"
-                            Click="ExportAsXML_Click"/>
+                            InputGestureText="Alt+X"
+                            Command="{x:Static commands:Commands.ExportAsXML}" />
                     </MenuItem>
                     <MenuItem
                         Header="Zamknij sesję"
-                        Click="CloseSession_Click"
-                        IsEnabled="{Binding IsSessionOpen}" />
-                    <MenuItem Header="Zamknij" Click="Exit_Click" />
+                        InputGestureText="Ctrl+W"
+                        Command="{x:Static commands:Commands.CloseSession}" />
+                    <MenuItem
+                        Header="Zamknij"
+                        InputGestureText="Alt+F4"
+                        Command="{x:Static commands:Commands.Exit}" />
                 </MenuItem>
                 <MenuItem Header="Pomoc" Focusable="false">
-                    <MenuItem Header="Skróty klawiaturowe" Click="ShortcutsHelp_Click" />
-                    <MenuItem Header="O programie" Click="About_Click" />
+                    <MenuItem
+                        Header="Skróty klawiaturowe"
+                        InputGestureText="Ctrl+F1"
+                        Command="{x:Static commands:Commands.KeyboardShortcuts}" />
+                    <MenuItem
+                        Header="O programie"
+                        Command="{x:Static commands:Commands.AboutIndexer}" />
                 </MenuItem>
             </Menu>
             <StatusBar x:Name="StatusBar" DockPanel.Dock="Bottom">
@@ -223,8 +336,8 @@
                                 Width="20"
                                 Height="20"
                                 Grid.Column="0"
-                                Click="PreviousPictureButton_Click"
-                                Focusable="false" />
+                                Focusable="false"
+                                Command="{x:Static commands:Commands.ChangeToPreviousImage}" />
                             <TextBlock
                                 Text="{Binding CurrentIndexedImage.ImagePath}"
                                 HorizontalAlignment="Center"
@@ -238,8 +351,8 @@
                                 Width="20"
                                 Height="20"
                                 Grid.Column="2"
-                                Click="NextPictureButton_Click"
-                                Focusable="false" />
+                                Focusable="false"
+                                Command="{x:Static commands:Commands.ChangeToNextImage}" />
                         </Grid>
                     </Grid>
                 </DockPanel>

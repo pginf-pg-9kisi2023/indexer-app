@@ -22,6 +22,25 @@ namespace Indexer.View
             InitializeComponent();
         }
 
+        private void CanExecute_IsSessionOpen(
+            object sender, CanExecuteRoutedEventArgs e
+        )
+        {
+            e.CanExecute = Data.IsSessionOpen;
+        }
+
+        private void CanExecute_IsSessionModified(
+            object sender, CanExecuteRoutedEventArgs e
+        )
+        {
+            e.CanExecute = Data.IsSessionModified;
+        }
+
+        private void CanExecute_HasImages(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Data.HasImages;
+        }
+
         private void CreateSession_Click(object sender, RoutedEventArgs e)
         {
             if (!PromptAboutUnsavedChanges())
@@ -268,10 +287,35 @@ namespace Indexer.View
 
         private void ShortcutsHelp_Click(object sender, RoutedEventArgs e)
         {
+            var bullet = "\u2022";
+            var arrows = "\u2191/\u2193/\u2192/\u2190";
             MessageBox.Show(
                 owner: this,
                 caption: Data.ProgramName,
-                messageBoxText: "",
+                messageBoxText: $"""
+                Etykietowanie zdjęć:
+                {bullet} Przesuń etykietę o 1 piksel: {arrows}
+                {bullet} Przesuń etykietę o 4 piksele: Ctrl+{arrows}
+                {bullet} Przesuń etykietę o 25 pikseli: Shift+{arrows}
+                {bullet} Przesuń etykietę o 100 pikseli: Ctrl+Shift+{arrows}
+
+                Nawigacja pomiędzy zdjęciami/punktami:
+                {bullet} Przejdź do wyboru następnego punktu: Enter
+                {bullet} Przejdź do następnego zdjęcia: Ctrl+Tab
+                {bullet} Przejdź do poprzedniego zdjęcia: Ctrl+Shift+Tab
+
+                Główne menu:
+                {bullet} Utwórz nową sesję: Ctrl+N
+                {bullet} Wczytaj sesję: Ctrl+O
+                {bullet} Dodaj zdjęcia i/lub foldery: Ctrl+I
+                {bullet} Zapisz sesję: Ctrl+S
+                {bullet} Zapisz sesji jako...: Ctrl+Shift+S
+                {bullet} Wyeksportuj sesję do pliku CSV: Alt+C
+                {bullet} Wyeksportuj sesję do pliku XML: Alt+X
+                {bullet} Zamknij bieżącą sesję: Ctrl+W
+                {bullet} Zamknij aplikację: Alt+F4
+                {bullet} Wyświetl pomoc dot. skrótów klawiaturowych: Ctrl+F1
+                """,
                 button: MessageBoxButton.OK
             );
         }
@@ -325,31 +369,40 @@ namespace Indexer.View
             }
         }
 
-        private void PreviousPictureButton_Click(object sender, RoutedEventArgs e)
+        private void PreviousImageButton_Click(object sender, RoutedEventArgs e)
         {
             Data.SwitchToPreviousImage();
         }
 
-        private void NextPictureButton_Click(object sender, RoutedEventArgs e)
+        private void NextImageButton_Click(object sender, RoutedEventArgs e)
         {
             Data.SwitchToNextImage();
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            var multiplier = 1;
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                multiplier *= 4;
+            }
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                multiplier *= 25;
+            }
             switch (e.Key)
             {
                 case Key.Up:
-                    Data.MoveCurrentLabelPositionRelatively(y: -1);
+                    Data.MoveCurrentLabelPositionRelatively(y: multiplier * -1);
                     break;
                 case Key.Down:
-                    Data.MoveCurrentLabelPositionRelatively(y: 1);
+                    Data.MoveCurrentLabelPositionRelatively(y: multiplier * 1);
                     break;
                 case Key.Left:
-                    Data.MoveCurrentLabelPositionRelatively(x: -1);
+                    Data.MoveCurrentLabelPositionRelatively(x: multiplier * -1);
                     break;
                 case Key.Right:
-                    Data.MoveCurrentLabelPositionRelatively(x: 1);
+                    Data.MoveCurrentLabelPositionRelatively(x: multiplier * 1);
                     break;
                 case Key.Enter:
                     Data.SwitchToNextLabel();
