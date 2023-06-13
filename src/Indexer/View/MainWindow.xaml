@@ -20,6 +20,10 @@
     </Window.DataContext>
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <local:PathConverter x:Key="PathConverter" />
+        <Style TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
     </Window.Resources>
 
     <Window.CommandBindings>
@@ -218,7 +222,7 @@
                     BorderBrush="{Binding Background, ElementName=StatusBar}"
                     Background="{Binding Background, ElementName=StatusBar}"
                 >
-                    <Grid Background="{Binding Background, ElementName=StatusBar}">
+                    <Grid Background="{Binding Background, ElementName=StatusBar}" Width="Auto">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="20" />
                             <RowDefinition Height="0.25*" />
@@ -244,7 +248,9 @@
                                 <GridView>
                                     <GridViewColumn
                                         Header="Path"
-                                        DisplayMemberBinding="{Binding ImagePath}" />
+                                        DisplayMemberBinding="{Binding ImagePath, Converter={StaticResource PathConverter}}"
+                                        Width="Auto"
+                                   />
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -253,7 +259,7 @@
                             Grid.Row="3"
                             Focusable="false"
                             ItemsSource="{Binding CurrentLabels}"
-                        >
+                            >
                             <ListView.Resources>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="Focusable" Value="false" />
@@ -266,13 +272,35 @@
                                 <GridView>
                                     <GridViewColumn
                                         Header="Name"
-                                        DisplayMemberBinding="{Binding Name}" />
+                                        Width="Auto"
+                                    >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}" TextAlignment="Center" Width="Auto"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
                                     <GridViewColumn
                                         Header="X"
-                                        DisplayMemberBinding="{Binding XText}" />
+                                        Width="Auto"
+                                    >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding X}" TextAlignment="Center" Width="Auto" MinWidth="48"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
                                     <GridViewColumn
                                         Header="Y"
-                                        DisplayMemberBinding="{Binding YText}" />
+                                        Width="Auto"
+                                    >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Y}" TextAlignment="Center" Width="Auto" MinWidth="48"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
                                 </GridView>
                             </ListView.View>
                         </ListView>
