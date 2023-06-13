@@ -21,9 +21,6 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <local:PathConverter x:Key="PathConverter" />
-        <Style TargetType="ListViewItem">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        </Style>
     </Window.Resources>
 
     <Window.CommandBindings>
@@ -222,13 +219,13 @@
                     BorderBrush="{Binding Background, ElementName=StatusBar}"
                     Background="{Binding Background, ElementName=StatusBar}"
                 >
-                    <Grid Background="{Binding Background, ElementName=StatusBar}" Width="Auto">
+                    <Grid Background="{Binding Background, ElementName=StatusBar}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="20" />
                             <RowDefinition Height="0.25*" />
                             <RowDefinition Height="4" />
                             <RowDefinition Height="*" />
-                            <RowDefinition Height="20" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <ListView
                             Name="FilesListView"
@@ -245,13 +242,13 @@
                                 </Style>
                             </ListView.Resources>
                             <ListView.View>
-                                <GridView>
+                                <local:AutoResizeGridView>
                                     <GridViewColumn
                                         Header="Path"
                                         DisplayMemberBinding="{Binding ImagePath, Converter={StaticResource PathConverter}}"
                                         Width="Auto"
                                    />
-                                </GridView>
+                                </local:AutoResizeGridView>
                             </ListView.View>
                         </ListView>
                         <ListView
@@ -269,14 +266,14 @@
                                 </Style>
                             </ListView.Resources>
                             <ListView.View>
-                                <GridView>
+                                <local:AutoResizeGridView>
                                     <GridViewColumn
                                         Header="Name"
-                                        Width="Auto"
+                                        Width="NaN"
                                     >
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Name}" TextAlignment="Center" Width="Auto"/>
+                                                <TextBlock Text="{Binding Name}" TextAlignment="Center" Width="NaN"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -287,7 +284,7 @@
                                     >
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding X}" TextAlignment="Center" Width="Auto" MinWidth="48"/>
+                                                <TextBlock Text="{Binding X}" TextAlignment="Center" Width="NaN"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -297,11 +294,11 @@
                                     >
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Y}" TextAlignment="Center" Width="Auto" MinWidth="48"/>
+                                                <TextBlock Text="{Binding Y}" TextAlignment="Center" Width="NaN"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                </GridView>
+                                </local:AutoResizeGridView>
                             </ListView.View>
                         </ListView>
                         <GridSplitter
