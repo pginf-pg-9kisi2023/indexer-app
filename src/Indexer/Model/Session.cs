@@ -1,5 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -216,6 +218,70 @@ namespace Indexer.Model
 
             var ser = new DataContractSerializer(GetType());
             ser.WriteObject(writer, this);
+        }
+        public void AnalyzeImages(string filePath)
+        {
+            string? recievedData = null;
+            using (Process p = new Process())
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                StringBuilder sb = new StringBuilder();
+                sb.Append(_indexedImages.Count);
+                foreach (var img in _indexedImages)
+                {
+                    sb.Append(' ');
+                    sb.Append(img.ImagePath);
+                    sb.Append(' ');
+                    sb.Append(Config.Hints.Count);
+                    foreach (var label in Config.Hints)
+                    {
+                        sb.Append(' ');
+                        sb.Append(label.Name);
+                    }
+                }
+                startInfo.CreateNoWindow = true;
+                startInfo.RedirectStandardOutput = true;
+                startInfo.RedirectStandardInput = true;
+
+                startInfo.UseShellExecute = false;
+                startInfo.Arguments = sb.ToString();
+                startInfo.FileName = filePath;
+
+
+                startInfo.UseShellExecute = false;
+                startInfo.RedirectStandardOutput = true;
+                p.StartInfo = startInfo;
+                p.Start();
+                recievedData = p.StandardOutput.ReadToEnd();
+                p.WaitForExit();
+            }
+            if(recievedData == null)
+            {
+                return;
+            }
+            string[] lines = recievedData.Replace("\r", "",StringComparison.CurrentCulture).Split("\n");
+            int j;
+            for(j=0;j<lines.Length;j++)
+            {
+                if (_indexedImages.TryGetValue(lines[j++], out var image))
+                {
+                    for(int k=0;k<Config.Hints.Count;k++)
+                    {
+                        string[] label = lines[j++].Split(" ");
+                        using (var fileStream = new FileStream(image.ImagePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        {
+                            using (var img = Image.FromStream(fileStream, false, false))
+                            {
+                                var height = img.Height;
+                                var width = img.Width;
+                                image.AddLabel(new Label(label[0], (int)(width * Double.Parse(label[1], CultureInfo.InvariantCulture)), (int)(height * Double.Parse(label[2], CultureInfo.InvariantCulture))));
+                            }
+                        }
+                       
+                    }
+                    j--;
+                }
+            }
         }
     }
 }

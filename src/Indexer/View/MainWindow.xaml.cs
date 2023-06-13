@@ -463,5 +463,33 @@ namespace Indexer.View
                 Data.SetCurrentLabel(label);
             }
         }
+
+        private static string? PromptForExecutable_Location()
+        {
+            var openFileDialog = new OpenFileDialog()
+            {
+                Title = "Wybierz plik wykonywalny",
+                DefaultExt = "exe",
+                Filter = (
+                   "Pliki wykonywalne|*.exe"
+               ),
+                RestoreDirectory = true
+            };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                return openFileDialog.FileName;
+            }
+            return null;
+        }
+
+        private void AnalyzeImages_Click(object sender, ExecutedRoutedEventArgs e)
+        {
+            var fileLocation = PromptForExecutable_Location();
+            if (fileLocation is null)
+            {
+                return;
+            }
+            Data.AnalyzeImages(fileLocation);
+        }
     }
 }
