@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace Indexer.View
@@ -15,9 +10,10 @@ namespace Indexer.View
             {
 
                 if (double.IsNaN(column.Width))
+                {
                     column.Width = column.ActualWidth;
+                }
 
-               
                 column.Width = double.NaN;
             }
             base.PrepareItem(item);
