@@ -42,6 +42,10 @@
             Executed="SaveSessionAs_Click"
             CanExecute="CanExecute_IsSessionOpen" />
         <CommandBinding
+            Command="{x:Static commands:Commands.ExportTo}"
+            Executed="ExportTo_Click"
+            CanExecute="CanExecute_HasExportedBefore" />
+        <CommandBinding
             Command="{x:Static commands:Commands.ExportAsCSV}"
             Executed="ExportAsCSV_Click"
             CanExecute="CanExecute_IsSessionOpen" />
@@ -93,6 +97,10 @@
             Key="S"
             Modifiers="Ctrl+Shift"
             Command="{x:Static commands:Commands.SaveSessionAs}" />
+        <KeyBinding
+            Key="E"
+            Modifiers="Ctrl"
+            Command="{x:Static commands:Commands.ExportTo}" />
         <KeyBinding
             Key="C"
             Modifiers="Alt"
@@ -149,15 +157,25 @@
                         InputGestureText="Ctrl+Shift+S"
                         Command="{x:Static commands:Commands.SaveSessionAs}" />
                     <MenuItem
-                        Header="Wyeksportuj do..."
+                        Header="{Binding LastExportFileName}"
+                        HeaderStringFormat="Wyeksportuj do {0}"
+                        InputGestureText="Ctrl+E"
+                        IsEnabled="{Binding IsSessionOpen}"
+                        Visibility="{
+                            Binding HasExportedBefore,
+                            Converter={StaticResource BooleanToVisibilityConverter}
+                        }"
+                        Command="{x:Static commands:Commands.ExportTo}" />
+                    <MenuItem
+                        Header="Wyeksportuj jako..."
                         IsEnabled="{Binding IsSessionOpen}"
                     >
                         <MenuItem
-                            Header="pliku CSV"
+                            Header="plik CSV"
                             InputGestureText="Alt+C"
                             Command="{x:Static commands:Commands.ExportAsCSV}" />
                         <MenuItem
-                            Header="pliku XML"
+                            Header="plik XML"
                             InputGestureText="Alt+X"
                             Command="{x:Static commands:Commands.ExportAsXML}" />
                     </MenuItem>
