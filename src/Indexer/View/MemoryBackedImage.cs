@@ -14,7 +14,7 @@ namespace Indexer.View
                 typeof(MemoryBackedImage),
                 new PropertyMetadata(default(MemoryStream), OnStreamSourceChange)
             );
-        public MemoryStream StreamSource
+        public MemoryStream? StreamSource
         {
             get => (MemoryStream)GetValue(StreamSourceProperty);
             set => SetValue(StreamSourceProperty, value);

@@ -1,17 +1,45 @@
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics.CodeAnalysis;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 using Indexer.Collections;
 using Indexer.ViewModel;
 
+using MemoryStream = System.IO.MemoryStream;
+
 namespace Indexer.View
 {
-    public class ImageWithLabels : MemoryBackedImage
+    public class ImageWithLabels : Grid
     {
+        public static readonly DependencyProperty StreamSourceProperty
+            = DependencyProperty.Register(
+                "StreamSource",
+                typeof(MemoryStream),
+                typeof(ImageWithLabels),
+                new PropertyMetadata(default(MemoryStream), OnStreamSourceChange)
+            );
+        public MemoryStream StreamSource
+        {
+            get => (MemoryStream)GetValue(StreamSourceProperty);
+            set => SetValue(StreamSourceProperty, value);
+        }
+        public static readonly DependencyProperty BitmapSourceProperty
+            = DependencyProperty.Register(
+                "BitmapSource",
+                typeof(BitmapImage),
+                typeof(ImageWithLabels),
+                new PropertyMetadata(default(BitmapImage))
+            );
+        public BitmapImage? BitmapSource
+        {
+            get => (BitmapImage)GetValue(BitmapSourceProperty);
+            private set => SetValue(BitmapSourceProperty, value);
+        }
         public static readonly DependencyProperty CurrentLabelProperty
             = DependencyProperty.Register(
                 "CurrentLabel",
@@ -38,14 +66,71 @@ namespace Indexer.View
             get => (LabelVMObservableCollection)GetValue(CurrentLabelsProperty);
             internal set => SetValue(CurrentLabelsProperty, value);
         }
-        private DrawingVisual? Drawing;
+        public static readonly DependencyProperty StretchProperty =
+            MemoryBackedImage.StretchProperty.AddOwner(typeof(ImageWithLabels));
+        public Stretch Stretch
+        {
+            get { return (Stretch)GetValue(StretchProperty); }
+            set { SetValue(StretchProperty, value); }
+        }
+        public static readonly DependencyProperty StretchDirectionProperty =
+            MemoryBackedImage.StretchDirectionProperty.AddOwner(
+                typeof(ImageWithLabels)
+            );
+        public StretchDirection StretchDirection
+        {
+            get { return (StretchDirection)GetValue(StretchDirectionProperty); }
+            set { SetValue(StretchDirectionProperty, value); }
+        }
 
-        public ImageWithLabels() { }
+        public MemoryBackedImage Image { get; private set; } = new();
+        private readonly Canvas Canvas = new();
+        private readonly Dictionary<string, Canvas> LabelPoints = new();
+
+        public ImageWithLabels()
+        {
+            Canvas.SetBinding(
+                WidthProperty, new Binding("ActualWidth") { Source = Image }
+            );
+            Canvas.SetBinding(
+                HeightProperty, new Binding("ActualHeight") { Source = Image }
+            );
+            Children.Add(Image);
+            Children.Add(Canvas);
+            TriggerCanvasChange();
+        }
+
+        private static void OnStreamSourceChange(
+            DependencyObject sender, DependencyPropertyChangedEventArgs e
+        )
+        {
+            var self = (ImageWithLabels)sender;
+            if (self is null)
+            {
+                return;
+            }
+            self.Image.StreamSource = (MemoryStream?)e.NewValue;
+            self.BitmapSource = self.Image.BitmapSource;
+            self.TriggerCanvasChange();
+        }
 
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
             base.OnRenderSizeChanged(sizeInfo);
-            DrawLabels();
+            TriggerCanvasChange();
+        }
+
+        private void TriggerCanvasChange()
+        {
+            LabelPoints.Clear();
+            Canvas.Children.Clear();
+            if (CurrentLabels is not null)
+            {
+                foreach (var label in CurrentLabels)
+                {
+                    DrawLabel(label);
+                }
+            }
         }
 
         private static void OnCurrentLabelChange(
@@ -57,7 +142,14 @@ namespace Indexer.View
             {
                 return;
             }
-            self.DrawLabels();
+            if (e.OldValue is LabelViewModel oldValue)
+            {
+                self.DrawLabel(oldValue);
+            }
+            if (e.NewValue is LabelViewModel newValue)
+            {
+                self.DrawLabel(newValue);
+            }
         }
 
         private static void OnCurrentLabelsChange(
@@ -69,123 +161,105 @@ namespace Indexer.View
             {
                 return;
             }
+
+            self.LabelPoints.Clear();
+            self.Canvas.Children.Clear();
             if (e.OldValue is LabelVMObservableCollection oldValue)
             {
-                oldValue.CollectionChanged -= self.OnLabelsCollectionChanged;
+                foreach (var label in oldValue)
+                {
+                    label.PropertyChanged -= self.OnLabelChange;
+                }
             }
             if (e.NewValue is LabelVMObservableCollection newValue)
             {
-                newValue.CollectionChanged += self.OnLabelsCollectionChanged;
-            }
-            self.DrawLabels();
-        }
-
-        private void OnLabelsCollectionChanged(
-            object? sender, NotifyCollectionChangedEventArgs e
-        )
-        {
-            if (Drawing != null && e.Action == NotifyCollectionChangedAction.Add)
-            {
-                if (e.NewItems is IList<LabelViewModel> labels)
+                foreach (var label in newValue)
                 {
-                    var drawingContext = Drawing.RenderOpen();
-                    foreach (var label in labels)
-                    {
-                        DrawLabel(drawingContext, label);
-                    }
-                    drawingContext.Close();
-                    UpdateSource();
+                    label.PropertyChanged += self.OnLabelChange;
+                    self.DrawLabel(label);
                 }
-                return;
             }
-            DrawLabels();
         }
 
-        private void DrawLabels()
+        private void OnLabelChange(object? sender, PropertyChangedEventArgs e)
         {
-            if (BitmapSource is null)
+            var label = (LabelViewModel?)sender;
+            if (label is null)
             {
                 return;
             }
-            Drawing = new DrawingVisual();
-            var drawingContext = Drawing.RenderOpen();
-            drawingContext.DrawImage(
-                BitmapSource,
-                new Rect(0, 0, BitmapSource.PixelWidth, BitmapSource.PixelHeight)
-            );
-            foreach (var label in CurrentLabels)
+            if (e.PropertyName == nameof(LabelViewModel.Position))
             {
-                DrawLabel(drawingContext, label);
+                DrawLabel(label);
             }
-            drawingContext.Close();
-            UpdateSource();
         }
 
-        private void UpdateSource()
+        private void DrawLabel(LabelViewModel label)
         {
-            if (BitmapSource is null)
+            if (Image.BitmapSource is null)
             {
                 return;
             }
-            var rtb = new RenderTargetBitmap(
-                BitmapSource.PixelWidth,
-                BitmapSource.PixelHeight,
-                96,
-                96,
-                PixelFormats.Pbgra32
-            );
-            rtb.Render(Drawing);
-            Source = rtb;
-        }
+            LabelPoints.TryGetValue(label.Name, out var oldCanvas);
+            if (oldCanvas is not null)
+            {
+                Canvas.Children.Remove(oldCanvas);
+                LabelPoints.Remove(label.Name);
+            }
+            if (label.Position is null)
+            {
+                return;
+            }
 
-        private void DrawLabel(
-            [NotNull] DrawingContext drawingContext, LabelViewModel label
-        )
-        {
-            if (BitmapSource is null || label.Position is null)
-            {
-                return;
-            }
-            double factor = 1;
-            if (ActualWidth != 0 && BitmapSource.PixelWidth != ActualWidth)
-            {
-                factor = BitmapSource.PixelWidth / ActualWidth;
-            }
+            var x = label.X * Image.ActualWidth / Image.BitmapSource.PixelWidth;
+            var y = label.Y * Image.ActualHeight / Image.BitmapSource.PixelHeight;
+            var labelCanvas = new Canvas();
             if (label == CurrentLabel)
             {
-                var radius = 8 * factor;
-                Pen pen = new Pen(Brushes.Red, 2 * factor);
-                drawingContext.DrawLine(
-                    pen,
-                    new Point(label.X, label.Y + radius),
-                    new Point(label.X, label.Y - radius)
-                );
-                drawingContext.DrawLine(
-                    pen,
-                    new Point(label.X + radius, label.Y),
-                    new Point(label.X - radius, label.Y)
-                );
+                var radius = 8;
+                var verticalLine = new Line()
+                {
+                    X1 = x,
+                    Y1 = y + radius,
+                    X2 = x,
+                    Y2 = y - radius,
+                    Stroke = Brushes.Red,
+                    StrokeThickness = 2
+                };
+                var horizontalLine = new Line()
+                {
+                    X1 = x - radius,
+                    Y1 = y,
+                    X2 = x + radius,
+                    Y2 = y,
+                    Stroke = Brushes.Red,
+                    StrokeThickness = 2
+                };
+                labelCanvas.Children.Add(verticalLine);
+                labelCanvas.Children.Add(horizontalLine);
             }
             else
             {
-                var radius = 6 * factor;
-                var strokeThickness = 4 * factor;
-                var fillThickness = 2 * factor;
-                drawingContext.DrawEllipse(
-                    null,
-                    new Pen(Brushes.White, strokeThickness),
-                    new Point(label.X, label.Y),
-                    radius,
-                    radius
-                );
-                drawingContext.DrawEllipse(
-                    null,
-                    new Pen(Brushes.Black, fillThickness),
-                    new Point(label.X, label.Y),
-                    radius,
-                    radius
-                );
+                var radius = 6;
+                var strokeThickness = 4;
+                var fillThickness = 2;
+                var stroke = new Path()
+                {
+                    Data = new EllipseGeometry(new Point(x, y), radius, radius),
+                    Stroke = Brushes.White,
+                    StrokeThickness = strokeThickness,
+                };
+                var fill = new Path()
+                {
+                    Data = new EllipseGeometry(new Point(x, y), radius, radius),
+                    Stroke = Brushes.Black,
+                    StrokeThickness = fillThickness,
+                };
+                labelCanvas.Children.Add(stroke);
+                labelCanvas.Children.Add(fill);
             }
+            LabelPoints.Add(label.Name, labelCanvas);
+            Canvas.Children.Add(labelCanvas);
         }
     }
 }

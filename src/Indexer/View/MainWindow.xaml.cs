@@ -293,9 +293,9 @@ namespace Indexer.View
 
         private Point GetImageCursorPosition(MouseEventArgs e)
         {
-            Point mousePos = e.GetPosition(MainImage);
-            var x = mousePos.X * Data.CurrentImage!.Width / MainImage.ActualWidth;
-            var y = mousePos.Y * Data.CurrentImage!.Height / MainImage.ActualHeight;
+            Point mousePos = e.GetPosition(MainImage.Image);
+            var x = mousePos.X * Data.CurrentImage!.Width / MainImage.Image.ActualWidth;
+            var y = mousePos.Y * Data.CurrentImage!.Height / MainImage.Image.ActualHeight;
             return new Point((int)x, (int)y);
         }
 
