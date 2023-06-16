@@ -465,6 +465,7 @@ namespace Indexer.ViewModel
             }
             _session.ExportPointsToCSV(filePath);
         }
+
         public void AnalyzeImages([NotNull] string filePath)
         {
             if (_session is null)

@@ -207,6 +207,7 @@ public class SessionTests
             File.Delete(filePath);
         }
     }
+
     [TestMethod]
     [DeploymentItem(@"test_data\session_valid_without_labels.xml")]
     [DeploymentItem(@"test_data\PointProposer.exe")]
@@ -216,19 +217,10 @@ public class SessionTests
         var expected = 2;
         var session = Session.FromFile("session_valid.xml");
         session.AnalyzeImages("PointProposer.exe");
-        if (session.IndexedImages.TryGetValue("D:\\absolute\\path\\to\\image1.jpg", out var image))
-        {
-            if (image == null)
-            {
-                Assert.Fail();
-            }
-            Assert.AreEqual(expected, image.Labels.Count);
-        }
-        else
-        {
-            Assert.Fail();
-        }
-
-
+        session.IndexedImages.TryGetValue(
+            "D:\\absolute\\path\\to\\image1.jpg", out var image
+        );
+        Assert.IsNotNull(image);
+        Assert.AreEqual(expected, image.Labels.Count);
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -219,6 +218,7 @@ namespace Indexer.Model
             var ser = new DataContractSerializer(GetType());
             ser.WriteObject(writer, this);
         }
+
         public void AnalyzeImages(string filePath)
         {
             string? receivedData = null;
