@@ -474,9 +474,9 @@ namespace Indexer.ViewModel
             _session.AnalyzeImages(filePath);
             IndexedImages.Clear();
             IndexedImages.AddRange(
-                    from indexedImage in _session.IndexedImages
-                    select new IndexedImageViewModel(_session, indexedImage)
-                );
+                from indexedImage in _session.IndexedImages
+                select new IndexedImageViewModel(_session, indexedImage)
+            );
             OnPropertyChanged(nameof(IndexedImages));
             OnPropertyChanged(nameof(CurrentBitmapImage));
             OnPropertyChanged(nameof(CurrentLabels));
