@@ -224,30 +224,29 @@ namespace Indexer.Model
             string? receivedData = null;
             using (var p = new Process())
             {
-                var sb = new StringBuilder();
-                sb.Append(_indexedImages.Count);
-                foreach (var img in _indexedImages)
-                {
-                    sb.Append(' ');
-                    sb.Append(img.ImagePath);
-                    sb.Append(' ');
-                    sb.Append(Config.Hints.Count);
-                    foreach (var label in Config.Hints)
-                    {
-                        sb.Append(' ');
-                        sb.Append(label.Name);
-                    }
-                }
-                p.StartInfo = new()
+                var startInfo = new ProcessStartInfo()
                 {
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,
                     RedirectStandardInput = true,
-
                     UseShellExecute = false,
-                    Arguments = sb.ToString(),
                     FileName = filePath,
                 };
+                startInfo.ArgumentList.Add(
+                    _indexedImages.Count.ToString(CultureInfo.InvariantCulture)
+                );
+                foreach (var img in _indexedImages)
+                {
+                    startInfo.ArgumentList.Add(img.ImagePath);
+                    startInfo.ArgumentList.Add(
+                        Config.Hints.Count.ToString(CultureInfo.InvariantCulture)
+                    );
+                    foreach (var label in Config.Hints)
+                    {
+                        startInfo.ArgumentList.Add(label.Name);
+                    }
+                }
+                p.StartInfo = startInfo;
                 p.Start();
                 receivedData = p.StandardOutput.ReadToEnd();
                 p.WaitForExit();
