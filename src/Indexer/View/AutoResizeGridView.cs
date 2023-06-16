@@ -8,7 +8,6 @@ namespace Indexer.View
         {
             foreach (GridViewColumn column in Columns)
             {
-
                 if (double.IsNaN(column.Width))
                 {
                     column.Width = column.ActualWidth;

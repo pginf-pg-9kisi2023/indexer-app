@@ -245,9 +245,11 @@
                                 <local:AutoResizeGridView>
                                     <GridViewColumn
                                         Header="Path"
-                                        DisplayMemberBinding="{Binding ImagePath, Converter={StaticResource PathConverter}}"
-                                        Width="Auto"
-                                   />
+                                        DisplayMemberBinding="{
+                                            Binding ImagePath,
+                                            Converter={StaticResource PathConverter}
+                                        }"
+                                        Width="Auto" />
                                 </local:AutoResizeGridView>
                             </ListView.View>
                         </ListView>
@@ -256,7 +258,7 @@
                             Grid.Row="3"
                             Focusable="false"
                             ItemsSource="{Binding CurrentLabels}"
-                            >
+                        >
                             <ListView.Resources>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="Focusable" Value="false" />
@@ -267,34 +269,34 @@
                             </ListView.Resources>
                             <ListView.View>
                                 <local:AutoResizeGridView>
-                                    <GridViewColumn
-                                        Header="Name"
-                                        Width="NaN"
-                                    >
+                                    <GridViewColumn Header="Name" Width="NaN">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Name}" TextAlignment="Center" Width="NaN"/>
+                                                <TextBlock
+                                                    Text="{Binding Name}"
+                                                    TextAlignment="Center"
+                                                    Width="NaN" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
 
-                                    <GridViewColumn
-                                        Header="X"
-                                        Width="Auto"
-                                    >
+                                    <GridViewColumn Header="X" Width="Auto">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding X}" TextAlignment="Center" Width="NaN"/>
+                                                <TextBlock
+                                                    Text="{Binding X}"
+                                                    TextAlignment="Center"
+                                                    Width="NaN" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn
-                                        Header="Y"
-                                        Width="Auto"
-                                    >
+                                    <GridViewColumn Header="Y" Width="Auto">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Y}" TextAlignment="Center" Width="NaN"/>
+                                                <TextBlock
+                                                    Text="{Binding Y}"
+                                                    TextAlignment="Center"
+                                                    Width="NaN" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
