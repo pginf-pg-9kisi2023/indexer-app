@@ -269,26 +269,11 @@ namespace Indexer.Model
                 for (var k = 0; k < Config.Hints.Count; k++)
                 {
                     var label = lines[j++].Split(" ");
-                    using var fileStream = new FileStream(
-                        image.ImagePath, FileMode.Open, FileAccess.Read
-                    );
-                    using var img = Image.FromStream(fileStream, false, false);
-
-                    var height = img.Height;
-                    var width = img.Width;
                     image.AddLabel(
                         new Label(
                             label[0],
-                            (int)(
-                                width * Double.Parse(
-                                    label[1], CultureInfo.InvariantCulture
-                                )
-                            ),
-                            (int)(
-                                height * Double.Parse(
-                                    label[2], CultureInfo.InvariantCulture
-                                )
-                            )
+                            int.Parse(label[1], CultureInfo.InvariantCulture),
+                            int.Parse(label[2], CultureInfo.InvariantCulture)
                         )
                     );
                 }
