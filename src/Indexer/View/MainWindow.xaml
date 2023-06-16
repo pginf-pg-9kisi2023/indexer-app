@@ -23,6 +23,7 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <local:PathConverter x:Key="PathConverter" />
+        <local:PreventAutoLoweringLengthConverter x:Key="PreventAutoLoweringLengthConverter" />
     </Window.Resources>
 
     <Window.CommandBindings>
@@ -210,6 +211,18 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Name="LeftSidebarColumnDef" Width="auto">
+                        <ColumnDefinition.MinWidth>
+                            <MultiBinding
+                                Converter="{
+                                    StaticResource PreventAutoLoweringLengthConverter
+                                }"
+                            >
+                                <Binding
+                                    Path="Width"
+                                    RelativeSource="{RelativeSource Self}" />
+                                <Binding Path="ActualWidth" ElementName="LeftSidebar" />
+                            </MultiBinding>
+                        </ColumnDefinition.MinWidth>
                         <ColumnDefinition.MaxWidth>
                             <MultiBinding
                                 Converter="{local:MaxLengthConverter Length=250}"
