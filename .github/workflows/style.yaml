@@ -6,7 +6,7 @@ on:
 jobs:
   style:
     if: >-
-      github.repository_owner != 'Jackenmen'
+      github.repository_owner != 'pginf-pg-9kisi2023'
       || github.event_name != 'push'
       || github.ref == 'refs/heads/main'
     runs-on: windows-latest
