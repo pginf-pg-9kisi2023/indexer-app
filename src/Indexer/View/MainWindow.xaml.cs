@@ -464,32 +464,20 @@ namespace Indexer.View
             }
         }
 
-        private static string? PromptForExecutable_Location()
+        private void AnalyzeImages_Click(object sender, ExecutedRoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog()
             {
-                Title = "Wybierz plik wykonywalny",
+                Title = "Wybierz program do wsadowej analizy zdjęć",
                 DefaultExt = "exe",
-                Filter = (
-                   "Pliki wykonywalne|*.exe"
-               ),
+                Filter = "Pliki wykonywalne|*.exe",
                 RestoreDirectory = true
             };
-            if (openFileDialog.ShowDialog() == true)
-            {
-                return openFileDialog.FileName;
-            }
-            return null;
-        }
-
-        private void AnalyzeImages_Click(object sender, ExecutedRoutedEventArgs e)
-        {
-            var fileLocation = PromptForExecutable_Location();
-            if (fileLocation is null)
+            if (openFileDialog.ShowDialog() != true)
             {
                 return;
             }
-            Data.AnalyzeImages(fileLocation);
+            Data.AnalyzeImages(openFileDialog.FileName);
         }
     }
 }
