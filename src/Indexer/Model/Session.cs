@@ -221,10 +221,9 @@ namespace Indexer.Model
 
         public void AnalyzeImages(string filePath)
         {
-            string? receivedData = null;
             using (var p = new Process())
             {
-                var startInfo = new ProcessStartInfo()
+                p.StartInfo = new()
                 {
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,
@@ -232,53 +231,51 @@ namespace Indexer.Model
                     UseShellExecute = false,
                     FileName = filePath,
                 };
-                startInfo.ArgumentList.Add(
-                    _indexedImages.Count.ToString(CultureInfo.InvariantCulture)
-                );
-                foreach (var img in _indexedImages)
+                p.OutputDataReceived += HandleAnalyzedImageOutput;
+                p.Start();
+                p.BeginOutputReadLine();
+                using (var writer = p.StandardInput)
                 {
-                    startInfo.ArgumentList.Add(img.ImagePath);
-                    startInfo.ArgumentList.Add(
-                        Config.Hints.Count.ToString(CultureInfo.InvariantCulture)
-                    );
-                    foreach (var label in Config.Hints)
+                    var line = new StringBuilder();
+                    foreach (var img in _indexedImages)
                     {
-                        startInfo.ArgumentList.Add(label.Name);
+                        line.Append(img.ImagePath);
+                        foreach (var hint in Config.Hints)
+                        {
+                            if (!img.Labels.Contains(hint.Name))
+                            {
+                                line.AppendFormat(
+                                    CultureInfo.InvariantCulture, "\0{0}", hint.Name
+                                );
+                            }
+                        }
+                        writer.WriteLine(line.ToString());
+                        line.Clear();
                     }
                 }
-                p.StartInfo = startInfo;
-                p.Start();
-                receivedData = p.StandardOutput.ReadToEnd();
                 p.WaitForExit();
             }
-            if (receivedData == null)
+        }
+
+        private void HandleAnalyzedImageOutput(object sender, DataReceivedEventArgs e)
+        {
+            var line = e.Data;
+            if (line is null)
             {
                 return;
             }
 
-            var lines = receivedData.Replace(
-                "\r", "", StringComparison.CurrentCulture
-            ).Split("\n");
-            for (var j = 0; j < lines.Length; j++)
+            var data = line.Split("\0");
+            var imgPath = data[0];
+            if (!_indexedImages.TryGetValue(imgPath, out var image))
             {
-                if (!_indexedImages.TryGetValue(lines[j++], out var image))
-                {
-                    continue;
-                }
-
-                for (var k = 0; k < Config.Hints.Count; k++)
-                {
-                    var label = lines[j++].Split(" ");
-                    image.AddLabel(
-                        new Label(
-                            label[0],
-                            int.Parse(label[1], CultureInfo.InvariantCulture),
-                            int.Parse(label[2], CultureInfo.InvariantCulture)
-                        )
-                    );
-                }
-                j--;
+                return;
             }
+            var labelName = data[1];
+            var x = int.Parse(data[2], CultureInfo.InvariantCulture);
+            var y = int.Parse(data[3], CultureInfo.InvariantCulture);
+
+            image.AddLabel(new Label(labelName, x, y));
         }
     }
 }
