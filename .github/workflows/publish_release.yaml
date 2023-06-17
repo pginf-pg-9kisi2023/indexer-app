@@ -43,7 +43,7 @@ jobs:
       - name: Create a release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.event_name == 'push' && 'edge' || github.ref_name }}
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'edge' }}
           target_commitish: ${{ github.sha }}
           body: >
             Built from [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
