@@ -65,7 +65,9 @@ namespace Indexer.View
             catch (SerializationException ex)
             {
                 ShowSerializationExceptionDialog(ex);
+                return;
             }
+            Data.SetTemporaryStatusOverride("Utworzono nową sesję");
         }
 
         private void LoadSession_Click(object sender, RoutedEventArgs e)
@@ -86,7 +88,9 @@ namespace Indexer.View
             catch (SerializationException ex)
             {
                 ShowSerializationExceptionDialog(ex);
+                return;
             }
+            Data.SetTemporaryStatusOverride($"Wczytano sesję z '{sessionLocation}'");
         }
 
         private void SaveSession_Click(object sender, RoutedEventArgs e)
@@ -106,6 +110,7 @@ namespace Indexer.View
                 return;
             }
             Data.CloseSession();
+            Data.SetStatus("");
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
@@ -163,6 +168,9 @@ namespace Indexer.View
                 }
             }
             Data.SaveSession(saveLocation);
+            Data.SetTemporaryStatusOverride(
+                $"Zapisano sesję do '{Data.SessionFilePath}'"
+            );
             return true;
         }
 
@@ -246,6 +254,9 @@ namespace Indexer.View
             if (dialog.ShowDialog() == true)
             {
                 Data.AddIndexedImages(imageSelection.Files);
+                Data.SetTemporaryStatusOverride(
+                    $"Dodano {imageSelection.Files.Count} zdjęć"
+                );
             }
             else
             {
@@ -256,6 +267,9 @@ namespace Indexer.View
         private void ExportTo_Click(object sender, RoutedEventArgs e)
         {
             Data.ExportToLastFile();
+            Data.SetTemporaryStatusOverride(
+                $"Wyeksportowano punkty do '{Data.LastExportPath}'"
+            );
         }
 
         private void ExportAsCSV_Click(object sender, RoutedEventArgs e)
@@ -267,6 +281,9 @@ namespace Indexer.View
             }
 
             Data.ExportPointsToCSV(fileLocation);
+            Data.SetTemporaryStatusOverride(
+                $"Wyeksportowano punkty do '{fileLocation}'"
+            );
         }
 
         private void ExportAsXML_Click(object sender, RoutedEventArgs e)
@@ -278,6 +295,9 @@ namespace Indexer.View
             }
 
             Data.ExportPointsToXML(fileLocation);
+            Data.SetTemporaryStatusOverride(
+                $"Wyeksportowano punkty do '{fileLocation}'"
+            );
         }
 
         private string? PromptForExportLocation(string fileExt)
@@ -394,11 +414,13 @@ namespace Indexer.View
         private void PreviousImageButton_Click(object sender, RoutedEventArgs e)
         {
             Data.SwitchToPreviousImage();
+            Data.SetTemporaryStatusOverride($"Załadowano '{Data.CurrentImage!.Path}'");
         }
 
         private void NextImageButton_Click(object sender, RoutedEventArgs e)
         {
             Data.SwitchToNextImage();
+            Data.SetTemporaryStatusOverride($"Załadowano '{Data.CurrentImage!.Path}'");
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -428,6 +450,7 @@ namespace Indexer.View
                     break;
                 case Key.Enter:
                     Data.SwitchToNextLabel();
+                    Data.SetStatus($"Zaznaczanie etykiety '{Data.CurrentLabel!.Name}'");
                     return;
             }
         }
@@ -469,6 +492,9 @@ namespace Indexer.View
             if (indexedImage is not null)
             {
                 Data.SetCurrentImage(indexedImage);
+                Data.SetTemporaryStatusOverride(
+                    $"Załadowano '{indexedImage.ImagePath}'"
+                );
             }
         }
 
@@ -483,6 +509,7 @@ namespace Indexer.View
             if (label is not null)
             {
                 Data.SetCurrentLabel(label);
+                Data.SetStatus($"Zaznaczanie etykiety '{label.Name}'");
             }
         }
 
@@ -500,6 +527,7 @@ namespace Indexer.View
                 return;
             }
             Data.AnalyzeImages(openFileDialog.FileName);
+            Data.SetTemporaryStatusOverride("Wsadowa analiza zdjęć ukończona");
         }
     }
 }
