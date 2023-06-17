@@ -1,0 +1,51 @@
+name: Publish edge and on tag release
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Publish
+        run: dotnet publish --no-build -c Release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: artifacts/publish/Indexer/Release/*.exe
+          if-no-files-found: error
+
+  release:
+    needs: build
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-output
+
+      - name: Create a release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event_name == 'push' && 'edge' || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          body: >
+            Built from [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+          prerelease: true
+          files: '*.exe'
