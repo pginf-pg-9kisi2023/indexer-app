@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Windows;
@@ -34,6 +35,11 @@ namespace Indexer.View
         )
         {
             e.CanExecute = Data.IsSessionModified;
+        }
+
+        private void CanExecute_HasExportedBefore(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Data.HasExportedBefore;
         }
 
         private void CanExecute_HasImages(object sender, CanExecuteRoutedEventArgs e)
@@ -247,6 +253,11 @@ namespace Indexer.View
             }
         }
 
+        private void ExportTo_Click(object sender, RoutedEventArgs e)
+        {
+            Data.ExportToLastFile();
+        }
+
         private void ExportAsCSV_Click(object sender, RoutedEventArgs e)
         {
             var fileLocation = PromptForExportLocation("csv");
@@ -269,15 +280,25 @@ namespace Indexer.View
             Data.ExportPointsToXML(fileLocation);
         }
 
-        private static string? PromptForExportLocation(string fileExt)
+        private string? PromptForExportLocation(string fileExt)
         {
+            string? path = null;
+            Data.LastExportPaths.TryGetValue(fileExt, out path);
             var saveFileDialog = new SaveFileDialog()
             {
                 Title = $"Eksportuj do pliku {fileExt.ToUpperInvariant()}",
                 DefaultExt = fileExt,
-                Filter = $"Pliki {fileExt.ToUpperInvariant()}|*.{fileExt}",
-                RestoreDirectory = true
+                Filter = $"Pliki {fileExt.ToUpperInvariant()}|*.{fileExt}"
             };
+            if (path is not null)
+            {
+                saveFileDialog.InitialDirectory = Path.GetDirectoryName(path);
+                saveFileDialog.FileName = Path.GetFileName(path);
+            }
+            else
+            {
+                saveFileDialog.RestoreDirectory = true;
+            }
             if (saveFileDialog.ShowDialog() == true)
             {
                 return saveFileDialog.FileName;
@@ -310,8 +331,9 @@ namespace Indexer.View
                 {bullet} Dodaj zdjęcia i/lub foldery: Ctrl+I
                 {bullet} Zapisz sesję: Ctrl+S
                 {bullet} Zapisz sesji jako...: Ctrl+Shift+S
-                {bullet} Wyeksportuj sesję do pliku CSV: Alt+C
-                {bullet} Wyeksportuj sesję do pliku XML: Alt+X
+                {bullet} Wyeksportuj sesję (do ostatniego pliku eksportu): Alt+C
+                {bullet} Wyeksportuj sesję jako plik CSV: Alt+C
+                {bullet} Wyeksportuj sesję jako plik XML: Alt+X
                 {bullet} Zamknij bieżącą sesję: Ctrl+W
                 {bullet} Zamknij aplikację: Alt+F4
                 {bullet} Wyświetl pomoc dot. skrótów klawiaturowych: Ctrl+F1

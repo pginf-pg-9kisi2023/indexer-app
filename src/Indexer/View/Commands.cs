@@ -24,6 +24,10 @@ namespace Indexer.View
             "Save Session As", "SaveSessionAs", typeof(Commands)
         );
 
+        public static RoutedUICommand ExportTo = new RoutedUICommand(
+            "Export To", "ExportTo", typeof(Commands)
+        );
+
         public static RoutedUICommand ExportAsCSV = new RoutedUICommand(
             "Export As CSV", "ExportAsCSV", typeof(Commands)
         );

@@ -40,6 +40,24 @@ namespace Indexer.ViewModel
                 return Path.GetFileName(_session.FilePath);
             }
         }
+        public bool HasExportedBefore => LastExportType != null;
+        public string? LastExportType { get; private set; }
+        private readonly Dictionary<string, string> _LastExportPaths = new();
+        public ReadOnlyDictionary<string, string> LastExportPaths =>
+            new(_LastExportPaths);
+        public string? LastExportPath =>
+            LastExportType != null ? LastExportPaths[LastExportType] : null;
+        public string? LastExportFileName
+        {
+            get
+            {
+                if (LastExportType == null)
+                {
+                    return null;
+                }
+                return Path.GetFileName(LastExportPaths[LastExportType]);
+            }
+        }
         public string SessionFileTitle => _session?.FilePath ?? "Bez tytułu";
         public bool IsSessionOpen => _session != null;
         public bool IsSessionOnDisk => _session != null && _session.FilePath != null;
@@ -189,6 +207,8 @@ namespace Indexer.ViewModel
                     SetCurrentImageIndex(_session.CurrentImageIndex, desynced: true);
                 }
             }
+            LastExportType = null;
+            _LastExportPaths.Clear();
             OnPropertyChanged(nameof(IsSessionOpen));
             OnPropertyChanged(nameof(IsSessionOnDisk));
             OnPropertyChanged(nameof(Title));
@@ -201,6 +221,10 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(CurrentBitmapImage));
             OnPropertyChanged(nameof(CurrentLabels));
             OnPropertyChanged(nameof(HasImages));
+            OnPropertyChanged(nameof(LastExportType));
+            OnPropertyChanged(nameof(LastExportPath));
+            OnPropertyChanged(nameof(LastExportFileName));
+            OnPropertyChanged(nameof(HasExportedBefore));
         }
 
         public void AddIndexedImages([NotNull] IEnumerable<string> imagePaths)
@@ -448,6 +472,27 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(CurrentHintBitmapImage));
         }
 
+        public void ExportToLastFile()
+        {
+            if (_session is null)
+            {
+                throw new InvalidOperationException("No session is open.");
+            }
+            if (LastExportType is null || LastExportPath is null)
+            {
+                throw new InvalidOperationException("The file to export to is unknown.");
+            }
+            switch (LastExportType)
+            {
+                case "xml":
+                    ExportPointsToXML(LastExportPath);
+                    break;
+                case "csv":
+                    ExportPointsToCSV(LastExportPath);
+                    break;
+            }
+        }
+
         public void ExportPointsToXML([NotNull] string filePath)
         {
             if (_session is null)
@@ -455,6 +500,13 @@ namespace Indexer.ViewModel
                 throw new InvalidOperationException("No session is open.");
             }
             _session.ExportPointsToXML(filePath);
+            var exportType = "xml";
+            _LastExportPaths[exportType] = filePath;
+            LastExportType = exportType;
+            OnPropertyChanged(nameof(LastExportType));
+            OnPropertyChanged(nameof(LastExportPath));
+            OnPropertyChanged(nameof(LastExportFileName));
+            OnPropertyChanged(nameof(HasExportedBefore));
         }
 
         public void ExportPointsToCSV([NotNull] string filePath)
@@ -464,6 +516,13 @@ namespace Indexer.ViewModel
                 throw new InvalidOperationException("No session is open.");
             }
             _session.ExportPointsToCSV(filePath);
+            var exportType = "csv";
+            _LastExportPaths[exportType] = filePath;
+            LastExportType = exportType;
+            OnPropertyChanged(nameof(LastExportType));
+            OnPropertyChanged(nameof(LastExportPath));
+            OnPropertyChanged(nameof(LastExportFileName));
+            OnPropertyChanged(nameof(HasExportedBefore));
         }
 
         public void AnalyzeImages([NotNull] string filePath)
