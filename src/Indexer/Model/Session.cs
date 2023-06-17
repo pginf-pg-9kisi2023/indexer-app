@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -216,6 +217,65 @@ namespace Indexer.Model
 
             var ser = new DataContractSerializer(GetType());
             ser.WriteObject(writer, this);
+        }
+
+        public void AnalyzeImages(string filePath)
+        {
+            using (var p = new Process())
+            {
+                p.StartInfo = new()
+                {
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardInput = true,
+                    UseShellExecute = false,
+                    FileName = filePath,
+                };
+                p.OutputDataReceived += HandleAnalyzedImageOutput;
+                p.Start();
+                p.BeginOutputReadLine();
+                using (var writer = p.StandardInput)
+                {
+                    var line = new StringBuilder();
+                    foreach (var img in _indexedImages)
+                    {
+                        line.Append(img.ImagePath);
+                        foreach (var hint in Config.Hints)
+                        {
+                            if (!img.Labels.Contains(hint.Name))
+                            {
+                                line.AppendFormat(
+                                    CultureInfo.InvariantCulture, "\0{0}", hint.Name
+                                );
+                            }
+                        }
+                        writer.WriteLine(line.ToString());
+                        line.Clear();
+                    }
+                }
+                p.WaitForExit();
+            }
+        }
+
+        private void HandleAnalyzedImageOutput(object sender, DataReceivedEventArgs e)
+        {
+            var line = e.Data;
+            if (line is null)
+            {
+                return;
+            }
+
+            var data = line.Split("\0");
+            var imgPath = data[0];
+            if (!_indexedImages.TryGetValue(imgPath, out var image))
+            {
+                return;
+            }
+            var labelName = data[1];
+            var x = int.Parse(data[2], CultureInfo.InvariantCulture);
+            var y = int.Parse(data[3], CultureInfo.InvariantCulture);
+
+            image.AddLabel(new Label(labelName, x, y));
         }
     }
 }

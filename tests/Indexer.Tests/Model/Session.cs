@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.Serialization;
@@ -205,6 +206,47 @@ public class SessionTests
         finally
         {
             File.Delete(filePath);
+        }
+    }
+
+    [TestMethod]
+    [DeploymentItem(@"test_data\config_valid.xml")]
+    [DeploymentItem(@"test_data\example_image.png")]
+    public void AnalyzeImages_TestLabelCount()
+    {
+        var session = new Session(Config.FromFile("config_valid.xml"));
+        var imagePath = Path.GetFullPath("example_image.png");
+        session.AddIndexedImage(new IndexedImage(imagePath));
+
+        var resourceStream = GetType().Assembly.GetManifestResourceStream(
+            "Indexer.Tests.PointProposer.PointProposer.exe"
+        );
+
+        var oldEnvValue = Environment.GetEnvironmentVariable("POINT_PROPOSER_SEED");
+        var tempDir = Directory.CreateTempSubdirectory();
+        Environment.SetEnvironmentVariable("POINT_PROPOSER_SEED", "123");
+        try
+        {
+            var executable = Path.Join(tempDir.FullName, "PointProposer.exe");
+            using (var exeStream = File.Create(executable))
+            {
+                resourceStream!.Seek(0, SeekOrigin.Begin);
+                resourceStream.CopyTo(exeStream);
+            }
+
+            session.AnalyzeImages(executable);
+            session.IndexedImages.TryGetValue(imagePath, out var image);
+            Assert.IsNotNull(image);
+            Assert.AreEqual(2, image.Labels.Count);
+            Assert.AreEqual(984, image.Labels["TOP_LT"].X);
+            Assert.AreEqual(907, image.Labels["TOP_LT"].Y);
+            Assert.AreEqual(743, image.Labels["TOP_RT"].X);
+            Assert.AreEqual(811, image.Labels["TOP_RT"].Y);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("POINT_PROPOSER_SEED", oldEnvValue);
+            Directory.Delete(tempDir.FullName, true);
         }
     }
 }

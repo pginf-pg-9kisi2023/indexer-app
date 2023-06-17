@@ -524,5 +524,25 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(LastExportFileName));
             OnPropertyChanged(nameof(HasExportedBefore));
         }
+
+        public void AnalyzeImages([NotNull] string filePath)
+        {
+            if (_session is null)
+            {
+                throw new InvalidOperationException("No session is open.");
+            }
+            _session.AnalyzeImages(filePath);
+            IndexedImages.Clear();
+            IndexedImages.AddRange(
+                from indexedImage in _session.IndexedImages
+                select new IndexedImageViewModel(_session, indexedImage)
+            );
+            OnPropertyChanged(nameof(IndexedImages));
+            OnPropertyChanged(nameof(CurrentBitmapImage));
+            OnPropertyChanged(nameof(CurrentLabels));
+            OnPropertyChanged(nameof(CurrentLabel));
+            OnPropertyChanged(nameof(CurrentIndexedImage));
+            OnPropertyChanged(nameof(CurrentHintImage));
+        }
     }
 }

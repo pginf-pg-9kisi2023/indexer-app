@@ -78,6 +78,10 @@
             Command="{x:Static commands:Commands.ChangeToPreviousImage}"
             Executed="PreviousImageButton_Click"
             CanExecute="CanExecute_HasImages" />
+        <CommandBinding
+            Command="{x:Static commands:Commands.AnalyzeImages}"
+            Executed="AnalyzeImages_Click"
+            CanExecute="CanExecute_HasImages" />
     </Window.CommandBindings>
 
     <Window.InputBindings>
@@ -183,6 +187,9 @@
                             InputGestureText="Alt+X"
                             Command="{x:Static commands:Commands.ExportAsXML}" />
                     </MenuItem>
+                    <MenuItem
+                        Header="Przeanalizuj zdjecia"
+                        Command="{x:Static commands:Commands.AnalyzeImages}" />
                     <MenuItem
                         Header="Zamknij sesję"
                         InputGestureText="Ctrl+W"

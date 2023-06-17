@@ -59,5 +59,9 @@ namespace Indexer.View
         public static RoutedUICommand ChangeToPreviousImage = new RoutedUICommand(
             "Change To Previous Image", "ChangeToPreviousImage", typeof(Commands)
         );
+
+        public static RoutedUICommand AnalyzeImages = new RoutedUICommand(
+            "Analyze Images", "AnalyzeImages", typeof(Commands)
+        );
     }
 }

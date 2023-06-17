@@ -485,5 +485,21 @@ namespace Indexer.View
                 Data.SetCurrentLabel(label);
             }
         }
+
+        private void AnalyzeImages_Click(object sender, ExecutedRoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog()
+            {
+                Title = "Wybierz program do wsadowej analizy zdjęć",
+                DefaultExt = "exe",
+                Filter = "Pliki wykonywalne|*.exe",
+                RestoreDirectory = true
+            };
+            if (openFileDialog.ShowDialog() != true)
+            {
+                return;
+            }
+            Data.AnalyzeImages(openFileDialog.FileName);
+        }
     }
 }
