@@ -40,12 +40,21 @@ jobs:
         with:
           name: build-output
 
-      - name: Create a release
+      - name: Create the edge release
         uses: softprops/action-gh-release@v1
+        if: ${{ github.ref_type != 'tag' }}
         with:
-          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'edge' }}
+          tag_name: edge
           target_commitish: ${{ github.sha }}
           body: >
             Built from [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
           prerelease: true
+          files: '*.exe'
+
+      - name: Create a tagged release
+        uses: softprops/action-gh-release@v1
+        if: ${{ github.ref_type == 'tag' }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          target_commitish: ${{ github.sha }}
           files: '*.exe'
