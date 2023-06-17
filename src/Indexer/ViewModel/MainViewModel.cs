@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Timers;
 
 using Indexer.Collections;
 using Indexer.Model;
@@ -150,8 +151,22 @@ namespace Indexer.ViewModel
                 return "";
             }
         }
+        private string _statusText = "";
+        private Timer? _statusTimer;
+        public string StatusText { get; private set; } = "";
 
         public MainViewModel() { }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                _statusTimer?.Dispose();
+                _statusTimer = null;
+            }
+        }
 
         public void NewSession(string configFilePath)
         {
@@ -543,6 +558,37 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentIndexedImage));
             OnPropertyChanged(nameof(CurrentHintImage));
+        }
+
+        public void SetStatus(string text)
+        {
+            _statusText = text;
+            if (!_statusTimer?.Enabled ?? true)
+            {
+                StatusText = text;
+                OnPropertyChanged(nameof(StatusText));
+            }
+        }
+
+        public void SetTemporaryStatusOverride(string text)
+        {
+            _statusTimer?.Stop();
+            _statusTimer?.Dispose();
+
+            StatusText = text;
+            OnPropertyChanged(nameof(StatusText));
+            _statusTimer = new Timer(8000);
+            _statusTimer.Elapsed += OnStatusTimerElapsed;
+            _statusTimer.Start();
+        }
+
+        private void OnStatusTimerElapsed(object? sender, ElapsedEventArgs e)
+        {
+            _statusTimer?.Stop();
+            _statusTimer?.Dispose();
+            _statusTimer = null;
+            StatusText = _statusText;
+            OnPropertyChanged(nameof(StatusText));
         }
     }
 }

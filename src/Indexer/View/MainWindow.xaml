@@ -224,7 +224,7 @@
                     </ItemsPanelTemplate>
                 </StatusBar.ItemsPanel>
                 <StatusBarItem Grid.Column="1">
-                    <TextBlock Text="{Binding CurrentIndexedImage.ImagePath}" />
+                    <TextBlock Text="{Binding StatusText}" />
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="2" />
                 <StatusBarItem Grid.Column="3">
