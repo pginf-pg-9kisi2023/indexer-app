@@ -322,7 +322,7 @@
                             <ListView.View>
                                 <local:AutoResizeGridView>
                                     <GridViewColumn
-                                        Header="Path"
+                                        Header="Plik"
                                         DisplayMemberBinding="{
                                             Binding ImagePath,
                                             Converter={StaticResource PathConverter}
@@ -347,7 +347,7 @@
                             </ListView.Resources>
                             <ListView.View>
                                 <local:AutoResizeGridView>
-                                    <GridViewColumn Header="Name" Width="NaN">
+                                    <GridViewColumn Header="Etykieta" Width="NaN">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock
