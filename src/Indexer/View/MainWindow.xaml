@@ -362,7 +362,7 @@
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock
-                                                    Text="{Binding X}"
+                                                    Text="{Binding XText}"
                                                     TextAlignment="Center"
                                                     Width="NaN" />
                                             </DataTemplate>
@@ -372,7 +372,7 @@
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock
-                                                    Text="{Binding Y}"
+                                                    Text="{Binding YText}"
                                                     TextAlignment="Center"
                                                     Width="NaN" />
                                             </DataTemplate>
