@@ -209,7 +209,6 @@ namespace Indexer.ViewModel
         private void SetSession(Session? value, bool isSessionModified)
         {
             _session = value;
-            IsSessionModified = isSessionModified;
             IndexedImages.Clear();
             if (_session != null)
             {
@@ -224,6 +223,7 @@ namespace Indexer.ViewModel
             }
             LastExportType = null;
             _LastExportPaths.Clear();
+            IsSessionModified = isSessionModified;
             OnPropertyChanged(nameof(IsSessionOpen));
             OnPropertyChanged(nameof(IsSessionOnDisk));
             OnPropertyChanged(nameof(Title));
@@ -370,6 +370,7 @@ namespace Indexer.ViewModel
                 Math.Max(0, currentLabel.Y + y), CurrentIndexedImage.Image.Height
             );
             CurrentLabels.TriggerReset();
+            IsSessionModified = true;
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
             OnPropertyChanged(nameof(SavedPosition));
@@ -396,6 +397,7 @@ namespace Indexer.ViewModel
             currentLabel.X = x;
             currentLabel.Y = y;
             CurrentLabels.TriggerReset();
+            IsSessionModified = true;
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
             OnPropertyChanged(nameof(SavedPosition));
@@ -418,6 +420,7 @@ namespace Indexer.ViewModel
                 CurrentIndexedImage.DeleteLabel(_session.CurrentHint.Name);
             }
 
+            IsSessionModified = true;
             OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
             OnPropertyChanged(nameof(SavedPosition));
@@ -552,6 +555,7 @@ namespace Indexer.ViewModel
                 from indexedImage in _session.IndexedImages
                 select new IndexedImageViewModel(_session, indexedImage)
             );
+            IsSessionModified = true;
             OnPropertyChanged(nameof(IndexedImages));
             OnPropertyChanged(nameof(CurrentBitmapImage));
             OnPropertyChanged(nameof(CurrentLabels));
