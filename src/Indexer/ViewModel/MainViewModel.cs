@@ -209,7 +209,6 @@ namespace Indexer.ViewModel
         private void SetSession(Session? value, bool isSessionModified)
         {
             _session = value;
-            IsSessionModified = isSessionModified;
             IndexedImages.Clear();
             if (_session != null)
             {
@@ -224,6 +223,7 @@ namespace Indexer.ViewModel
             }
             LastExportType = null;
             _LastExportPaths.Clear();
+            IsSessionModified = isSessionModified;
             OnPropertyChanged(nameof(IsSessionOpen));
             OnPropertyChanged(nameof(IsSessionOnDisk));
             OnPropertyChanged(nameof(Title));
