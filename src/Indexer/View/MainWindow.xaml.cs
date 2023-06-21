@@ -23,6 +23,34 @@ namespace Indexer.View
             InitializeComponent();
         }
 
+        public void OpenSession(string sessionLocation)
+        {
+            try
+            {
+                Data.OpenSession(sessionLocation);
+            }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show(
+                    owner: this,
+                    caption: Data.ProgramName,
+                    messageBoxText: (
+                        "Program nie może znaleźć pliku o podanej ścieźce:\n"
+                        + sessionLocation
+                    ),
+                    button: MessageBoxButton.OK,
+                    icon: MessageBoxImage.Error
+                );
+                return;
+            }
+            catch (SerializationException ex)
+            {
+                ShowSerializationExceptionDialog(ex);
+                return;
+            }
+            Data.SetTemporaryStatusOverride($"Wczytano sesję z '{sessionLocation}'");
+        }
+
         private void CanExecute_IsSessionOpen(
             object sender, CanExecuteRoutedEventArgs e
         )
@@ -81,16 +109,7 @@ namespace Indexer.View
             {
                 return;
             }
-            try
-            {
-                Data.OpenSession(sessionLocation);
-            }
-            catch (SerializationException ex)
-            {
-                ShowSerializationExceptionDialog(ex);
-                return;
-            }
-            Data.SetTemporaryStatusOverride($"Wczytano sesję z '{sessionLocation}'");
+            OpenSession(sessionLocation);
         }
 
         private void SaveSession_Click(object sender, RoutedEventArgs e)
