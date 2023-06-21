@@ -451,7 +451,10 @@ namespace Indexer.View
                 case Key.Enter:
                     Data.SwitchToNextLabel();
                     Data.SetStatus($"Zaznaczanie etykiety '{Data.CurrentLabel!.Name}'");
-                    return;
+                    break;
+                case Key.Delete:
+                    Data.RemoveCurrentLabelPosition();
+                    break;
             }
         }
 
