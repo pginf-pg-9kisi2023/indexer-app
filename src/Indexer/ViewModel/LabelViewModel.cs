@@ -24,9 +24,8 @@ namespace Indexer.ViewModel
         }
         public string Name => _hint.Name;
         public Point? Position => _label is null ? null : new Point(X, Y);
-        // TODO: change this to 3 hyphens once GH-30 is resolved
-        public string XText => X >= 0 ? $"{X}" : "-----";
-        public string YText => Y >= 0 ? $"{Y}" : "-----";
+        public string XText => X >= 0 ? $"{X}" : "---";
+        public string YText => Y >= 0 ? $"{Y}" : "---";
         public int X
         {
             get => _label?.X ?? -1;
