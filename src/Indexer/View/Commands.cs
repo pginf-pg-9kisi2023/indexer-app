@@ -44,8 +44,8 @@ namespace Indexer.View
             "Exit", "Exit", typeof(Commands)
         );
 
-        public static RoutedUICommand KeyboardShortcuts = new RoutedUICommand(
-            "Keyboard Shortcuts", "KeyboardShortcuts", typeof(Commands)
+        public static RoutedUICommand ShortHelp = new RoutedUICommand(
+            "Short Help", "ShortHelp", typeof(Commands)
         );
 
         public static RoutedUICommand AboutIndexer = new RoutedUICommand(

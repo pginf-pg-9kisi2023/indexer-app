@@ -326,7 +326,7 @@ namespace Indexer.View
             return null;
         }
 
-        private void ShortcutsHelp_Click(object sender, RoutedEventArgs e)
+        private void ShortHelp_Click(object sender, RoutedEventArgs e)
         {
             var bullet = "\u2022";
             var arrows = "\u2191/\u2193/\u2192/\u2190";
@@ -335,6 +335,8 @@ namespace Indexer.View
                 caption: Data.ProgramName,
                 messageBoxText: $"""
                 Etykietowanie zdjęć:
+                {bullet} Przesuń etykietę do lokalizacji kursora myszy: Lewy przycisk myszy
+                {bullet} Usuń współrzędne obecnej etykiety: Prawy przycisk myszy/Delete
                 {bullet} Przesuń etykietę o 1 piksel: {arrows}
                 {bullet} Przesuń etykietę o 4 piksele: Ctrl+{arrows}
                 {bullet} Przesuń etykietę o 25 pikseli: Shift+{arrows}

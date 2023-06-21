@@ -65,8 +65,8 @@
             Command="{x:Static commands:Commands.Exit}"
             Executed="Exit_Click" />
         <CommandBinding
-            Command="{x:Static commands:Commands.KeyboardShortcuts}"
-            Executed="ShortcutsHelp_Click" />
+            Command="{x:Static commands:Commands.ShortHelp}"
+            Executed="ShortHelp_Click" />
         <CommandBinding
             Command="{x:Static commands:Commands.AboutIndexer}"
             Executed="About_Click" />
@@ -124,7 +124,7 @@
         <KeyBinding
             Key="F1"
             Modifiers="Ctrl"
-            Command="{x:Static commands:Commands.KeyboardShortcuts}" />
+            Command="{x:Static commands:Commands.ShortHelp}" />
         <KeyBinding
             Key="Tab"
             Modifiers="Ctrl"
@@ -201,9 +201,9 @@
                 </MenuItem>
                 <MenuItem Header="Pomoc" Focusable="false">
                     <MenuItem
-                        Header="Skróty klawiaturowe"
+                        Header="Skrócona instrukcja obsługi"
                         InputGestureText="Ctrl+F1"
-                        Command="{x:Static commands:Commands.KeyboardShortcuts}" />
+                        Command="{x:Static commands:Commands.ShortHelp}" />
                     <MenuItem
                         Header="O programie"
                         Command="{x:Static commands:Commands.AboutIndexer}" />
