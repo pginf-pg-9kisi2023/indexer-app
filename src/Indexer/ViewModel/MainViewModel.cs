@@ -221,6 +221,14 @@ namespace Indexer.ViewModel
                     SetCurrentImageIndex(_session.CurrentImageIndex, desynced: true);
                 }
             }
+            else
+            {
+                CurrentImage?.UnloadImage();
+                CurrentHintImage?.UnloadImage();
+                CurrentImage = null;
+                CurrentHint = null;
+                CurrentHintImage = null;
+            }
             LastExportType = null;
             _LastExportPaths.Clear();
             IsSessionModified = isSessionModified;
@@ -232,9 +240,16 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(SessionFileName));
             OnPropertyChanged(nameof(SessionFileTitle));
             OnPropertyChanged(nameof(IndexedImages));
+            OnPropertyChanged(nameof(CurrentIndexedImage));
             OnPropertyChanged(nameof(CurrentImage));
             OnPropertyChanged(nameof(CurrentBitmapImage));
+            OnPropertyChanged(nameof(CurrentLabel));
             OnPropertyChanged(nameof(CurrentLabels));
+            OnPropertyChanged(nameof(SavedPosition));
+            OnPropertyChanged(nameof(SavedPositionText));
+            OnPropertyChanged(nameof(CurrentHint));
+            OnPropertyChanged(nameof(CurrentHintImage));
+            OnPropertyChanged(nameof(CurrentHintBitmapImage));
             OnPropertyChanged(nameof(HasImages));
             OnPropertyChanged(nameof(LastExportType));
             OnPropertyChanged(nameof(LastExportPath));
