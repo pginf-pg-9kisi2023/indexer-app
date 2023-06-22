@@ -273,6 +273,14 @@ namespace Indexer.View
             if (dialog.ShowDialog() == true)
             {
                 Data.AddIndexedImages(imageSelection.Files);
+                if (Data.CurrentLabel != null)
+                {
+                    Data.SetStatus($"Zaznaczanie etykiety '{Data.CurrentLabel.Name}'");
+                }
+                else
+                {
+                    Data.SetStatus("");
+                }
                 Data.SetTemporaryStatusOverride(
                     $"Dodano {imageSelection.Files.Count} zdjęć"
                 );
