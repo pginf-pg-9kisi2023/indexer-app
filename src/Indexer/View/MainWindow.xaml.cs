@@ -374,6 +374,15 @@ namespace Indexer.View
                 {bullet} Przejdź do następnego zdjęcia: Ctrl+Tab
                 {bullet} Przejdź do poprzedniego zdjęcia: Ctrl+Shift+Tab
 
+                Lupa:
+                {bullet} Przybliż lupę: +
+                {bullet} Oddal lupę: -
+                {bullet} Ustaw lupę na 100%, 200%, ..., 500%: 1, 2, 3, 4, 5
+                
+                Rozmiar zdjęcia:
+                {bullet} Dopasowane do ekranu: Ctrl+0
+                {bullet} Rzeczywisty rozmiar: Ctrl+1
+
                 Główne menu:
                 {bullet} Utwórz nową sesję: Ctrl+N
                 {bullet} Wczytaj sesję: Ctrl+O
@@ -457,6 +466,17 @@ namespace Indexer.View
             var multiplier = 1;
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
+                switch (e.Key)
+                {
+                    case Key.D0:
+                    case Key.NumPad0:
+                        FitImageOnScreen();
+                        return;
+                    case Key.D1:
+                    case Key.NumPad1:
+                        ShowActualImageSize();
+                        return;
+                }
                 multiplier *= 4;
             }
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
@@ -465,6 +485,34 @@ namespace Indexer.View
             }
             switch (e.Key)
             {
+                case Key.OemPlus:
+                case Key.Add:
+                    Magnifier.Value += 1;
+                    break;
+                case Key.OemMinus:
+                case Key.Subtract:
+                    Magnifier.Value -= 1;
+                    break;
+                case Key.D1:
+                case Key.NumPad1:
+                    Magnifier.Value = 1;
+                    break;
+                case Key.D2:
+                case Key.NumPad2:
+                    Magnifier.Value = 2;
+                    break;
+                case Key.D3:
+                case Key.NumPad3:
+                    Magnifier.Value = 3;
+                    break;
+                case Key.D4:
+                case Key.NumPad4:
+                    Magnifier.Value = 4;
+                    break;
+                case Key.D5:
+                case Key.NumPad5:
+                    Magnifier.Value = 5;
+                    break;
                 case Key.Up:
                     Data.MoveCurrentLabelPositionRelatively(y: multiplier * -1);
                     break;
@@ -489,13 +537,25 @@ namespace Indexer.View
 
         private void ShowActualSizeButton_Checked(object sender, RoutedEventArgs e)
         {
+            ShowActualImageSize();
+        }
+
+        private void ShowActualSizeButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            FitImageOnScreen();
+        }
+
+        private void ShowActualImageSize()
+        {
+            ShowActualSizeButton.IsChecked = true;
             MainImage.Stretch = Stretch.None;
             MainImageScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             MainImageScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
         }
 
-        private void ShowActualSizeButton_Unchecked(object sender, RoutedEventArgs e)
+        private void FitImageOnScreen()
         {
+            ShowActualSizeButton.IsChecked = false;
             MainImage.Stretch = Stretch.Uniform;
             MainImageScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
             MainImageScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
