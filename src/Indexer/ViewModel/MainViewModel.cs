@@ -570,6 +570,10 @@ namespace Indexer.ViewModel
                 from indexedImage in _session.IndexedImages
                 select new IndexedImageViewModel(_session, indexedImage)
             );
+            if (IndexedImages.Count != 0)
+            {
+                SetCurrentImageIndex(_session.CurrentImageIndex, desynced: true);
+            }
             IsSessionModified = true;
             OnPropertyChanged(nameof(IndexedImages));
             OnPropertyChanged(nameof(CurrentBitmapImage));
