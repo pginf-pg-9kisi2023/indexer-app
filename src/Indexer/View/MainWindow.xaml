@@ -501,6 +501,7 @@
                                 SavedPosition="{Binding SavedPosition}"
                                 ImageCursor="{Binding ImageCursorPosition}"
                                 Height="250"
+                                Width="250"
                                 Grid.Row="2" />
                             <Slider
                                 Minimum="1"
