@@ -49,6 +49,9 @@ namespace Indexer.View
                 return;
             }
             Data.SetTemporaryStatusOverride($"Wczytano sesję z '{sessionLocation}'");
+            MainImage.InvalidateMeasure();
+            MainImage.UpdateLayout();
+            ScrollCurrentLabelIntoCenter();
         }
 
         private void CanExecute_IsSessionOpen(
@@ -272,6 +275,7 @@ namespace Indexer.View
             var dialog = new ImageSelectionDialog(imageSelection);
             if (dialog.ShowDialog() == true)
             {
+                var centerScrollViewerAfter = Data.IndexedImages.Count == 0;
                 Data.AddIndexedImages(imageSelection.Files);
                 if (Data.CurrentLabel != null)
                 {
@@ -284,6 +288,10 @@ namespace Indexer.View
                 Data.SetTemporaryStatusOverride(
                     $"Dodano {imageSelection.Files.Count} zdjęć"
                 );
+                if (centerScrollViewerAfter)
+                {
+                    ScrollCurrentLabelIntoCenter();
+                }
             }
             else
             {
@@ -453,12 +461,14 @@ namespace Indexer.View
         {
             Data.SwitchToPreviousImage();
             Data.SetTemporaryStatusOverride($"Załadowano '{Data.CurrentImage!.Path}'");
+            ScrollCurrentLabelIntoCenter();
         }
 
         private void NextImageButton_Click(object sender, RoutedEventArgs e)
         {
             Data.SwitchToNextImage();
             Data.SetTemporaryStatusOverride($"Załadowano '{Data.CurrentImage!.Path}'");
+            ScrollCurrentLabelIntoCenter();
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -515,19 +525,24 @@ namespace Indexer.View
                     break;
                 case Key.Up:
                     Data.MoveCurrentLabelPositionRelatively(y: multiplier * -1);
+                    ScrollCurrentLabelIntoCenter();
                     break;
                 case Key.Down:
                     Data.MoveCurrentLabelPositionRelatively(y: multiplier * 1);
+                    ScrollCurrentLabelIntoCenter();
                     break;
                 case Key.Left:
                     Data.MoveCurrentLabelPositionRelatively(x: multiplier * -1);
+                    ScrollCurrentLabelIntoCenter();
                     break;
                 case Key.Right:
                     Data.MoveCurrentLabelPositionRelatively(x: multiplier * 1);
+                    ScrollCurrentLabelIntoCenter();
                     break;
                 case Key.Enter:
                     Data.SwitchToNextLabel();
                     Data.SetStatus($"Zaznaczanie etykiety '{Data.CurrentLabel!.Name}'");
+                    ScrollCurrentLabelIntoCenter();
                     break;
                 case Key.Delete:
                     Data.RemoveCurrentLabelPosition();
@@ -551,6 +566,9 @@ namespace Indexer.View
             MainImage.Stretch = Stretch.None;
             MainImageScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             MainImageScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            MainImage.InvalidateMeasure();
+            MainImage.UpdateLayout();
+            ScrollCurrentLabelIntoCenter();
         }
 
         private void FitImageOnScreen()
@@ -573,6 +591,65 @@ namespace Indexer.View
             }
         }
 
+        private void MainImageScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (e.HorizontalChange != 0 || e.VerticalChange != 0)
+            {
+                // we're not interested in scrollbar movement (ours or not)
+                return;
+            }
+            if (e.ViewportWidthChange != 0)
+            {
+                var newWidth = e.ViewportWidth;
+                var oldWidth = newWidth - e.ViewportWidthChange;
+                if (oldWidth > 0 && newWidth > 0)
+                {
+                    var x = MainImageScrollViewer.HorizontalOffset + oldWidth / 2;
+                    ScrollXIntoCenter(x);
+                }
+            }
+            if (e.ViewportHeightChange != 0)
+            {
+                var newHeight = e.ViewportHeight;
+                var oldHeight = newHeight - e.ViewportHeightChange;
+                if (oldHeight > 0 && newHeight > 0)
+                {
+                    var y = MainImageScrollViewer.VerticalOffset + oldHeight / 2;
+                    ScrollYIntoCenter(y);
+                }
+            }
+        }
+
+        private void ScrollCurrentLabelIntoCenter()
+        {
+            if (Data.CurrentLabel?.Position == null)
+            {
+                return;
+            }
+            double x = Data.CurrentLabel.X;
+            x *= MainImageScrollViewer.ExtentWidth;
+            x /= MainImage.BitmapSource!.PixelWidth;
+            double y = Data.CurrentLabel.Y;
+            y *= MainImageScrollViewer.ExtentHeight;
+            y /= MainImage.BitmapSource!.PixelHeight;
+            ScrollXIntoCenter(x);
+            ScrollYIntoCenter(y);
+        }
+
+        private void ScrollXIntoCenter(double x)
+        {
+            MainImageScrollViewer.ScrollToHorizontalOffset(
+                x - MainImageScrollViewer.ViewportWidth / 2
+            );
+        }
+
+        private void ScrollYIntoCenter(double y)
+        {
+            MainImageScrollViewer.ScrollToVerticalOffset(
+                y - MainImageScrollViewer.ViewportHeight / 2
+            );
+        }
+
         private void FilesListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var item = sender as ListViewItem;
@@ -587,6 +664,7 @@ namespace Indexer.View
                 Data.SetTemporaryStatusOverride(
                     $"Załadowano '{indexedImage.ImagePath}'"
                 );
+                ScrollCurrentLabelIntoCenter();
             }
         }
 
@@ -602,6 +680,7 @@ namespace Indexer.View
             {
                 Data.SetCurrentLabel(label);
                 Data.SetStatus($"Zaznaczanie etykiety '{label.Name}'");
+                ScrollCurrentLabelIntoCenter();
             }
         }
 
