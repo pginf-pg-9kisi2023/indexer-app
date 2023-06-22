@@ -97,6 +97,7 @@ namespace Indexer.View
             );
             Children.Add(Image);
             Children.Add(Canvas);
+            Image.SizeChanged += OnImageSizeChange;
             TriggerCanvasChange();
         }
 
@@ -112,6 +113,11 @@ namespace Indexer.View
             self.Image.StreamSource = (MemoryStream?)e.NewValue;
             self.BitmapSource = self.Image.BitmapSource;
             self.TriggerCanvasChange();
+        }
+
+        private void OnImageSizeChange(object sender, SizeChangedEventArgs e)
+        {
+            TriggerCanvasChange();
         }
 
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
