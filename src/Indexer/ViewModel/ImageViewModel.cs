@@ -100,13 +100,6 @@ namespace Indexer.ViewModel
             OnPropertyChanged(nameof(OriginalOrientation));
         }
 
-        // TODO: figure out what arguments would be needed here
-        // and whether this is needed at all
-        public void Scale()
-        {
-            throw new NotImplementedException();
-        }
-
         public void UnloadImage()
         {
             LoadedImage = null;
