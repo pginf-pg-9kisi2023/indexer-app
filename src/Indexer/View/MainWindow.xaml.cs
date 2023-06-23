@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -548,7 +549,17 @@ namespace Indexer.View
         private void ShowActualImageSize()
         {
             ShowActualSizeButton.IsChecked = true;
-            MainImage.Stretch = Stretch.None;
+            MainImage.Stretch = Stretch.Fill;
+            MainImage.StretchDirection = StretchDirection.Both;
+            MainImage.SetBinding(
+                ImageWithLabels.WidthProperty,
+                new Binding("BitmapSource.PixelWidth") { RelativeSource = RelativeSource.Self }
+            );
+            MainImage.SetBinding(
+                ImageWithLabels.HeightProperty,
+                new Binding("BitmapSource.PixelHeight") { RelativeSource = RelativeSource.Self }
+            );
+            RenderOptions.SetBitmapScalingMode(MainImage, BitmapScalingMode.NearestNeighbor);
             MainImageScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             MainImageScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
         }
@@ -557,6 +568,10 @@ namespace Indexer.View
         {
             ShowActualSizeButton.IsChecked = false;
             MainImage.Stretch = Stretch.Uniform;
+            MainImage.StretchDirection = StretchDirection.DownOnly;
+            BindingOperations.ClearBinding(MainImage, ImageWithLabels.WidthProperty);
+            BindingOperations.ClearBinding(MainImage, ImageWithLabels.HeightProperty);
+            RenderOptions.SetBitmapScalingMode(MainImage, BitmapScalingMode.Unspecified);
             MainImageScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
             MainImageScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
         }
