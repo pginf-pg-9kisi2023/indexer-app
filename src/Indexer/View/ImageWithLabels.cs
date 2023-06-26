@@ -95,6 +95,13 @@ namespace Indexer.View
             Canvas.SetBinding(
                 HeightProperty, new Binding("ActualHeight") { Source = Image }
             );
+            Image.SetBinding(
+                StretchProperty, new Binding("Stretch") { Source = this }
+            );
+            Image.SetBinding(
+                StretchDirectionProperty,
+                new Binding("StretchDirection") { Source = this }
+            );
             Children.Add(Image);
             Children.Add(Canvas);
             Image.SizeChanged += OnImageSizeChange;
