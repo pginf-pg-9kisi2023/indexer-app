@@ -86,6 +86,9 @@ namespace Indexer.View
         protected double CrosshairOffset =>
             Math.Ceiling(StrokeThickness / 2) + ZoomFactor;
         protected System.Drawing.Image? BaseImage { get; set; }
+        protected System.Drawing.Graphics? Graphics { get; set; }
+        protected System.Drawing.Bitmap? Bitmap { get; set; }
+        protected MemoryStream ResultStream { get; set; } = new();
         protected Image MagnifierImage { get; set; } =
             new()
             {
@@ -96,7 +99,6 @@ namespace Indexer.View
             };
         protected Canvas MagnifierCanvas { get; set; } =
             new() { SnapsToDevicePixels = true };
-        protected Rectangle MagnifierRectangle { get; set; } = new();
 
         public Magnifier()
         {
@@ -140,12 +142,16 @@ namespace Indexer.View
             {
                 return;
             }
+            self.BaseImage?.Dispose();
             if (self.StreamSource is null)
             {
                 self.BaseImage = null;
-                return;
             }
-            self.BaseImage = System.Drawing.Image.FromStream(self.StreamSource);
+            else
+            {
+                self.BaseImage = System.Drawing.Image.FromStream(self.StreamSource);
+            }
+            self.CreateGraphicsObjects();
             self.UpdateMagnifierImage(resetViewBox: true);
         }
 
@@ -165,8 +171,35 @@ namespace Indexer.View
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
             base.OnRenderSizeChanged(sizeInfo);
+            CreateGraphicsObjects();
             UpdateCrosshair();
             UpdateMagnifierImage(resetViewBox: true);
+        }
+
+        private void CreateGraphicsObjects()
+        {
+            Graphics?.Dispose();
+            Bitmap?.Dispose();
+            if (BaseImage != null)
+            {
+                Bitmap = new System.Drawing.Bitmap(
+                    PixelWidth,
+                    PixelHeight,
+                    BaseImage.PixelFormat
+                );
+                Graphics = System.Drawing.Graphics.FromImage(Bitmap);
+                // With integer scaling, this will ensure that each pixel
+                // becomes factor x factor square of original pixel's color.
+                Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+                // This is needed so that the first pixel is not partially offset
+                // into negative coordinates.
+                Graphics.PixelOffsetMode = PixelOffsetMode.Half;
+            }
+            else
+            {
+                Bitmap = null;
+                Graphics = null;
+            }
         }
 
         private void UpdateCrosshair()
@@ -377,35 +410,22 @@ namespace Indexer.View
             var width = stopX - startX;
             var height = stopY - startY;
 
-            using var result = new System.Drawing.Bitmap(
-                PixelWidth,
-                PixelHeight,
-                BaseImage.PixelFormat
+            Graphics!.DrawImage(
+                BaseImage,
+                new System.Drawing.Rectangle(
+                    destX, destY, width * ZoomFactor, height * ZoomFactor
+                ),
+                startX, startY, width, height,
+                System.Drawing.GraphicsUnit.Pixel
             );
-            using (var g = System.Drawing.Graphics.FromImage(result))
-            {
-                // With integer scaling, this will ensure that each pixel
-                // becomes factor x factor square of original pixel's color.
-                g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                // This is needed so that the first pixel is not partially offset
-                // into negative coordinates.
-                g.PixelOffsetMode = PixelOffsetMode.Half;
-                g.DrawImage(
-                    BaseImage,
-                    new System.Drawing.Rectangle(
-                        destX, destY, width * ZoomFactor, height * ZoomFactor
-                    ),
-                    startX, startY, width, height,
-                    System.Drawing.GraphicsUnit.Pixel
-                );
-            }
-            var ms = new MemoryStream();
-            result.Save(ms, ImageFormat.Bmp);
-            ms.Seek(0, SeekOrigin.Begin);
+            ResultStream.SetLength(0);
+            Bitmap!.Save(ResultStream, ImageFormat.Bmp);
+            ResultStream.Seek(0, SeekOrigin.Begin);
+
             {
                 var bitmapSource = new BitmapImage();
                 bitmapSource.BeginInit();
-                bitmapSource.StreamSource = ms;
+                bitmapSource.StreamSource = ResultStream;
                 bitmapSource.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapSource.EndInit();
                 return bitmapSource;
