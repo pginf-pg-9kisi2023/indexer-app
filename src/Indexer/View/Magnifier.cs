@@ -1,6 +1,11 @@
+using System;
 using System.ComponentModel;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -9,19 +14,19 @@ using Point = System.Drawing.Point;
 
 namespace Indexer.View
 {
-    public class Magnifier : DockPanel
+    public class Magnifier : Border
     {
-        public static readonly DependencyProperty ImageBitmapProperty
+        public static readonly DependencyProperty StreamSourceProperty
             = DependencyProperty.Register(
-                "ImageBitmap",
-                typeof(ImageSource),
+                "StreamSource",
+                typeof(MemoryStream),
                 typeof(Magnifier),
-                new PropertyMetadata(default(ImageSource), OnImageBitmapChange)
+                new PropertyMetadata(default(MemoryStream), OnStreamSourceChange)
             );
-        public BitmapSource ImageBitmap
+        public MemoryStream StreamSource
         {
-            get => (BitmapSource)GetValue(ImageBitmapProperty);
-            set => SetValue(ImageBitmapProperty, value);
+            get => (MemoryStream)GetValue(StreamSourceProperty);
+            set => SetValue(StreamSourceProperty, value);
         }
 
         public static readonly DependencyProperty SavedPositionProperty
@@ -74,26 +79,58 @@ namespace Indexer.View
             set => SetValue(ZoomFactorProperty, value);
         }
 
-        protected int PixelWidth => (int)ActualWidth;
-        protected int PixelHeight => (int)ActualHeight;
+        protected int PixelWidth => (int)ActualWidth - 2;
+        protected int PixelHeight => (int)ActualHeight - 2;
         protected double FillThickness => ZoomFactor + 2;
         protected double StrokeThickness => FillThickness + 2;
         protected double CrosshairOffset =>
             Math.Ceiling(StrokeThickness / 2) + ZoomFactor;
-        protected Rect ViewBox
-        {
-            get => MagnifierImageBrush.Viewbox;
-            set => MagnifierImageBrush.Viewbox = value;
-        }
-        protected ImageBrush MagnifierImageBrush { get; set; } = new();
+        protected BitmapSource? ImageBitmap { get; set; }
+        protected Image MagnifierImage { get; set; } =
+            new()
+            {
+                Stretch = Stretch.None,
+                SnapsToDevicePixels = true,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+            };
+        protected Canvas MagnifierCanvas { get; set; } =
+            new() { SnapsToDevicePixels = true };
         protected Rectangle MagnifierRectangle { get; set; } = new();
 
         public Magnifier()
         {
+            RenderOptions.SetBitmapScalingMode(
+                MagnifierImage, BitmapScalingMode.NearestNeighbor
+            );
+            MagnifierImage.SetBinding(
+                Image.WidthProperty,
+                new Binding("Source.PixelWidth")
+                {
+                    RelativeSource = RelativeSource.Self
+                }
+            );
+            MagnifierImage.SetBinding(
+                Image.HeightProperty,
+                new Binding("Source.PixelHeight")
+                {
+                    RelativeSource = RelativeSource.Self
+                }
+            );
+
+            var grid = new Grid() { ClipToBounds = true };
+            grid.Children.Add(MagnifierImage);
+            grid.Children.Add(MagnifierCanvas);
+
+            SnapsToDevicePixels = true;
+            BorderThickness = new(1);
+            BorderBrush = Stroke;
+            Child = grid;
+
             TriggerMagnifierUpdate();
         }
 
-        private static void OnImageBitmapChange(
+        private static void OnStreamSourceChange(
             DependencyObject sender, DependencyPropertyChangedEventArgs e
         )
         {
@@ -105,12 +142,58 @@ namespace Indexer.View
             self.TriggerMagnifierUpdate();
         }
 
+        private static void OnZoomFactorChange(
+            DependencyObject sender, DependencyPropertyChangedEventArgs e
+        )
+        {
+            var self = (Magnifier)sender;
+            if (self is null)
+            {
+                return;
+            }
+            self.TriggerMagnifierUpdate();
+        }
+
+        private void UpdateImageBitmap()
+        {
+            if (StreamSource is null)
+            {
+                ImageBitmap = null;
+                return;
+            }
+
+            var regular = System.Drawing.Image.FromStream(StreamSource);
+            using var result = new System.Drawing.Bitmap(
+                regular.Width * ZoomFactor,
+                regular.Height * ZoomFactor,
+                regular.PixelFormat
+            );
+            using (var g = System.Drawing.Graphics.FromImage(result))
+            {
+                // With integer scaling, this will ensure that each pixel
+                // becomes factor x factor square of original pixel's color.
+                g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                // This is needed so that the first pixel is not partially offset
+                // into negative coordinates.
+                g.PixelOffsetMode = PixelOffsetMode.Half;
+                g.DrawImage(regular, 0, 0, result.Width, result.Height);
+            }
+            var ms = new MemoryStream();
+            result.Save(ms, ImageFormat.Bmp);
+            ms.Seek(0, SeekOrigin.Begin);
+            {
+                var bitmapSource = new BitmapImage();
+                bitmapSource.BeginInit();
+                bitmapSource.StreamSource = ms;
+                bitmapSource.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapSource.EndInit();
+                ImageBitmap = bitmapSource;
+            }
+        }
+
         private void TriggerMagnifierUpdate()
         {
-            MagnifierImageBrush = new ImageBrush(ImageBitmap)
-            {
-                ViewboxUnits = BrushMappingMode.Absolute
-            };
+            UpdateImageBitmap();
             TriggerMagnifierRectangleUpdate();
         }
 
@@ -122,33 +205,17 @@ namespace Indexer.View
 
         private void TriggerMagnifierRectangleUpdate()
         {
-            MagnifierRectangle = new Rectangle
-            {
-                Stroke = Stroke,
-                Width = ActualWidth,
-                Height = ActualHeight,
-                Visibility = Visibility.Visible,
-                Fill = MagnifierImageBrush
-            };
+            MagnifierCanvas.Children.Clear();
+            CreateVerticalLines();
+            CreateHorizontalLines();
 
-            Canvas canvas = new Canvas();
-            canvas.Children.Add(MagnifierRectangle);
-            if (ActualWidth - 2 * MagnifierRectangle.StrokeThickness >= StrokeThickness)
-            {
-                CreateVerticalLines(canvas);
-                CreateHorizontalLines(canvas);
-            }
-
-            Children.Clear();
-            Children.Add(canvas);
             TriggerViewBoxUpdate(resetViewBox: true);
         }
 
-        private void CreateVerticalLines(Canvas canvas)
+        private void CreateVerticalLines()
         {
             // top line
             CreateLine(
-                canvas,
                 X1: PixelWidth / 2,
                 Y1: PixelHeight / 2 - CrosshairOffset + (ZoomFactor % 2),
                 X2: PixelWidth / 2,
@@ -156,7 +223,6 @@ namespace Indexer.View
             );
             // bottom line
             CreateLine(
-                canvas,
                 X1: PixelWidth / 2,
                 Y1: PixelHeight / 2 + CrosshairOffset,
                 X2: PixelWidth / 2,
@@ -164,11 +230,10 @@ namespace Indexer.View
             );
         }
 
-        private void CreateHorizontalLines(Canvas canvas)
+        private void CreateHorizontalLines()
         {
             // left line
             CreateLine(
-                canvas,
                 X1: PixelWidth / 2 - CrosshairOffset + (ZoomFactor % 2),
                 Y1: PixelHeight / 2 + (ZoomFactor % 2),
                 X2: 0,
@@ -176,7 +241,6 @@ namespace Indexer.View
             );
             // right line
             CreateLine(
-                canvas,
                 X1: PixelWidth / 2 + CrosshairOffset,
                 Y1: PixelHeight / 2 + (ZoomFactor % 2),
                 X2: PixelWidth,
@@ -184,9 +248,7 @@ namespace Indexer.View
             );
         }
 
-        private void CreateLine(
-            Canvas canvas, double X1, double Y1, double X2, double Y2
-        )
+        private void CreateLine(double X1, double Y1, double X2, double Y2)
         {
             // These are relative to stroke thickness, as required by StrokeDashArray.
             var dashSize = 2;
@@ -259,25 +321,16 @@ namespace Indexer.View
             }
         }
 
-        private static void OnZoomFactorChange(
-            DependencyObject sender, DependencyPropertyChangedEventArgs e
-        )
-        {
-            var self = (Magnifier)sender;
-            if (self is null)
-            {
-                return;
-            }
-            self.TriggerMagnifierRectangleUpdate();
-        }
-
         private void TriggerViewBoxUpdate(bool resetViewBox = false)
         {
             if (ImageBitmap == null)
             {
-                ViewBox = new Rect(0, 0, 0, 0);
+                MagnifierImage.Source = null;
                 return;
             }
+
+            // The first pixel of the scaled pixel ("pixel square").
+            // These are simply coords multiplied by the zoom factor.
             int x = 0;
             int y = 0;
             if (SavedPosition is Point savedPosition)
@@ -295,16 +348,41 @@ namespace Indexer.View
                 // keep the current viewbox
                 return;
             }
-            var factorX = 96 / ImageBitmap.DpiX;
-            var factorY = 96 / ImageBitmap.DpiY;
-            var width = factorX * ActualWidth / ZoomFactor;
-            var height = factorY * ActualHeight / ZoomFactor;
-            ViewBox = new Rect(
-                factorX * (x + 0.5) - width / 2,
-                factorY * (y + 0.5) - height / 2,
-                width,
-                height
-            );
+            x *= ZoomFactor;
+            y *= ZoomFactor;
+
+            // The position within the scaled image of the top-left corner
+            // of the area the bitmap will be cropped to.
+            // Since we want the center of the magnifier to be the center of the scaled
+            // pixel, we have to increment this by half of the zoom factor as well.
+            var rectX = x - PixelWidth / 2 + ZoomFactor / 2;
+            var rectY = y - PixelHeight / 2 + ZoomFactor / 2;
+
+            // If a calculated coordinate of the top-left corner is negative,
+            // we have to set it to 0, making sure to store this offset in order to
+            // later use it as image's TranslateTransform.
+            var offsetX = rectX < 0 ? -rectX : 0;
+            var offsetY = rectY < 0 ? -rectY : 0;
+            rectX = Math.Max(rectX, 0);
+            rectY = Math.Max(rectY, 0);
+
+            // The actual size of the area the bitmap will be cropped to.
+            // This is just the width of magnifier unless the distance to
+            // the bottom-right corner of the scaled image is less than that
+            // in which case, it's the size of whatever the remaining area is.
+            var rectWidth = Math.Min(PixelWidth, ImageBitmap.PixelWidth - rectX);
+            var rectHeight = Math.Min(PixelHeight, ImageBitmap.PixelHeight - rectY);
+
+            var sourceRect = new Int32Rect(rectX, rectY, rectWidth, rectHeight);
+            BitmapSource? cropped = null;
+            if (sourceRect.HasArea)
+            {
+                cropped = new CroppedBitmap(ImageBitmap, sourceRect);
+            }
+            var transform = new TranslateTransform(offsetX, offsetY);
+
+            MagnifierImage.Source = cropped;
+            MagnifierImage.RenderTransform = transform;
         }
     }
 }
