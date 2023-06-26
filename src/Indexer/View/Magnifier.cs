@@ -64,19 +64,22 @@ namespace Indexer.View
         public static readonly DependencyProperty ZoomFactorProperty
             = DependencyProperty.Register(
                 "ZoomFactor",
-                typeof(double),
+                typeof(int),
                 typeof(Magnifier),
-                new PropertyMetadata(default(double), OnZoomFactorChange)
+                new PropertyMetadata(default(int), OnZoomFactorChange)
             );
-        public double ZoomFactor
+        public int ZoomFactor
         {
-            get => (double)GetValue(ZoomFactorProperty);
+            get => (int)GetValue(ZoomFactorProperty);
             set => SetValue(ZoomFactorProperty, value);
         }
 
-        protected double FillThickness => ZoomFactor + 1;
-        protected double StrokeThickness => 2 * FillThickness;
-        protected double CrosshairOffset => 1.5 * FillThickness;
+        protected int PixelWidth => (int)ActualWidth;
+        protected int PixelHeight => (int)ActualHeight;
+        protected double FillThickness => ZoomFactor + 2;
+        protected double StrokeThickness => FillThickness + 2;
+        protected double CrosshairOffset =>
+            Math.Ceiling(StrokeThickness / 2) + ZoomFactor;
         protected Rect ViewBox
         {
             get => MagnifierImageBrush.Viewbox;
@@ -146,18 +149,18 @@ namespace Indexer.View
             // top line
             CreateLine(
                 canvas,
-                X1: ActualWidth / 2,
-                Y1: ActualHeight / 2 - CrosshairOffset,
-                X2: ActualWidth / 2,
+                X1: PixelWidth / 2,
+                Y1: PixelHeight / 2 - CrosshairOffset + (ZoomFactor % 2),
+                X2: PixelWidth / 2,
                 Y2: 0
             );
             // bottom line
             CreateLine(
                 canvas,
-                X1: ActualWidth / 2,
-                Y1: ActualHeight / 2 + CrosshairOffset,
-                X2: ActualWidth / 2,
-                Y2: ActualHeight
+                X1: PixelWidth / 2,
+                Y1: PixelHeight / 2 + CrosshairOffset,
+                X2: PixelWidth / 2,
+                Y2: PixelHeight
             );
         }
 
@@ -166,18 +169,18 @@ namespace Indexer.View
             // left line
             CreateLine(
                 canvas,
-                X1: ActualWidth / 2 - CrosshairOffset,
-                Y1: ActualHeight / 2,
+                X1: PixelWidth / 2 - CrosshairOffset + (ZoomFactor % 2),
+                Y1: PixelHeight / 2 + (ZoomFactor % 2),
                 X2: 0,
-                Y2: ActualHeight / 2
+                Y2: PixelHeight / 2 + (ZoomFactor % 2)
             );
             // right line
             CreateLine(
                 canvas,
-                X1: ActualWidth / 2 + CrosshairOffset,
-                Y1: ActualHeight / 2,
-                X2: ActualWidth,
-                Y2: ActualHeight / 2
+                X1: PixelWidth / 2 + CrosshairOffset,
+                Y1: PixelHeight / 2 + (ZoomFactor % 2),
+                X2: PixelWidth,
+                Y2: PixelHeight / 2 + (ZoomFactor % 2)
             );
         }
 
@@ -185,18 +188,41 @@ namespace Indexer.View
             Canvas canvas, double X1, double Y1, double X2, double Y2
         )
         {
+            // These are relative to stroke thickness, as required by StrokeDashArray.
+            var dashSize = 2;
+            var gapSize = 2;
+
             var stroke = new Line { X1 = X1, Y1 = Y1, X2 = X2, Y2 = Y2 };
             stroke.Stroke = Brushes.Black;
             stroke.StrokeThickness = StrokeThickness;
-            stroke.StrokeDashArray = new DoubleCollection(new double[] { 2, 1 });
-            canvas.Children.Add(stroke);
+            stroke.StrokeDashArray = new DoubleCollection(
+                new double[] { dashSize, gapSize }
+            );
+            MagnifierCanvas.Children.Add(stroke);
+
+            // StrokeDashArray is relative to StrokeThickness
+            // so we need to calculate the ratio to allow common point of reference.
+            var ratio = StrokeThickness / FillThickness;
+            // Difference between stroke and fill thickness, allows us to
+            // calculate the offsets for StrokeDashOffset, dash, and gap size.
+            var diff = StrokeThickness - FillThickness;
 
             var fill = new Line { X1 = X1, Y1 = Y1, X2 = X2, Y2 = Y2 };
             fill.Stroke = Brushes.White;
             fill.StrokeThickness = FillThickness;
-            fill.StrokeDashOffset = -0.5;
-            fill.StrokeDashArray = new DoubleCollection(new double[] { 3, 3 });
-            canvas.Children.Add(fill);
+            // Offset by half of the diff to keep the fill in center.
+            // Divided by FillThickness since `diff` is an absolute value.
+            fill.StrokeDashOffset = -diff / (2 * FillThickness);
+            fill.StrokeDashArray = new DoubleCollection(
+                new double[]
+                {
+                    // fill dash is smaller than stroke by `diff` (absolute value)
+                    ratio * (dashSize - diff / StrokeThickness),
+                    // fill gap is larger than stroke by `diff` (absolute value)
+                    ratio * (gapSize + diff / StrokeThickness),
+                }
+            );
+            MagnifierCanvas.Children.Add(fill);
         }
 
         private static void OnImageCursorChange(
