@@ -85,7 +85,7 @@ namespace Indexer.View
         protected double StrokeThickness => FillThickness + 2;
         protected double CrosshairOffset =>
             Math.Ceiling(StrokeThickness / 2) + ZoomFactor;
-        protected BitmapSource? ImageBitmap { get; set; }
+        protected System.Drawing.Image? BaseImage { get; set; }
         protected Image MagnifierImage { get; set; } =
             new()
             {
@@ -127,7 +127,8 @@ namespace Indexer.View
             BorderBrush = Stroke;
             Child = grid;
 
-            TriggerMagnifierUpdate();
+            UpdateCrosshair();
+            UpdateMagnifierImage(resetViewBox: true);
         }
 
         private static void OnStreamSourceChange(
@@ -139,7 +140,13 @@ namespace Indexer.View
             {
                 return;
             }
-            self.TriggerMagnifierUpdate();
+            if (self.StreamSource is null)
+            {
+                self.BaseImage = null;
+                return;
+            }
+            self.BaseImage = System.Drawing.Image.FromStream(self.StreamSource);
+            self.UpdateMagnifierImage(resetViewBox: true);
         }
 
         private static void OnZoomFactorChange(
@@ -151,65 +158,22 @@ namespace Indexer.View
             {
                 return;
             }
-            self.TriggerMagnifierUpdate();
-        }
-
-        private void UpdateImageBitmap()
-        {
-            if (StreamSource is null)
-            {
-                ImageBitmap = null;
-                return;
-            }
-
-            var regular = System.Drawing.Image.FromStream(StreamSource);
-            using var result = new System.Drawing.Bitmap(
-                regular.Width * ZoomFactor,
-                regular.Height * ZoomFactor,
-                regular.PixelFormat
-            );
-            using (var g = System.Drawing.Graphics.FromImage(result))
-            {
-                // With integer scaling, this will ensure that each pixel
-                // becomes factor x factor square of original pixel's color.
-                g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                // This is needed so that the first pixel is not partially offset
-                // into negative coordinates.
-                g.PixelOffsetMode = PixelOffsetMode.Half;
-                g.DrawImage(regular, 0, 0, result.Width, result.Height);
-            }
-            var ms = new MemoryStream();
-            result.Save(ms, ImageFormat.Bmp);
-            ms.Seek(0, SeekOrigin.Begin);
-            {
-                var bitmapSource = new BitmapImage();
-                bitmapSource.BeginInit();
-                bitmapSource.StreamSource = ms;
-                bitmapSource.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapSource.EndInit();
-                ImageBitmap = bitmapSource;
-            }
-        }
-
-        private void TriggerMagnifierUpdate()
-        {
-            UpdateImageBitmap();
-            TriggerMagnifierRectangleUpdate();
+            self.UpdateCrosshair();
+            self.UpdateMagnifierImage(resetViewBox: true);
         }
 
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
             base.OnRenderSizeChanged(sizeInfo);
-            TriggerMagnifierRectangleUpdate();
+            UpdateCrosshair();
+            UpdateMagnifierImage(resetViewBox: true);
         }
 
-        private void TriggerMagnifierRectangleUpdate()
+        private void UpdateCrosshair()
         {
             MagnifierCanvas.Children.Clear();
             CreateVerticalLines();
             CreateHorizontalLines();
-
-            TriggerViewBoxUpdate(resetViewBox: true);
         }
 
         private void CreateVerticalLines()
@@ -297,7 +261,7 @@ namespace Indexer.View
                 return;
             }
 
-            self.TriggerViewBoxUpdate();
+            self.UpdateMagnifierImage();
         }
 
         private static void OnSavedPositionChange(
@@ -310,20 +274,20 @@ namespace Indexer.View
                 return;
             }
 
-            self.TriggerViewBoxUpdate();
+            self.UpdateMagnifierImage();
         }
 
         private void OnLabelPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "X" || e.PropertyName == "Y")
             {
-                TriggerViewBoxUpdate();
+                UpdateMagnifierImage();
             }
         }
 
-        private void TriggerViewBoxUpdate(bool resetViewBox = false)
+        private void UpdateMagnifierImage(bool resetViewBox = false)
         {
-            if (ImageBitmap == null)
+            if (BaseImage == null)
             {
                 MagnifierImage.Source = null;
                 return;
@@ -348,6 +312,11 @@ namespace Indexer.View
                 // keep the current viewbox
                 return;
             }
+            // depending on which property change is triggered first,
+            // we might end up with a point for a different image
+            // that could potentially by out of bounds
+            x = Math.Min(x, BaseImage.Width - 1);
+            y = Math.Min(y, BaseImage.Height - 1);
             x *= ZoomFactor;
             y *= ZoomFactor;
 
@@ -370,19 +339,77 @@ namespace Indexer.View
             // This is just the width of magnifier unless the distance to
             // the bottom-right corner of the scaled image is less than that
             // in which case, it's the size of whatever the remaining area is.
-            var rectWidth = Math.Min(PixelWidth, ImageBitmap.PixelWidth - rectX);
-            var rectHeight = Math.Min(PixelHeight, ImageBitmap.PixelHeight - rectY);
+            var rectWidth = Math.Min(PixelWidth, BaseImage.Width * ZoomFactor - rectX);
+            var rectHeight = Math.Min(PixelHeight, BaseImage.Height * ZoomFactor - rectY);
 
             var sourceRect = new Int32Rect(rectX, rectY, rectWidth, rectHeight);
-            BitmapSource? cropped = null;
-            if (sourceRect.HasArea)
-            {
-                cropped = new CroppedBitmap(ImageBitmap, sourceRect);
-            }
+            var imageBitmap = GenerateImageBitmap(sourceRect);
             var transform = new TranslateTransform(offsetX, offsetY);
 
-            MagnifierImage.Source = cropped;
+            MagnifierImage.Source = imageBitmap;
             MagnifierImage.RenderTransform = transform;
+            MagnifierImage.Clip = new RectangleGeometry(new Rect(0, 0, rectWidth, rectHeight));
+        }
+
+        private BitmapImage? GenerateImageBitmap(Int32Rect sourceRect)
+        {
+            if (BaseImage is null)
+            {
+                return null;
+            }
+            if (!sourceRect.HasArea)
+            {
+                return null;
+            }
+
+            // Top-left corner of the source portion of the image.
+            // If sourceRect's position is mid-pixel, we round down
+            // and put the offset in the destX/Y.
+            var startX = sourceRect.X / ZoomFactor;
+            var startY = sourceRect.Y / ZoomFactor;
+            var destX = - (sourceRect.X % ZoomFactor);
+            var destY = - (sourceRect.Y % ZoomFactor);
+            // Bottom-right corner of the source portion of the image.
+            // If this is mid-pixel, we round up.
+            var stopX = (sourceRect.X + sourceRect.Width - 1) / ZoomFactor + 1;
+            var stopY = (sourceRect.Y + sourceRect.Height - 1) / ZoomFactor + 1;
+            // The actual width of the source portion of the image.
+            var width = stopX - startX;
+            var height = stopY - startY;
+
+            using var result = new System.Drawing.Bitmap(
+                PixelWidth,
+                PixelHeight,
+                BaseImage.PixelFormat
+            );
+            using (var g = System.Drawing.Graphics.FromImage(result))
+            {
+                // With integer scaling, this will ensure that each pixel
+                // becomes factor x factor square of original pixel's color.
+                g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                // This is needed so that the first pixel is not partially offset
+                // into negative coordinates.
+                g.PixelOffsetMode = PixelOffsetMode.Half;
+                g.DrawImage(
+                    BaseImage,
+                    new System.Drawing.Rectangle(
+                        destX, destY, width * ZoomFactor, height * ZoomFactor
+                    ),
+                    startX, startY, width, height,
+                    System.Drawing.GraphicsUnit.Pixel
+                );
+            }
+            var ms = new MemoryStream();
+            result.Save(ms, ImageFormat.Bmp);
+            ms.Seek(0, SeekOrigin.Begin);
+            {
+                var bitmapSource = new BitmapImage();
+                bitmapSource.BeginInit();
+                bitmapSource.StreamSource = ms;
+                bitmapSource.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapSource.EndInit();
+                return bitmapSource;
+            }
         }
     }
 }
