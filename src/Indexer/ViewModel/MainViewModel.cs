@@ -379,10 +379,10 @@ namespace Indexer.ViewModel
             }
 
             currentLabel.X = Math.Min(
-                Math.Max(0, currentLabel.X + x), CurrentIndexedImage.Image.Width
+                Math.Max(0, currentLabel.X + x), CurrentIndexedImage.Image.Width - 1
             );
             currentLabel.Y = Math.Min(
-                Math.Max(0, currentLabel.Y + y), CurrentIndexedImage.Image.Height
+                Math.Max(0, currentLabel.Y + y), CurrentIndexedImage.Image.Height - 1
             );
             CurrentLabels.TriggerReset();
             IsSessionModified = true;
