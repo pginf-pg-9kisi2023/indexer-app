@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -88,7 +89,7 @@ namespace Indexer.View
         private System.Drawing.Image? BaseImage;
         private System.Drawing.Graphics? Graphics;
         private System.Drawing.Bitmap? Bitmap;
-        private readonly MemoryStream ResultStream = new();
+        protected WriteableBitmap? BitmapSource;
         private readonly Image MagnifierImage =
             new()
             {
@@ -209,11 +210,15 @@ namespace Indexer.View
                 // This is needed so that the first pixel is not partially offset
                 // into negative coordinates.
                 Graphics.PixelOffsetMode = PixelOffsetMode.Half;
+                BitmapSource = new WriteableBitmap(
+                    PixelWidth, PixelHeight, 96, 96, PixelFormats.Pbgra32, null
+                );
             }
             else
             {
                 Bitmap = null;
                 Graphics = null;
+                BitmapSource = null;
             }
         }
 
@@ -399,7 +404,15 @@ namespace Indexer.View
             MagnifierImage.Clip = new RectangleGeometry(new Rect(0, 0, rectWidth, rectHeight));
         }
 
-        private BitmapImage? GenerateImageBitmap(Int32Rect sourceRect)
+        [DllImport("kernel32.dll", EntryPoint = "RtlMoveMemory")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Security",
+            "CA5392:Use DefaultDllImportSearchPaths attribute for P/Invokes",
+            Justification = "The imported assembly is a commonly used system assembly"
+        )]
+        private static extern void CopyMemory(IntPtr dest, IntPtr source, int Length);
+
+        private BitmapSource? GenerateImageBitmap(Int32Rect sourceRect)
         {
             if (Bitmap is null)
             {
@@ -433,18 +446,36 @@ namespace Indexer.View
                 startX, startY, width, height,
                 System.Drawing.GraphicsUnit.Pixel
             );
-            ResultStream.SetLength(0);
-            Bitmap.Save(ResultStream, ImageFormat.Bmp);
-            ResultStream.Seek(0, SeekOrigin.Begin);
 
+            var data = Bitmap.LockBits(
+                new System.Drawing.Rectangle(0, 0, Bitmap.Width, Bitmap.Height),
+                ImageLockMode.ReadOnly,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb
+            );
+            try
             {
-                var bitmapSource = new BitmapImage();
-                bitmapSource.BeginInit();
-                bitmapSource.StreamSource = ResultStream;
-                bitmapSource.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapSource.EndInit();
-                return bitmapSource;
+                BitmapSource!.Lock();
+                try
+                {
+                    CopyMemory(
+                        BitmapSource.BackBuffer,
+                        data.Scan0,
+                        BitmapSource.BackBufferStride * Bitmap.Height
+                    );
+                    BitmapSource.AddDirtyRect(
+                        new Int32Rect(0, 0, Bitmap.Width, Bitmap.Height)
+                    );
+                }
+                finally
+                {
+                    BitmapSource.Unlock();
+                }
             }
+            finally
+            {
+                Bitmap.UnlockBits(data);
+            }
+            return BitmapSource;
         }
     }
 }
