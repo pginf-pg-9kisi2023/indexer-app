@@ -89,7 +89,7 @@ namespace Indexer.View
         private System.Drawing.Image? BaseImage;
         private System.Drawing.Graphics? Graphics;
         private System.Drawing.Bitmap? Bitmap;
-        protected WriteableBitmap? BitmapSource;
+        private WriteableBitmap? BitmapSource;
         private readonly Image MagnifierImage =
             new()
             {
@@ -396,10 +396,10 @@ namespace Indexer.View
             var rectHeight = Math.Min(PixelHeight, BaseImage.Height * ZoomFactor - rectY);
 
             var sourceRect = new Int32Rect(rectX, rectY, rectWidth, rectHeight);
-            var imageBitmap = GenerateImageBitmap(sourceRect);
+            GenerateImageBitmap(sourceRect);
             var transform = new TranslateTransform(offsetX, offsetY);
 
-            MagnifierImage.Source = imageBitmap;
+            MagnifierImage.Source = BitmapSource;
             MagnifierImage.RenderTransform = transform;
             MagnifierImage.Clip = new RectangleGeometry(new Rect(0, 0, rectWidth, rectHeight));
         }
@@ -412,15 +412,15 @@ namespace Indexer.View
         )]
         private static extern void CopyMemory(IntPtr dest, IntPtr source, int Length);
 
-        private BitmapSource? GenerateImageBitmap(Int32Rect sourceRect)
+        private void GenerateImageBitmap(Int32Rect sourceRect)
         {
             if (Bitmap is null)
             {
-                return null;
+                return;
             }
             if (!sourceRect.HasArea)
             {
-                return null;
+                return;
             }
 
             // Top-left corner of the source portion of the image.
@@ -475,7 +475,6 @@ namespace Indexer.View
             {
                 Bitmap.UnlockBits(data);
             }
-            return BitmapSource;
         }
     }
 }
