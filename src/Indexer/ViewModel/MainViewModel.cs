@@ -154,6 +154,16 @@ namespace Indexer.ViewModel
         private string _statusText = "";
         private Timer? _statusTimer;
         public string StatusText { get; private set; } = "";
+        private bool _isCurrentLabelAutoCentered = true;
+        public bool IsCurrentLabelAutoCentered
+        {
+            get => _isCurrentLabelAutoCentered;
+            set
+            {
+                _isCurrentLabelAutoCentered = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MainViewModel() { }
 

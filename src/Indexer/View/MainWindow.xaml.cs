@@ -272,6 +272,7 @@ namespace Indexer.View
             var dialog = new ImageSelectionDialog(imageSelection);
             if (dialog.ShowDialog() == true)
             {
+                var centerScrollViewerAfter = Data.IndexedImages.Count == 0;
                 Data.AddIndexedImages(imageSelection.Files);
                 if (Data.CurrentLabel != null)
                 {
@@ -284,6 +285,10 @@ namespace Indexer.View
                 Data.SetTemporaryStatusOverride(
                     $"Dodano {imageSelection.Files.Count} zdjęć"
                 );
+                if (centerScrollViewerAfter)
+                {
+                    Data.IsCurrentLabelAutoCentered = true;
+                }
             }
             else
             {
@@ -438,6 +443,7 @@ namespace Indexer.View
 
         private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            Data.IsCurrentLabelAutoCentered = false;
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 var pos = GetImageCursorPosition(e);
@@ -453,12 +459,14 @@ namespace Indexer.View
         {
             Data.SwitchToPreviousImage();
             Data.SetTemporaryStatusOverride($"Załadowano '{Data.CurrentImage!.Path}'");
+            Data.IsCurrentLabelAutoCentered = true;
         }
 
         private void NextImageButton_Click(object sender, RoutedEventArgs e)
         {
             Data.SwitchToNextImage();
             Data.SetTemporaryStatusOverride($"Załadowano '{Data.CurrentImage!.Path}'");
+            Data.IsCurrentLabelAutoCentered = true;
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -515,19 +523,24 @@ namespace Indexer.View
                     break;
                 case Key.Up:
                     Data.MoveCurrentLabelPositionRelatively(y: multiplier * -1);
+                    Data.IsCurrentLabelAutoCentered = true;
                     break;
                 case Key.Down:
                     Data.MoveCurrentLabelPositionRelatively(y: multiplier * 1);
+                    Data.IsCurrentLabelAutoCentered = true;
                     break;
                 case Key.Left:
                     Data.MoveCurrentLabelPositionRelatively(x: multiplier * -1);
+                    Data.IsCurrentLabelAutoCentered = true;
                     break;
                 case Key.Right:
                     Data.MoveCurrentLabelPositionRelatively(x: multiplier * 1);
+                    Data.IsCurrentLabelAutoCentered = true;
                     break;
                 case Key.Enter:
                     Data.SwitchToNextLabel();
                     Data.SetStatus($"Zaznaczanie etykiety '{Data.CurrentLabel!.Name}'");
+                    Data.IsCurrentLabelAutoCentered = true;
                     break;
                 case Key.Delete:
                     Data.RemoveCurrentLabelPosition();
@@ -551,6 +564,7 @@ namespace Indexer.View
             MainImage.Stretch = Stretch.None;
             MainImageScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             MainImageScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            Data.IsCurrentLabelAutoCentered = true;
         }
 
         private void FitImageOnScreen()
@@ -587,6 +601,7 @@ namespace Indexer.View
                 Data.SetTemporaryStatusOverride(
                     $"Załadowano '{indexedImage.ImagePath}'"
                 );
+                Data.IsCurrentLabelAutoCentered = true;
             }
         }
 
@@ -602,6 +617,7 @@ namespace Indexer.View
             {
                 Data.SetCurrentLabel(label);
                 Data.SetStatus($"Zaznaczanie etykiety '{label.Name}'");
+                Data.IsCurrentLabelAutoCentered = true;
             }
         }
 
