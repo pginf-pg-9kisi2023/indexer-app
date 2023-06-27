@@ -503,7 +503,7 @@
                                 Grid.Row="1" />
                             <local:Magnifier
                                 ZoomFactor="{Binding Value, ElementName=Magnifier}"
-                                ImageBitmap="{Binding BitmapSource, ElementName=MainImage}"
+                                StreamSource="{Binding CurrentBitmapImage}"
                                 SavedPosition="{Binding SavedPosition}"
                                 ImageCursor="{Binding ImageCursorPosition}"
                                 Height="250"
