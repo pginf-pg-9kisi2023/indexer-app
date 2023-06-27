@@ -400,8 +400,8 @@ namespace Indexer.View
             // and put the offset in the destX/Y.
             var startX = sourceRect.X / ZoomFactor;
             var startY = sourceRect.Y / ZoomFactor;
-            var destX = - (sourceRect.X % ZoomFactor);
-            var destY = - (sourceRect.Y % ZoomFactor);
+            var destX = -(sourceRect.X % ZoomFactor);
+            var destY = -(sourceRect.Y % ZoomFactor);
             // Bottom-right corner of the source portion of the image.
             // If this is mid-pixel, we round up.
             var stopX = (sourceRect.X + sourceRect.Width - 1) / ZoomFactor + 1;
