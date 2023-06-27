@@ -14,7 +14,7 @@ using Point = System.Drawing.Point;
 
 namespace Indexer.View
 {
-    public class Magnifier : Border
+    public class Magnifier : Border, IDisposable
     {
         public static readonly DependencyProperty StreamSourceProperty
             = DependencyProperty.Register(
@@ -130,6 +130,22 @@ namespace Indexer.View
 
             UpdateCrosshair();
             UpdateMagnifierImage(resetViewBox: true);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                BaseImage?.Dispose();
+                Graphics?.Dispose();
+                Bitmap?.Dispose();
+            }
         }
 
         private static void OnStreamSourceChange(
