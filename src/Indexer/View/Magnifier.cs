@@ -79,17 +79,17 @@ namespace Indexer.View
             set => SetValue(ZoomFactorProperty, value);
         }
 
-        protected int PixelWidth => (int)ActualWidth - 2;
-        protected int PixelHeight => (int)ActualHeight - 2;
-        protected double FillThickness => ZoomFactor + 2;
-        protected double StrokeThickness => FillThickness + 2;
-        protected double CrosshairOffset =>
+        private int PixelWidth => (int)ActualWidth - 2;
+        private int PixelHeight => (int)ActualHeight - 2;
+        private double FillThickness => ZoomFactor + 2;
+        private double StrokeThickness => FillThickness + 2;
+        private double CrosshairOffset =>
             Math.Ceiling(StrokeThickness / 2) + ZoomFactor;
-        protected System.Drawing.Image? BaseImage { get; set; }
-        protected System.Drawing.Graphics? Graphics { get; set; }
-        protected System.Drawing.Bitmap? Bitmap { get; set; }
-        protected MemoryStream ResultStream { get; set; } = new();
-        protected Image MagnifierImage { get; set; } =
+        private System.Drawing.Image? BaseImage;
+        private System.Drawing.Graphics? Graphics;
+        private System.Drawing.Bitmap? Bitmap;
+        private readonly MemoryStream ResultStream = new();
+        private readonly Image MagnifierImage =
             new()
             {
                 Stretch = Stretch.None,
@@ -97,8 +97,7 @@ namespace Indexer.View
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
             };
-        protected Canvas MagnifierCanvas { get; set; } =
-            new() { SnapsToDevicePixels = true };
+        private readonly Canvas MagnifierCanvas = new() { SnapsToDevicePixels = true };
 
         public Magnifier()
         {
