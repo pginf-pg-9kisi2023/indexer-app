@@ -195,7 +195,7 @@ namespace Indexer.View
         {
             Graphics?.Dispose();
             Bitmap?.Dispose();
-            if (BaseImage != null)
+            if (BaseImage != null && PixelWidth > 0 && PixelHeight > 0)
             {
                 Bitmap = new System.Drawing.Bitmap(
                     PixelWidth,
@@ -335,7 +335,7 @@ namespace Indexer.View
 
         private void UpdateMagnifierImage(bool resetViewBox = false)
         {
-            if (BaseImage == null)
+            if (Bitmap == null)
             {
                 MagnifierImage.Source = null;
                 return;
@@ -363,7 +363,7 @@ namespace Indexer.View
             // depending on which property change is triggered first,
             // we might end up with a point for a different image
             // that could potentially by out of bounds
-            x = Math.Min(x, BaseImage.Width - 1);
+            x = Math.Min(x, BaseImage!.Width - 1);
             y = Math.Min(y, BaseImage.Height - 1);
             x *= ZoomFactor;
             y *= ZoomFactor;
@@ -401,7 +401,7 @@ namespace Indexer.View
 
         private BitmapImage? GenerateImageBitmap(Int32Rect sourceRect)
         {
-            if (BaseImage is null)
+            if (Bitmap is null)
             {
                 return null;
             }
@@ -426,7 +426,7 @@ namespace Indexer.View
             var height = stopY - startY;
 
             Graphics!.DrawImage(
-                BaseImage,
+                BaseImage!,
                 new System.Drawing.Rectangle(
                     destX, destY, width * ZoomFactor, height * ZoomFactor
                 ),
@@ -434,7 +434,7 @@ namespace Indexer.View
                 System.Drawing.GraphicsUnit.Pixel
             );
             ResultStream.SetLength(0);
-            Bitmap!.Save(ResultStream, ImageFormat.Bmp);
+            Bitmap.Save(ResultStream, ImageFormat.Bmp);
             ResultStream.Seek(0, SeekOrigin.Begin);
 
             {
